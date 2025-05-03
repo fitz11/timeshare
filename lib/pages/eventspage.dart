@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:timeshare/pages/calendarview.dart';
 import 'package:timeshare/util.dart';
 
-class Homepage extends StatefulWidget {
-  const Homepage({super.key, required this.title});
+class EventsPage extends StatefulWidget {
+  const EventsPage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<EventsPage> createState() => _EventsPageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _EventsPageState extends State<EventsPage> {
   late final ValueNotifier<List<Event>> _userEvents;
 
   late TextEditingController _eventNameController;
