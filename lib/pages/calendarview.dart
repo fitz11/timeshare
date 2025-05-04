@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:timeshare/pages/calendarhepler.dart';
 import 'package:timeshare/util.dart';
 
 class CalendarView extends StatefulWidget {
@@ -10,88 +11,52 @@ class CalendarView extends StatefulWidget {
 }
 
 class _CalendarViewState extends State<CalendarView> {
-  late final ValueNotifier<List<Event>> _selectedEvents;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  RangeSelectionMode _rangeSelectionMode =
-      RangeSelectionMode
-          .toggledOff; // Can be toggled on/off by longpressing a date
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-  DateTime? _rangeStart;
-  DateTime? _rangeEnd;
-
-  bool _addEventMode = false;
-  Widget _addEventModeButton() {
-    if (_addEventMode) {
-      return Icon(Icons.search);
-    } else {
-      return Icon(Icons.add);
-    }
-  }
+  //Helper class to clean up some overhead in the UI code
+  final CalendarHelper _cHelper = CalendarHelper();
 
   @override
   void initState() {
     super.initState();
-
-    _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    _cHelper.initNotifier();
   }
 
   @override
   void dispose() {
-    _selectedEvents.dispose();
+    _cHelper.selectedEvents.dispose();
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
-    // Implementation example
-    return kEvents[day] ?? [];
-  }
-
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
-    // Implementation example
-    final days = daysInRange(start, end);
-
-    return [for (final d in days) ..._getEventsForDay(d)];
-  }
-
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_selectedDay, selectedDay)) {
+    if (!isSameDay(_cHelper.selectedDay, selectedDay)) {
       setState(() {
-        _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
-        _rangeStart = null; // Important to clean those
-        _rangeEnd = null;
-        _rangeSelectionMode = RangeSelectionMode.toggledOff;
+        _cHelper.selectedDay = selectedDay;
+        _cHelper.focusedDay = focusedDay;
+        _cHelper.rangeStart = null; // Important to clean those
+        _cHelper.rangeEnd = null;
+        _cHelper.rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      _selectedEvents.value = _getEventsForDay(selectedDay);
+      _cHelper.selectedEvents.value = _cHelper.getEventsForDay(selectedDay);
     }
   }
 
   void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
     setState(() {
-      _selectedDay = null;
-      _focusedDay = focusedDay;
-      _rangeStart = start;
-      _rangeEnd = end;
-      _rangeSelectionMode = RangeSelectionMode.toggledOn;
+      _cHelper.selectedDay = null;
+      _cHelper.focusedDay = focusedDay;
+      _cHelper.rangeStart = start;
+      _cHelper.rangeEnd = end;
+      _cHelper.rangeSelectionMode = RangeSelectionMode.toggledOn;
     });
 
     // `start` or `end` could be null
     if (start != null && end != null) {
-      _selectedEvents.value = _getEventsForRange(start, end);
+      _cHelper.selectedEvents.value = _cHelper.getEventsForRange(start, end);
     } else if (start != null) {
-      _selectedEvents.value = _getEventsForDay(start);
+      _cHelper.selectedEvents.value = _cHelper.getEventsForDay(start);
     } else if (end != null) {
-      _selectedEvents.value = _getEventsForDay(end);
+      _cHelper.selectedEvents.value = _cHelper.getEventsForDay(end);
     }
-  }
-
-  void _onModePressed() async {
-    setState(() {
-      _addEventMode = !_addEventMode;
-    });
   }
 
   @override
@@ -99,9 +64,17 @@ class _CalendarViewState extends State<CalendarView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Timeshare'),
+        elevation: 5,
         centerTitle: true,
         actions: [
-          IconButton(onPressed: _onModePressed, icon: _addEventModeButton()),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _cHelper.onModePressed();
+              });
+            },
+            icon: _cHelper.addEventModeButton(),
+          ),
         ],
       ),
       body: Column(
@@ -109,13 +82,13 @@ class _CalendarViewState extends State<CalendarView> {
           TableCalendar<Event>(
             firstDay: kFirstDay,
             lastDay: kLastDay,
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            rangeStartDay: _rangeStart,
-            rangeEndDay: _rangeEnd,
-            calendarFormat: _calendarFormat,
-            rangeSelectionMode: _rangeSelectionMode,
-            eventLoader: _getEventsForDay,
+            focusedDay: _cHelper.focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_cHelper.selectedDay, day),
+            rangeStartDay: _cHelper.rangeStart,
+            rangeEndDay: _cHelper.rangeEnd,
+            calendarFormat: _cHelper.calendarFormat,
+            rangeSelectionMode: _cHelper.rangeSelectionMode,
+            eventLoader: _cHelper.getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
             calendarStyle: const CalendarStyle(
               // Use `CalendarStyle` to customize the UI
@@ -124,26 +97,26 @@ class _CalendarViewState extends State<CalendarView> {
             onDaySelected: _onDaySelected,
             onRangeSelected: _onRangeSelected,
             onFormatChanged: (format) {
-              if (_calendarFormat != format) {
+              if (_cHelper.calendarFormat != format) {
                 setState(() {
-                  _calendarFormat = format;
+                  _cHelper.calendarFormat = format;
                 });
               }
             },
             onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
+              _cHelper.focusedDay = focusedDay;
             },
           ),
-          const SizedBox(height: 8.0),
+          const SizedBox(height: 16.0),
           Center(
             child:
-                _addEventMode
+                _cHelper.addEventMode
                     ? Text('Events available to add')
                     : Text('Viewing events in selection'),
           ),
           Expanded(
             child:
-                _addEventMode
+                _cHelper.addEventMode
                     ? ListView.builder(
                       itemCount: userEvents.length,
                       itemBuilder: (context, index) {
@@ -159,20 +132,26 @@ class _CalendarViewState extends State<CalendarView> {
                           child: ListTile(
                             title: Text('${userEvents[index]}'),
                             onTap: () {
-                              if (_selectedDay != null) {
+                              if (_cHelper.selectedDay != null) {
                                 setState(() {
-                                  kEvents.putIfAbsent(_selectedDay!, () => []);
-                                  kEvents[_selectedDay]!.add(userEvents[index]);
+                                  userEventList.putIfAbsent(
+                                    _cHelper.selectedDay!,
+                                    () => [],
+                                  );
+                                  userEventList[_cHelper.selectedDay]!.add(
+                                    userEvents[index],
+                                  );
                                 });
-                              } else if (_rangeStart != null) {
+                              } else if (_cHelper.rangeStart != null &&
+                                  _cHelper.rangeEnd != null) {
                                 setState(() {
                                   for (
-                                    DateTime date = _rangeStart!;
-                                    !date.isAfter(_rangeEnd!);
+                                    DateTime date = _cHelper.rangeStart!;
+                                    !date.isAfter(_cHelper.rangeEnd!);
                                     date = date.add(Duration(days: 1))
                                   ) {
-                                    kEvents.putIfAbsent(date, () => []);
-                                    kEvents[date]!.add(userEvents[index]);
+                                    userEventList.putIfAbsent(date, () => []);
+                                    userEventList[date]!.add(userEvents[index]);
                                   }
                                 });
                               }
@@ -182,7 +161,7 @@ class _CalendarViewState extends State<CalendarView> {
                       },
                     )
                     : ValueListenableBuilder<List<Event>>(
-                      valueListenable: _selectedEvents,
+                      valueListenable: _cHelper.selectedEvents,
                       builder: (context, value, _) {
                         return ListView.builder(
                           itemCount: value.length,
@@ -205,10 +184,6 @@ class _CalendarViewState extends State<CalendarView> {
           ),
         ],
       ),
-      floatingActionButton:
-          _addEventMode
-              ? FloatingActionButton(onPressed: () {}, child: Icon(Icons.add))
-              : null,
     );
   }
 }

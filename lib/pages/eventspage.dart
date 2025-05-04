@@ -98,12 +98,6 @@ class _EventsPageState extends State<EventsPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          userEvents = _userEvents.value;
-        },
-        child: Icon(Icons.add),
-      ),
     );
   }
 }
