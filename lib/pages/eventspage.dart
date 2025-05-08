@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:timeshare/event.dart';
 import 'package:timeshare/pages/calendarview.dart';
-import 'package:timeshare/util.dart';
 
 class EventsPage extends StatefulWidget {
   const EventsPage({super.key, required this.title});
@@ -13,6 +13,7 @@ class EventsPage extends StatefulWidget {
 
 class _EventsPageState extends State<EventsPage> {
   late final ValueNotifier<List<Event>> _userEvents;
+  bool _makeSquare = false;
 
   late TextEditingController _eventNameController;
 
@@ -20,7 +21,7 @@ class _EventsPageState extends State<EventsPage> {
   void initState() {
     super.initState();
     _eventNameController = TextEditingController();
-    _userEvents = ValueNotifier(userEvents);
+    _userEvents = ValueNotifier(testEvents);
   }
 
   @override
@@ -35,7 +36,9 @@ class _EventsPageState extends State<EventsPage> {
     for (Event event in _userEvents.value) {
       if (event.title == value) return;
     }
-    _userEvents.value.add(Event(value));
+    _userEvents.value.add(
+      Event(value, shape: _makeSquare ? BoxShape.rectangle : BoxShape.circle),
+    );
     setState(() {
       _eventNameController.clear();
     });
@@ -70,6 +73,23 @@ class _EventsPageState extends State<EventsPage> {
             controller: _eventNameController,
             onSubmitted: _onSubmitted,
           ),
+          Row(
+            children: [
+              Checkbox(
+                value: _makeSquare,
+                onChanged: (_) {
+                  setState(() {
+                    _makeSquare = !_makeSquare;
+                  });
+                },
+              ),
+              Text('Event shape on Calendar (sqaure or circle)'),
+            ],
+          ),
+          Row(children: [
+            
+            ],
+          ),
           Expanded(
             child: ValueListenableBuilder<List<Event>>(
               valueListenable: _userEvents,
@@ -87,8 +107,9 @@ class _EventsPageState extends State<EventsPage> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
-                        onTap: () => print('${value[index]}'),
-                        title: Text('${value[index]}'),
+                        // onTap: () => print('${value[index]}'),
+                        title: Text(value[index].title),
+                        trailing: Text('${value[index].shape}'),
                       ),
                     );
                   },

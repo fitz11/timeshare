@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:timeshare/event.dart';
 import 'package:timeshare/pages/calendarhepler.dart';
-import 'package:timeshare/util.dart';
 
 class CalendarView extends StatefulWidget {
   const CalendarView({super.key});
@@ -80,8 +80,8 @@ class _CalendarViewState extends State<CalendarView> {
       body: Column(
         children: [
           TableCalendar<Event>(
-            firstDay: kFirstDay,
-            lastDay: kLastDay,
+            firstDay: firstDay,
+            lastDay: lastDay,
             focusedDay: _cHelper.focusedDay,
             selectedDayPredicate: (day) => isSameDay(_cHelper.selectedDay, day),
             rangeStartDay: _cHelper.rangeStart,
@@ -93,6 +93,10 @@ class _CalendarViewState extends State<CalendarView> {
             calendarStyle: const CalendarStyle(
               // Use `CalendarStyle` to customize the UI
               outsideDaysVisible: false,
+              markerDecoration: BoxDecoration(
+                color: Colors.green,
+                shape: BoxShape.rectangle,
+              ),
             ),
             onDaySelected: _onDaySelected,
             onRangeSelected: _onRangeSelected,
