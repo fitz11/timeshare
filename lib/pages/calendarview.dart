@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/event.dart';
-import 'package:timeshare/pages/calendarhepler.dart';
+import 'package:timeshare/util.dart';
 
 class CalendarView extends StatefulWidget {
   const CalendarView({super.key});
@@ -11,51 +11,63 @@ class CalendarView extends StatefulWidget {
 }
 
 class _CalendarViewState extends State<CalendarView> {
-  //Helper class to clean up some overhead in the UI code
-  final CalendarHelper _cHelper = CalendarHelper();
+  late final ValueNotifier<List<Event>> _selectedEvents;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+  DateTime? _rangeStart;
+  DateTime? _rangeEnd;
 
   @override
   void initState() {
     super.initState();
-    _cHelper.initNotifier();
+
+    _selectedDay = _focusedDay;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
 
   @override
   void dispose() {
-    _cHelper.selectedEvents.dispose();
+    _selectedEvents.dispose();
     super.dispose();
   }
 
-  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_cHelper.selectedDay, selectedDay)) {
-      setState(() {
-        _cHelper.selectedDay = selectedDay;
-        _cHelper.focusedDay = focusedDay;
-        _cHelper.rangeStart = null; // Important to clean those
-        _cHelper.rangeEnd = null;
-        _cHelper.rangeSelectionMode = RangeSelectionMode.toggledOff;
-      });
+  List<Event> _getEventsForDay(DateTime day) {
+    return userEventList[day] ?? [];
+  }
 
-      _cHelper.selectedEvents.value = _cHelper.getEventsForDay(selectedDay);
+  List<Event> _getEventsForRange(DateTime start, DateTime end) {
+    final days = daysInRange(start, end);
+    return [for (final d in days) ..._getEventsForDay(d)];
+  }
+
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    if (!isSameDay(_selectedDay, selectedDay)) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+        _rangeStart = null;
+        _rangeEnd = null;
+        _rangeSelectionMode = RangeSelectionMode.toggledOff;
+      });
     }
   }
 
   void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
     setState(() {
-      _cHelper.selectedDay = null;
-      _cHelper.focusedDay = focusedDay;
-      _cHelper.rangeStart = start;
-      _cHelper.rangeEnd = end;
-      _cHelper.rangeSelectionMode = RangeSelectionMode.toggledOn;
+      _selectedDay = null;
+      _focusedDay = focusedDay;
+      _rangeStart = start;
+      _rangeEnd = end;
+      _rangeSelectionMode = RangeSelectionMode.toggledOn;
     });
-
-    // `start` or `end` could be null
     if (start != null && end != null) {
-      _cHelper.selectedEvents.value = _cHelper.getEventsForRange(start, end);
+      _selectedEvents.value = _getEventsForRange(start, end);
     } else if (start != null) {
-      _cHelper.selectedEvents.value = _cHelper.getEventsForDay(start);
+      _selectedEvents.value = _getEventsForDay(start);
     } else if (end != null) {
-      _cHelper.selectedEvents.value = _cHelper.getEventsForDay(end);
+      _selectedEvents.value = _getEventsForDay(end);
     }
   }
 
@@ -66,125 +78,34 @@ class _CalendarViewState extends State<CalendarView> {
         title: const Text('Timeshare'),
         elevation: 5,
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _cHelper.onModePressed();
-              });
-            },
-            icon: _cHelper.addEventModeButton(),
-          ),
-        ],
       ),
+
       body: Column(
         children: [
-          TableCalendar<Event>(
+          TableCalendar(
+            focusedDay: _focusedDay,
             firstDay: firstDay,
             lastDay: lastDay,
-            focusedDay: _cHelper.focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_cHelper.selectedDay, day),
-            rangeStartDay: _cHelper.rangeStart,
-            rangeEndDay: _cHelper.rangeEnd,
-            calendarFormat: _cHelper.calendarFormat,
-            rangeSelectionMode: _cHelper.rangeSelectionMode,
-            eventLoader: _cHelper.getEventsForDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            rangeStartDay: _rangeStart,
+            rangeEndDay: _rangeEnd,
+            calendarFormat: _calendarFormat,
+            rangeSelectionMode: _rangeSelectionMode,
+            eventLoader: _getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
-            calendarStyle: const CalendarStyle(
-              // Use `CalendarStyle` to customize the UI
-              outsideDaysVisible: false,
-              markerDecoration: BoxDecoration(
-                color: Colors.green,
-                shape: BoxShape.rectangle,
-              ),
-            ),
+            calendarStyle: const CalendarStyle(outsideDaysVisible: false),
             onDaySelected: _onDaySelected,
             onRangeSelected: _onRangeSelected,
             onFormatChanged: (format) {
-              if (_cHelper.calendarFormat != format) {
+              if (_calendarFormat != format) {
                 setState(() {
-                  _cHelper.calendarFormat = format;
+                  _calendarFormat = format;
                 });
               }
             },
             onPageChanged: (focusedDay) {
-              _cHelper.focusedDay = focusedDay;
+              _focusedDay = focusedDay;
             },
-          ),
-          const SizedBox(height: 16.0),
-          Center(
-            child:
-                _cHelper.addEventMode
-                    ? Text('Events available to add')
-                    : Text('Viewing events in selection'),
-          ),
-          Expanded(
-            child:
-                _cHelper.addEventMode
-                    ? ListView.builder(
-                      itemCount: userEvents.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 12.0,
-                            vertical: 4.0,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: ListTile(
-                            title: Text('${userEvents[index]}'),
-                            onTap: () {
-                              if (_cHelper.selectedDay != null) {
-                                setState(() {
-                                  userEventList.putIfAbsent(
-                                    _cHelper.selectedDay!,
-                                    () => [],
-                                  );
-                                  userEventList[_cHelper.selectedDay]!.add(
-                                    userEvents[index],
-                                  );
-                                });
-                              } else if (_cHelper.rangeStart != null &&
-                                  _cHelper.rangeEnd != null) {
-                                setState(() {
-                                  for (
-                                    DateTime date = _cHelper.rangeStart!;
-                                    !date.isAfter(_cHelper.rangeEnd!);
-                                    date = date.add(Duration(days: 1))
-                                  ) {
-                                    userEventList.putIfAbsent(date, () => []);
-                                    userEventList[date]!.add(userEvents[index]);
-                                  }
-                                });
-                              }
-                            },
-                          ),
-                        );
-                      },
-                    )
-                    : ValueListenableBuilder<List<Event>>(
-                      valueListenable: _cHelper.selectedEvents,
-                      builder: (context, value, _) {
-                        return ListView.builder(
-                          itemCount: value.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 12.0,
-                                vertical: 4.0,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(),
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              child: ListTile(title: Text('${value[index]}')),
-                            );
-                          },
-                        );
-                      },
-                    ),
           ),
         ],
       ),
