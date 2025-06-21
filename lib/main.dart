@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:timeshare/event.dart';
 import 'package:timeshare/pages/eventspage.dart';
 import 'firebase_options.dart';
 
@@ -18,10 +19,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TimeShare',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const EventsPage(title: 'Flutter Demo Home Page'),
+      home: EventsPage(title: 'TimeShare', calendars: [testCalendar]),
     );
   }
 }
