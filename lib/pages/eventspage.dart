@@ -108,7 +108,7 @@ class _EventsPageState extends State<EventsPage> {
         actions: [
           IconButton(
             onPressed:
-                () => Navigator.push(
+                () => Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (_) => CalendarView(calendars: widget.calendars),
@@ -252,7 +252,8 @@ class _EventsPageState extends State<EventsPage> {
                         // onTap: () => print('${value[index]}'),
                         title: Row(
                           children: [
-                            Text(value.getEvents()[index].time.toString()),
+                            Text("${value.getEvents()[index].time.day}-"),
+                            Text("${value.getEvents()[index].time.month}"),
                             SizedBox(width: 20),
                             Text(
                               value.getEvents()[index].title,

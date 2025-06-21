@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/event.dart';
+import 'package:timeshare/pages/eventspage.dart';
 
 class CalendarView extends StatefulWidget {
   const CalendarView({super.key, required this.calendars});
@@ -116,36 +117,54 @@ class _CalendarViewState extends State<CalendarView> {
     }
   }
 
-  //TODO: Where i left off
+  //render a dialog box to pick a calendar for adding events.
   void _openEventBuilder() async {
-    Future<Calendar>? calendar = await showDialog(
+    Calendar? calendar = await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("select Calendar to add event to:"),
-        content: ListView.builder(
-          itemCount: widget.calendars.length,
-          itemBuilder: (context, index) {
-            return Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 6.0,
-                vertical: 4.0,
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadiusDirectional.circular(12),
-              ),
-              child: ListTile(
-                title: Text(widget.calendars[index].name),
-                onTap: () {
-                  setState((value) {
-                    
-                  });
-                  return widget.calendars[index];
+      builder:
+          (context) => AlertDialog(
+            title: Text("select Calendar to add event to:"),
+            content: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.8,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: ListView.builder(
+                itemCount: widget.calendars.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadiusDirectional.circular(12),
+                    ),
+                    child: ListTile(
+                      title: Text(widget.calendars[index].name),
+                      onTap: () {
+                        Navigator.pop(context, widget.calendars[index]);
+                      },
+                    ),
+                  );
                 },
-              )
-            );
-          }
-      )
+              ),
+            ),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              ),
+            ],
+          ),
+    );
+
+    if (calendar == null) return;
+
+    Navigator.push(
+      // ignore: use_build_context_synchronously
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) =>
+                EventsPage(title: calendar.name, calendars: [calendar]),
+      ),
     );
   }
 
@@ -156,7 +175,12 @@ class _CalendarViewState extends State<CalendarView> {
         title: const Text('Timeshare'),
         elevation: 8,
         centerTitle: true,
-        actions: [IconButton.outlined(onPressed: () {}, icon: Icon(Icons.add))],
+        actions: [
+          IconButton.outlined(
+            onPressed: _openEventBuilder,
+            icon: Icon(Icons.add),
+          ),
+        ],
       ),
 
       //the MEAT
