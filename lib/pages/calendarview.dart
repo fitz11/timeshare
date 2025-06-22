@@ -428,7 +428,7 @@ class _CalendarViewState extends State<CalendarView> {
       ),
 
       floatingActionButton: IconButton.filled(
-        onPressed: () {},
+        onPressed: _openEventBuilder,
         icon: Icon(Icons.edit),
       ),
     );
