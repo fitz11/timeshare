@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:timeshare/event.dart';
-import 'package:timeshare/pages/eventspage.dart';
+import 'package:timeshare/pages/calendarview.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: EventsPage(title: 'TimeShare', calendars: [testCalendar]),
+      home: CalendarView(calendars: [testCalendar]),
     );
   }
 }

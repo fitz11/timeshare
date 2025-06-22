@@ -52,8 +52,8 @@ class _EventsPageState extends State<EventsPage> {
     if (_selectedName!.isNotEmpty && _selectedDate != null) {
       BoxShape shape = _makeSquare ? BoxShape.rectangle : BoxShape.circle;
       Event event = Event(
-        _selectedName!,
-        _selectedDate!,
+        title: _selectedName!,
+        time: _selectedDate!,
         color: _selectedColor,
         shape: shape,
       );
@@ -265,16 +265,14 @@ class _EventsPageState extends State<EventsPage> {
                           ],
                         ),
                         leading: Container(
-                          width: 4,
-                          height: 4,
+                          width: 8,
+                          height: 8,
                           decoration: BoxDecoration(
                             color: value.getEvents()[index].color,
                             shape: value.getEvents()[index].shape,
                           ),
                         ),
                         trailing: Text('${value.getEvents()[index].shape}'),
-
-                        onTap: () {},
                       ),
                     );
                   },

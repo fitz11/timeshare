@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/event.dart';
 import 'package:timeshare/pages/eventspage.dart';
+import 'package:intl/intl.dart';
 
 class CalendarView extends StatefulWidget {
   const CalendarView({super.key, required this.calendars});
@@ -14,9 +15,8 @@ class CalendarView extends StatefulWidget {
 class _CalendarViewState extends State<CalendarView> {
   //used to build events viewing
   late final ValueNotifier<List<Event>> _selectedEvents;
-
-  //TODO: add copy event functionality
-  bool _copyEventMode = false;
+  late final ValueNotifier<List<Event>> _loadedEvents;
+  late List<bool> _highlightedEvents;
 
   //BOILERPLATE DEFNINITIONS FOR THE CALENDAR WIDGET
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -31,7 +31,12 @@ class _CalendarViewState extends State<CalendarView> {
   //and events is the total list of events to display.
   //(maximum 4 per day)
   late final List<Calendar> _loadedCalendars;
-  late final Map<DateTime, List<Event>> _events;
+  late Map<DateTime, List<Event>> _events;
+  late final List<bool> _calendarSelection;
+
+  //TODO: add copy event functionality
+  bool _copyEventMode = false;
+  Event? _copyEvent;
 
   @override
   void initState() {
@@ -40,10 +45,15 @@ class _CalendarViewState extends State<CalendarView> {
     _selectedDay = _focusedDay;
 
     //initially loads all calendars supplied to the widget
-    _loadedCalendars = widget.calendars;
+    _loadedCalendars = widget.calendars.toList();
+    _calendarSelection = List.filled(widget.calendars.length, true);
 
     //initially loads all events from all supplied calendars
     _events = _mapAllEvents(_getAllEventsInCalendars(_loadedCalendars));
+
+    //load events in active calendars
+    _loadedEvents = ValueNotifier(_getAllEventsInCalendars(_loadedCalendars));
+    _highlightedEvents = List.filled(_loadedEvents.value.length, false);
 
     //loads the selected events; initially today
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
@@ -51,8 +61,30 @@ class _CalendarViewState extends State<CalendarView> {
 
   @override
   void dispose() {
+    _loadedEvents.dispose();
     _selectedEvents.dispose();
     super.dispose();
+  }
+
+  void _reloadCalendars(int index) {
+    if (_loadedCalendars.contains(widget.calendars[index])) {
+      _loadedCalendars.remove(widget.calendars[index]);
+    } else {
+      _loadedCalendars.add(widget.calendars[index]);
+    }
+    _events = _mapAllEvents(_getAllEventsInCalendars(_loadedCalendars));
+    _loadedEvents.value = _getAllEventsInCalendars(_loadedCalendars);
+    _highlightedEvents = List.filled(_loadedEvents.value.length, false);
+
+    if (_selectedDay != null) {
+      _selectedEvents.value = _getEventsForDay(_selectedDay!);
+    }
+  }
+
+  void _reloadEvents() {
+    _events = _mapAllEvents(_getAllEventsInCalendars(_loadedCalendars));
+    _loadedEvents.value = _getAllEventsInCalendars(_loadedCalendars);
+    _highlightedEvents = [..._highlightedEvents, false];
   }
 
   ///Essential function; loads events for each day
@@ -61,6 +93,7 @@ class _CalendarViewState extends State<CalendarView> {
     return _events[normalized] ?? [];
   }
 
+  ///function for range selection event showing
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
     final days = daysInRange(start, end);
     return [for (final d in days) ..._getEventsForDay(d)];
@@ -88,14 +121,45 @@ class _CalendarViewState extends State<CalendarView> {
   ///pretty ignorable function
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
+      if (_copyEventMode) {
+        _onDaySelectedCopyMode(selectedDay, focusedDay);
+      } else {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+          _rangeStart = null;
+          _rangeEnd = null;
+          _rangeSelectionMode = RangeSelectionMode.toggledOff;
+          _selectedEvents.value = _getEventsForDay(_selectedDay!);
+          print('${_selectedDay!.day} selected.');
+        });
+      }
+    }
+  }
+
+  void _onDaySelectedCopyMode(DateTime selectedDay, DateTime focusedDay) {
+    final sourceCalendar = Calendar.findCalendarContainingEvent(
+      _copyEvent!,
+      _loadedCalendars,
+    );
+    if (sourceCalendar != null) {
+      print('sourceCalendar found: ${sourceCalendar.name}');
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
         _rangeStart = null;
         _rangeEnd = null;
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
-        _selectedEvents.value = _getEventsForDay(_selectedDay!);
+        sourceCalendar.copyEventToDate(
+          event: _copyEvent!,
+          targetDate: _selectedDay!,
+        );
+        _reloadEvents();
+        print('${_copyEvent!.toString()} added to ${sourceCalendar.name}');
+        //_selectedEvents.value = _getEventsForDay(_selectedDay!);
       });
+    } else {
+      print('sourceCalendar not found');
     }
   }
 
@@ -154,9 +218,7 @@ class _CalendarViewState extends State<CalendarView> {
             ],
           ),
     );
-
     if (calendar == null) return;
-
     Navigator.push(
       // ignore: use_build_context_synchronously
       context,
@@ -168,19 +230,92 @@ class _CalendarViewState extends State<CalendarView> {
     );
   }
 
+  //when a list tile is selected;
+  void _onEventSelected(int index) {
+    if (_copyEventMode) {
+      setState(() {
+        _copyEventMode = !_copyEventMode;
+        _highlightedEvents = List.filled(_loadedEvents.value.length, false);
+        _copyEvent = null;
+      });
+      for (var cal in _loadedCalendars) {
+        print(cal.toString());
+      }
+    } else {
+      setState(() {
+        _copyEventMode = !_copyEventMode;
+        _highlightedEvents[index] = !_highlightedEvents[index];
+        _copyEvent = _loadedEvents.value[index].copy();
+      });
+    }
+  }
+
+  Widget _editModeIndicator() {
+    if (!_copyEventMode) return SizedBox.shrink();
+    return FilledButton(
+      onPressed: () => _onEventSelected(0),
+      child: Row(children: [Icon(Icons.copy), Text("Copy")]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Timeshare'),
+        title: Text('Timeshare'),
         elevation: 8,
         centerTitle: true,
         actions: [
-          IconButton.outlined(
-            onPressed: _openEventBuilder,
-            icon: Icon(Icons.add),
+          _editModeIndicator(),
+          SizedBox(width: 10),
+          Builder(
+            builder: (context) {
+              return IconButton(
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+                icon: Icon(Icons.menu),
+              );
+            },
           ),
         ],
+      ),
+
+      //End drawer for enabling/disabling calendars
+      endDrawerEnableOpenDragGesture: false,
+      endDrawer: Drawer(
+        child: ListView.builder(
+          itemCount: widget.calendars.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "loaded calendars: ",
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+                Divider(),
+                CheckboxListTile(
+                  value: _calendarSelection[index],
+                  title: Text(widget.calendars[index].name),
+                  onChanged: (selection) {
+                    setState(() {
+                      _calendarSelection[index] = selection!;
+                      _reloadCalendars(index);
+                    });
+                    print('checkbox toggled: $index → ${selection!}');
+                    print('calendar length: ${widget.calendars.length}');
+                    print('selection length: ${_calendarSelection.length}');
+                  },
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("Close"),
+                ),
+              ],
+            );
+          },
+        ),
       ),
 
       //the MEAT
@@ -190,8 +325,8 @@ class _CalendarViewState extends State<CalendarView> {
           Center(
             child: Text(
               _loadedCalendars.fold(
-                "",
-                (prev, cal) => prev.isEmpty ? cal.name : '$prev, ${cal.name}',
+                "Loaded Calendars: ",
+                (prev, cal) => '$prev ${cal.name}, ',
               ),
             ),
           ),
@@ -253,14 +388,14 @@ class _CalendarViewState extends State<CalendarView> {
 
           Expanded(
             child: ValueListenableBuilder<List<Event>>(
-              valueListenable: _selectedEvents,
+              valueListenable: _loadedEvents,
               builder: (context, value, _) {
                 return ListView.builder(
                   itemCount: value.length,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
+                        horizontal: 8.0,
                         vertical: 4.0,
                       ),
                       decoration: BoxDecoration(
@@ -268,8 +403,20 @@ class _CalendarViewState extends State<CalendarView> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
-                        onTap: () => print('${value[index]}'),
+                        selected: _highlightedEvents[index],
+                        leading: Text(
+                          DateFormat.yMMMd().format(value[index].time),
+                        ),
                         title: Text(value[index].title),
+                        trailing: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: value[index].color,
+                            shape: value[index].shape,
+                          ),
+                        ),
+                        onTap: () => _onEventSelected(index),
                       ),
                     );
                   },
@@ -278,6 +425,11 @@ class _CalendarViewState extends State<CalendarView> {
             ),
           ),
         ],
+      ),
+
+      floatingActionButton: IconButton.filled(
+        onPressed: () {},
+        icon: Icon(Icons.edit),
       ),
     );
   }
