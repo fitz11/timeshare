@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/event.dart';
 import 'package:timeshare/pages/calendarview.dart';
+import 'package:intl/intl.dart';
 
 ///this is a page that allows users to view/add events
 /// to the provided event list.
 class EventsPage extends StatefulWidget {
-  const EventsPage({super.key, required this.title, required this.calendars});
+  const EventsPage({super.key, required this.title, required this.calendar});
 
   final String title;
-  final List<Calendar> calendars;
+  final Calendar calendar;
 
   @override
   State<EventsPage> createState() => _EventsPageState();
@@ -30,11 +32,13 @@ class _EventsPageState extends State<EventsPage> {
   @override
   void initState() {
     super.initState();
-    _activeCalendar = ValueNotifier(widget.calendars[0]);
+    _activeCalendar = ValueNotifier(widget.calendar);
     _eventNameController = TextEditingController();
     _dateController = TextEditingController();
-    _selectedDate = DateTime.now().add(Duration(days: 5));
-    _dateController = TextEditingController(text: _selectedDate.toString());
+    _selectedDate = normalizeDate(DateTime.now()).add(Duration(days: 5));
+    _dateController = TextEditingController(
+      text: DateFormat.yMMMd().format(_selectedDate!),
+    );
   }
 
   @override
@@ -65,7 +69,7 @@ class _EventsPageState extends State<EventsPage> {
     setState(() {
       _eventNameController.clear();
       _dateController.clear();
-      _selectedDate = DateTime.now().add(Duration(days: 5));
+      _selectedDate = normalizeDate(DateTime.now()).add(Duration(days: 5));
     });
   }
 
@@ -79,7 +83,7 @@ class _EventsPageState extends State<EventsPage> {
       setState(() {
         _selectedDate = picked;
         print('selected date: $_selectedDate');
-        _dateController.text = _selectedDate.toString();
+        _dateController.text = DateFormat.yMMMd().format(_selectedDate!);
       });
     }
   }
@@ -111,7 +115,8 @@ class _EventsPageState extends State<EventsPage> {
                 () => Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => CalendarView(calendars: widget.calendars),
+                    //TODO: pass complete list of user calendars
+                    builder: (_) => CalendarView(calendars: [widget.calendar]),
                   ),
                 ),
             icon: Icon(Icons.calendar_month),
@@ -158,8 +163,9 @@ class _EventsPageState extends State<EventsPage> {
 
           //Field to determine shape of our event
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Checkbox(
                   value: _makeSquare,
@@ -178,6 +184,7 @@ class _EventsPageState extends State<EventsPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Select a color: '),
                 SizedBox(width: 20),
@@ -219,16 +226,23 @@ class _EventsPageState extends State<EventsPage> {
           SizedBox(height: 10),
 
           //The submit button
-          Center(
-            child: FilledButton.tonal(
-              onPressed: _onSubmitted,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            child: Center(
+              child: FilledButton.tonal(
+                onPressed: _onSubmitted,
+                style: FilledButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Icon(Icons.add), Text('Add to calendar')],
+                ),
               ),
-              child: Row(children: [Icon(Icons.add), Text('Add to calendar')]),
             ),
           ),
+
+          Divider(),
 
           // This renders a list of the events in the calendar, silly!
           // the listview is scrollable, so don't sweat it
@@ -252,8 +266,11 @@ class _EventsPageState extends State<EventsPage> {
                         // onTap: () => print('${value[index]}'),
                         title: Row(
                           children: [
-                            Text("${value.getEvents()[index].time.day}-"),
-                            Text("${value.getEvents()[index].time.month}"),
+                            Text(
+                              DateFormat.yMMMd().format(
+                                value.getEvents()[index].time,
+                              ),
+                            ),
                             SizedBox(width: 20),
                             Text(
                               value.getEvents()[index].title,
@@ -272,7 +289,6 @@ class _EventsPageState extends State<EventsPage> {
                             shape: value.getEvents()[index].shape,
                           ),
                         ),
-                        trailing: Text('${value.getEvents()[index].shape}'),
                       ),
                     );
                   },

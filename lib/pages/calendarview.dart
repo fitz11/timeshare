@@ -224,8 +224,7 @@ class _CalendarViewState extends State<CalendarView> {
       context,
       MaterialPageRoute(
         builder:
-            (context) =>
-                EventsPage(title: calendar.name, calendars: [calendar]),
+            (context) => EventsPage(title: calendar.name, calendar: calendar),
       ),
     );
   }
