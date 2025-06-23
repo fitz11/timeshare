@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/classes/calendar/calendar.dart';
 import 'package:timeshare/classes/event/event.dart';
@@ -21,3 +22,6 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
 }
 
 DateTime today = normalizeDate(DateTime.now());
+
+//global for active user, cause why not?
+User? activeUser;
