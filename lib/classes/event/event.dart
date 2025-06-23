@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeshare/classes/color_converter.dart';
 //it is a dependency, don't let dartls lie to you
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
 part 'event.freezed.dart';

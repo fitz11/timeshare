@@ -6,6 +6,7 @@ import 'package:timeshare/pages/calendarview.dart';
 
 //note: dartls does not recognize that the DateFormat lib
 //is in this import, so it thinks it has to go. I need it
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
 ///this is a page that allows users to view/add events

@@ -6,6 +6,7 @@ import 'package:timeshare/util.dart';
 import 'package:timeshare/pages/eventspage.dart';
 
 //it is a dependency, don't let dartls lie to you
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
 class CalendarView extends StatefulWidget {
@@ -33,6 +34,7 @@ class _CalendarViewState extends State<CalendarView> {
   //used to build events viewing
   late final ValueNotifier<List<Event>> _selectedEvents;
   late final ValueNotifier<List<Event>> _loadedEvents;
+  late Map<DateTime, List<Event>> _mappedEvents;
   late List<bool> _highlightedEvents;
 
   late final List<Calendar> _loadedCalendars;
@@ -61,6 +63,7 @@ class _CalendarViewState extends State<CalendarView> {
     for (var event in _loadedEvents.value) {
       print("  ${event.dbgOutput()}");
     }
+    _mappedEvents = _mapAllEvents();
 
     _highlightedEvents = List.filled(_loadedEvents.value.length, false);
 
@@ -79,12 +82,14 @@ class _CalendarViewState extends State<CalendarView> {
   ///by removing the calendar at the selected index.
   ///Then it adjusts the loaded events list/map accordingly.
   void _reloadCalendars(int index) {
+    print('*- call to _reloadCalendars($index) -*');
     if (_loadedCalendars.contains(widget.calendars[index])) {
       _loadedCalendars.remove(widget.calendars[index]);
     } else {
       _loadedCalendars.add(widget.calendars[index]);
     }
     _loadedEvents.value = _getAllEventsInCalendars();
+    _mappedEvents = _mapAllEvents();
     _highlightedEvents = List.filled(_loadedEvents.value.length, false);
 
     if (_selectedDay != null) {
@@ -95,7 +100,9 @@ class _CalendarViewState extends State<CalendarView> {
   ///reloads the events map and list
   ///use after there has been a change in the loaded calendars list.
   void _reloadEvents() {
+    print('*- call to _reloadEvents() -*');
     _loadedEvents.value = _getAllEventsInCalendars();
+    _mappedEvents = _mapAllEvents();
     _highlightedEvents = [..._highlightedEvents, false];
 
     if (_selectedDay != null) {
@@ -104,9 +111,12 @@ class _CalendarViewState extends State<CalendarView> {
   }
 
   ///Essential function; loads events for each day
+  ///dbg output was too frequent; every interaction seems
+  ///to call this function for every visible day in calendar.
   List<Event> _getEventsForDay(DateTime day) {
+    //print('*- call to _getEventsForDay(${DateFormat.yMMMd().format(day)} -*');
     final normalized = normalizeDate(day);
-    return _mapAllEvents()[normalized] ?? [];
+    return _mappedEvents[normalized] ?? [];
   }
 
   ///function for range selection event showing
@@ -117,25 +127,28 @@ class _CalendarViewState extends State<CalendarView> {
 
   ///background function: creates a list of all our active calendars
   List<Event> _getAllEventsInCalendars() {
+    print('*- call to _getAllEventsInCalendars() -*');
     final List<Event> list = _loadedCalendars.fold(
       [],
       (prev, list) =>
           prev.isEmpty ? list.getEvents() : prev += list.getEvents(),
     );
     print('\n _getallevents returns: ');
-    print(list);
+    for (var i in list) {
+      print(i.dbgOutput());
+    }
     return list;
   }
 
   ///background function: creates a map of all events from a list
   /// Used for our calendarbuilder to create custom markers
   Map<DateTime, List<Event>> _mapAllEvents() {
+    print('*- call to _mapAllEvents (includes _getAllEventsInCalendars) -*');
     return _getAllEventsInCalendars().fold<Map<DateTime, List<Event>>>({}, (
       map,
       event,
     ) {
       final day = normalizeDate(event.time);
-      print('*- call to _mapAllEvents -*');
       print('Event "${event.title}" mapped to $day');
       map.putIfAbsent(day, () => []).add(event);
       return map;
