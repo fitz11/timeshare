@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/event.dart';
+import 'package:timeshare/classes/calendar/calendar.dart';
+import 'package:timeshare/classes/event/event.dart';
 import 'package:timeshare/pages/calendarview.dart';
+
+//note: dartls does not recognize that the DateFormat lib
+//is in this import, so it thinks it has to go. I need it
 import 'package:intl/intl.dart';
 
 ///this is a page that allows users to view/add events
@@ -19,15 +23,15 @@ class EventsPage extends StatefulWidget {
 class _EventsPageState extends State<EventsPage> {
   //allows us to update or pass the active calendar back to our main view
   late ValueNotifier<Calendar> _activeCalendar;
+  bool _canSubmit = false;
 
   //fields the user selects to customize event markers
   bool _makeSquare = false;
   Color _selectedColor = Colors.black;
-  DateTime? _selectedDate;
-  String? _selectedName;
 
   late TextEditingController _eventNameController;
   late TextEditingController _dateController;
+  late DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -35,9 +39,9 @@ class _EventsPageState extends State<EventsPage> {
     _activeCalendar = ValueNotifier(widget.calendar);
     _eventNameController = TextEditingController();
     _dateController = TextEditingController();
-    _selectedDate = normalizeDate(DateTime.now()).add(Duration(days: 5));
+    _selectedDate = normalizeDate(DateTime.now());
     _dateController = TextEditingController(
-      text: DateFormat.yMMMd().format(_selectedDate!),
+      text: DateFormat.yMMMd().format(normalizeDate(_selectedDate!)),
     );
   }
 
@@ -51,39 +55,48 @@ class _EventsPageState extends State<EventsPage> {
 
   //adds configured event to calendar
   void _onSubmitted() {
-    print('$_selectedDate $_selectedName :: trying to add event...');
-    _selectedName = _eventNameController.text;
-    if (_selectedName!.isNotEmpty && _selectedDate != null) {
+    String selectedName = _eventNameController.text;
+    print('$_selectedDate - $selectedName :: trying to add event...');
+    if (selectedName.isNotEmpty && _selectedDate != null) {
       BoxShape shape = _makeSquare ? BoxShape.rectangle : BoxShape.circle;
       Event event = Event(
-        title: _selectedName!,
+        title: selectedName,
         time: _selectedDate!,
         color: _selectedColor,
         shape: shape,
       );
-      _activeCalendar.value.addEvent(event);
-      print('Event added!');
+      _activeCalendar.value = _activeCalendar.value.addEvent(event);
+      print('Event added!\n ${_activeCalendar.value.dbgOutput()}');
     } else {
       print('event not added :( ');
     }
     setState(() {
       _eventNameController.clear();
       _dateController.clear();
-      _selectedDate = normalizeDate(DateTime.now()).add(Duration(days: 5));
+      _selectedDate = null;
+      _canSubmit = false;
     });
   }
 
   Future<void> _pickDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    _selectedDate = await showDatePicker(
       context: context,
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
-    if (picked != null) {
+    if (_selectedDate != null) {
       setState(() {
-        _selectedDate = picked;
         print('selected date: $_selectedDate');
         _dateController.text = DateFormat.yMMMd().format(_selectedDate!);
+        if (_selectedDate != null && _eventNameController.text.isNotEmpty) {
+          setState(() {
+            _canSubmit = true;
+          });
+        } else {
+          setState(() {
+            _canSubmit = false;
+          });
+        }
       });
     }
   }
@@ -101,6 +114,29 @@ class _EventsPageState extends State<EventsPage> {
     }
   }
 
+  Widget submitButton() {
+    if (_canSubmit) {
+      return FilledButton.tonal(
+        onPressed: _onSubmitted,
+        style: FilledButton.styleFrom(
+          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Icon(Icons.add), Text('Add to calendar')],
+        ),
+      );
+    } else {
+      return OutlinedButton(
+        onPressed: () {},
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Icon(Icons.add), Text('Add to calendar')],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,12 +148,16 @@ class _EventsPageState extends State<EventsPage> {
         actions: [
           IconButton(
             onPressed:
-                () => Navigator.pushReplacement(
+                () => Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                     //TODO: pass complete list of user calendars
-                    builder: (_) => CalendarView(calendars: [widget.calendar]),
+                    builder:
+                        (_) => CalendarView(
+                          calendars: [_activeCalendar.value.copyWith()],
+                        ),
                   ),
+                  (Route<dynamic> route) => false,
                 ),
             icon: Icon(Icons.calendar_month),
           ),
@@ -141,6 +181,18 @@ class _EventsPageState extends State<EventsPage> {
                 border: OutlineInputBorder(),
               ),
               controller: _eventNameController,
+              onChanged: (s) {
+                if (_selectedDate != null &&
+                    _eventNameController.text.isNotEmpty) {
+                  setState(() {
+                    _canSubmit = true;
+                  });
+                } else {
+                  setState(() {
+                    _canSubmit = false;
+                  });
+                }
+              },
             ),
           ),
 
@@ -228,18 +280,7 @@ class _EventsPageState extends State<EventsPage> {
           //The submit button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 50),
-            child: Center(
-              child: FilledButton.tonal(
-                onPressed: _onSubmitted,
-                style: FilledButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Icon(Icons.add), Text('Add to calendar')],
-                ),
-              ),
-            ),
+            child: Center(child: submitButton()),
           ),
 
           Divider(),

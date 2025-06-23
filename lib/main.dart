@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:timeshare/event.dart';
+import 'package:timeshare/util.dart';
 import 'package:timeshare/pages/calendarview.dart';
 import 'firebase_options.dart';
 
