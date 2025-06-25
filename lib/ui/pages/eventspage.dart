@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/calendar/calendar.dart';
 import 'package:timeshare/data/event/event.dart';
-import 'package:timeshare/pages/calendarview.dart';
 
 //note: dartls does not recognize that the DateFormat lib
 //is in this import, so it thinks it has to go. I need it
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:timeshare/providers.dart';
+import 'package:timeshare/ui/homepage.dart';
 
 ///this is a page that allows users to view/add events
 /// to the provided event list.
-class EventsPage extends StatefulWidget {
-  const EventsPage({super.key, required this.title, required this.calendar});
+class EventsPage extends ConsumerStatefulWidget {
+  const EventsPage({super.key, required this.title, required this.calendarId});
 
   final String title;
-  final Calendar calendar;
+  final String calendarId;
 
   @override
-  State<EventsPage> createState() => _EventsPageState();
+  ConsumerState<EventsPage> createState() => _EventsPageState();
 }
 
-class _EventsPageState extends State<EventsPage> {
+class _EventsPageState extends ConsumerState<EventsPage> {
   //allows us to update or pass the active calendar back to our main view
-  late ValueNotifier<Calendar> _activeCalendar;
   bool _canSubmit = false;
 
   //fields the user selects to customize event markers
@@ -37,7 +38,6 @@ class _EventsPageState extends State<EventsPage> {
   @override
   void initState() {
     super.initState();
-    _activeCalendar = ValueNotifier(widget.calendar);
     _eventNameController = TextEditingController();
     _dateController = TextEditingController();
     _selectedDate = normalizeDate(DateTime.now());
@@ -48,26 +48,39 @@ class _EventsPageState extends State<EventsPage> {
 
   @override
   void dispose() {
-    _activeCalendar.dispose();
     _eventNameController.dispose();
     _dateController.dispose();
     super.dispose();
   }
 
   //adds configured event to calendar
-  void _onSubmitted() {
+  void _onSubmitted() async {
     String selectedName = _eventNameController.text;
     print('$_selectedDate - $selectedName :: trying to add event...');
     if (selectedName.isNotEmpty && _selectedDate != null) {
       BoxShape shape = _makeSquare ? BoxShape.rectangle : BoxShape.circle;
-      Event event = Event(
-        title: selectedName,
+      Event newEvent = Event(
+        name: selectedName,
+        calendarId: widget.calendarId,
         time: _selectedDate!,
         color: _selectedColor,
         shape: shape,
       );
-      _activeCalendar.value = _activeCalendar.value.addEvent(event);
-      print('Event added!\n ${_activeCalendar.value.dbgOutput()}');
+
+      final calendars = ref.read(calendarNotifierProvider);
+      for (final cal in calendars) {
+        for (final event in cal.getEvents()) {
+          if (event == newEvent) {
+            print('Event already exists :P');
+            return;
+          }
+        }
+      }
+
+      await ref
+          .read(calendarNotifierProvider.notifier)
+          .addEventToCalendar(calendarId: widget.calendarId, event: newEvent);
+      print('Event added!\n}');
     } else {
       print('event not added :( ');
     }
@@ -140,26 +153,18 @@ class _EventsPageState extends State<EventsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final calendar = ref
+        .watch(calendarNotifierProvider)
+        .firstWhere((cal) => cal.id == widget.calendarId);
     return Scaffold(
       //AppBar, has navigation
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(calendar.name),
         centerTitle: true,
         elevation: 8,
         actions: [
           IconButton(
-            onPressed:
-                () => Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    //TODO: pass complete list of user calendars
-                    builder:
-                        (_) => CalendarView(
-                          calendars: [_activeCalendar.value.copyWith()],
-                        ),
-                  ),
-                  (Route<dynamic> route) => false,
-                ),
+            onPressed: () => Navigator.pop(context),
             icon: Icon(Icons.calendar_month),
           ),
         ],
@@ -169,9 +174,7 @@ class _EventsPageState extends State<EventsPage> {
       body: Column(
         children: [
           //header
-          Center(
-            child: Text("Add event to ${_activeCalendar.value.name} calendar"),
-          ),
+          Center(child: Text("Add event to ${calendar.name} calendar")),
 
           //naming and submission field
           Padding(
@@ -222,9 +225,9 @@ class _EventsPageState extends State<EventsPage> {
               children: [
                 Checkbox(
                   value: _makeSquare,
-                  onChanged: (_) {
+                  onChanged: (newVal) {
                     setState(() {
-                      _makeSquare = !_makeSquare;
+                      _makeSquare = newVal!;
                     });
                   },
                 ),
@@ -289,51 +292,46 @@ class _EventsPageState extends State<EventsPage> {
           // This renders a list of the events in the calendar, silly!
           // the listview is scrollable, so don't sweat it
           Expanded(
-            child: ValueListenableBuilder<Calendar>(
-              valueListenable: _activeCalendar,
-              builder: (context, value, _) {
-                return ListView.builder(
-                  itemCount: value.getEvents().length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 6.0,
-                        vertical: 4.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ListTile(
-                        // onTap: () => print('${value[index]}'),
-                        title: Row(
-                          children: [
-                            Text(
-                              DateFormat.yMMMd().format(
-                                value.getEvents()[index].time,
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            Text(
-                              value.getEvents()[index].title,
-                              style: TextStyle(
-                                color: value.getEvents()[index].color,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        leading: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: value.getEvents()[index].color,
-                            shape: value.getEvents()[index].shape,
+            child: ListView.builder(
+              itemCount: calendar.getEvents().length,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 6.0,
+                    vertical: 4.0,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: ListTile(
+                    // onTap: () => print('${value[index]}'),
+                    title: Row(
+                      children: [
+                        Text(
+                          DateFormat.yMMMd().format(
+                            calendar.getEvents()[index].time,
                           ),
                         ),
+                        SizedBox(width: 20),
+                        Text(
+                          calendar.getEvents()[index].name,
+                          style: TextStyle(
+                            color: calendar.getEvents()[index].color,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    leading: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: calendar.getEvents()[index].color,
+                        shape: calendar.getEvents()[index].shape,
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 );
               },
             ),

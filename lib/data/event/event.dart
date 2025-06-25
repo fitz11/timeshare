@@ -15,6 +15,7 @@ abstract class Event with _$Event {
   factory Event({
     required String name,
     required DateTime time,
+    required String calendarId,
     List<String>? atendees,
     @ColorConverter() @Default(Colors.black) Color color,
     @Default(BoxShape.circle) BoxShape shape,
@@ -25,6 +26,6 @@ abstract class Event with _$Event {
 
 extension EventX on Event {
   String dbgOutput() {
-    return "$name: ${DateFormat.yMMMd().format(time)} : ${color.toARGB32()} : ${shape.toString()}\n";
+    return "$name: $calendarId : ${DateFormat.yMMMd().format(time)} : ${color.toARGB32()} : ${shape.toString()}\n";
   }
 }

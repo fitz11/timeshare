@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Event {
 
- String get name; DateTime get time; List<String>? get atendees;@ColorConverter() Color get color; BoxShape get shape;
+ String get name; DateTime get time; String get calendarId; List<String>? get atendees;@ColorConverter() Color get color; BoxShape get shape;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $EventCopyWith<Event> get copyWith => _$EventCopyWithImpl<Event>(this as Event, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.name, name) || other.name == name)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other.atendees, atendees)&&(identical(other.color, color) || other.color == color)&&(identical(other.shape, shape) || other.shape == shape));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.name, name) || other.name == name)&&(identical(other.time, time) || other.time == time)&&(identical(other.calendarId, calendarId) || other.calendarId == calendarId)&&const DeepCollectionEquality().equals(other.atendees, atendees)&&(identical(other.color, color) || other.color == color)&&(identical(other.shape, shape) || other.shape == shape));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,time,const DeepCollectionEquality().hash(atendees),color,shape);
+int get hashCode => Object.hash(runtimeType,name,time,calendarId,const DeepCollectionEquality().hash(atendees),color,shape);
 
 @override
 String toString() {
-  return 'Event(name: $name, time: $time, atendees: $atendees, color: $color, shape: $shape)';
+  return 'Event(name: $name, time: $time, calendarId: $calendarId, atendees: $atendees, color: $color, shape: $shape)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $EventCopyWith<$Res>  {
   factory $EventCopyWith(Event value, $Res Function(Event) _then) = _$EventCopyWithImpl;
 @useResult
 $Res call({
- String name, DateTime time, List<String>? atendees,@ColorConverter() Color color, BoxShape shape
+ String name, DateTime time, String calendarId, List<String>? atendees,@ColorConverter() Color color, BoxShape shape
 });
 
 
@@ -66,11 +66,12 @@ class _$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? time = null,Object? atendees = freezed,Object? color = null,Object? shape = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? time = null,Object? calendarId = null,Object? atendees = freezed,Object? color = null,Object? shape = null,}) {
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
-as DateTime,atendees: freezed == atendees ? _self.atendees : atendees // ignore: cast_nullable_to_non_nullable
+as DateTime,calendarId: null == calendarId ? _self.calendarId : calendarId // ignore: cast_nullable_to_non_nullable
+as String,atendees: freezed == atendees ? _self.atendees : atendees // ignore: cast_nullable_to_non_nullable
 as List<String>?,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
 as Color,shape: null == shape ? _self.shape : shape // ignore: cast_nullable_to_non_nullable
 as BoxShape,
@@ -84,11 +85,12 @@ as BoxShape,
 @JsonSerializable()
 
 class _Event implements Event {
-   _Event({required this.name, required this.time, final  List<String>? atendees, @ColorConverter() this.color = Colors.black, this.shape = BoxShape.circle}): _atendees = atendees;
+   _Event({required this.name, required this.time, required this.calendarId, final  List<String>? atendees, @ColorConverter() this.color = Colors.black, this.shape = BoxShape.circle}): _atendees = atendees;
   factory _Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
 @override final  String name;
 @override final  DateTime time;
+@override final  String calendarId;
  final  List<String>? _atendees;
 @override List<String>? get atendees {
   final value = _atendees;
@@ -114,16 +116,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.name, name) || other.name == name)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other._atendees, _atendees)&&(identical(other.color, color) || other.color == color)&&(identical(other.shape, shape) || other.shape == shape));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.name, name) || other.name == name)&&(identical(other.time, time) || other.time == time)&&(identical(other.calendarId, calendarId) || other.calendarId == calendarId)&&const DeepCollectionEquality().equals(other._atendees, _atendees)&&(identical(other.color, color) || other.color == color)&&(identical(other.shape, shape) || other.shape == shape));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,time,const DeepCollectionEquality().hash(_atendees),color,shape);
+int get hashCode => Object.hash(runtimeType,name,time,calendarId,const DeepCollectionEquality().hash(_atendees),color,shape);
 
 @override
 String toString() {
-  return 'Event(name: $name, time: $time, atendees: $atendees, color: $color, shape: $shape)';
+  return 'Event(name: $name, time: $time, calendarId: $calendarId, atendees: $atendees, color: $color, shape: $shape)';
 }
 
 
@@ -134,7 +136,7 @@ abstract mixin class _$EventCopyWith<$Res> implements $EventCopyWith<$Res> {
   factory _$EventCopyWith(_Event value, $Res Function(_Event) _then) = __$EventCopyWithImpl;
 @override @useResult
 $Res call({
- String name, DateTime time, List<String>? atendees,@ColorConverter() Color color, BoxShape shape
+ String name, DateTime time, String calendarId, List<String>? atendees,@ColorConverter() Color color, BoxShape shape
 });
 
 
@@ -151,11 +153,12 @@ class __$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? time = null,Object? atendees = freezed,Object? color = null,Object? shape = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? time = null,Object? calendarId = null,Object? atendees = freezed,Object? color = null,Object? shape = null,}) {
   return _then(_Event(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
-as DateTime,atendees: freezed == atendees ? _self._atendees : atendees // ignore: cast_nullable_to_non_nullable
+as DateTime,calendarId: null == calendarId ? _self.calendarId : calendarId // ignore: cast_nullable_to_non_nullable
+as String,atendees: freezed == atendees ? _self._atendees : atendees // ignore: cast_nullable_to_non_nullable
 as List<String>?,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
 as Color,shape: null == shape ? _self.shape : shape // ignore: cast_nullable_to_non_nullable
 as BoxShape,

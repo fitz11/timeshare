@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/calendar/calendar.dart';
+import 'package:timeshare/data/event/event.dart';
 
 class CalendarRepository {
   final FirebaseFirestore firestore;
@@ -32,6 +34,79 @@ class CalendarRepository {
     return combined.map((doc) {
       return Calendar.fromJson(doc.data());
     }).toList();
+  }
+
+  Future<void> addCalendar(Calendar calendar) async {
+    final docRef = firestore.collection('calendars').doc(calendar.id);
+    await docRef.set(calendar.toJson());
+  }
+
+  ///Adds an event to the firestore calendar given.
+  Future<void> addEventToCalendar({
+    required String calendarId,
+    required Event event,
+  }) async {
+    final docRef = firestore.collection('calendars').doc(calendarId);
+    final snapshot = await docRef.get();
+
+    if (!snapshot.exists) {
+      throw Exception("Calendar not found");
+    }
+
+    // Get the existing calendar data
+    final calendar = Calendar.fromJson(snapshot.data()!);
+
+    final normalizedDay = normalizeDate(event.time);
+
+    // Add the event to the day's list
+    final updatedEvents = Map<DateTime, List<Event>>.from(calendar.events);
+    updatedEvents.update(
+      normalizedDay,
+      (list) => [...list, event],
+      ifAbsent: () => [event],
+    );
+
+    // Create updated calendar
+    final updatedCalendar = calendar.copyWith(events: updatedEvents);
+
+    // Write back to Firestore
+    print(' -updating the calendar in firestore...');
+    await docRef.set(updatedCalendar.toJson());
+    print(' -Finished updating!');
+  }
+
+  ///removes an event from the firestore calendar given.
+  Future<void> removeEventFromCalendar({
+    required String calendarId,
+    required Event event,
+  }) async {
+    final docRef = FirebaseFirestore.instance
+        .collection('calendars')
+        .doc(calendarId);
+    final snapshot = await docRef.get();
+
+    if (!snapshot.exists) {
+      throw Exception("Calendar not found");
+    }
+
+    final calendarData = snapshot.data()!;
+    final calendar = Calendar.fromJson(calendarData);
+
+    final normalizedDay = normalizeDate(event.time);
+    final currentEvents = calendar.events[normalizedDay] ?? [];
+
+    final updatedEventList = currentEvents.where((e) => e != event).toList();
+    final updatedEvents = Map<DateTime, List<Event>>.from(calendar.events);
+
+    if (updatedEventList.isEmpty) {
+      updatedEvents.remove(normalizedDay);
+    } else {
+      updatedEvents[normalizedDay] = updatedEventList;
+    }
+
+    final updatedCalendar = calendar.copyWith(events: updatedEvents);
+
+    await docRef.set(updatedCalendar.toJson());
   }
 
   Future<void> saveCalendar(Calendar calendar) async {
