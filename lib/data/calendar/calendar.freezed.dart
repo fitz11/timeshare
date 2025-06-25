@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Calendar {
 
- String get id; String get owner; List<String> get sharedWith; String get name; Map<DateTime, List<Event>> get events;
+ String get id; String get owner;@SetConverter() Set<String> get sharedWith; String get name;// ignore: invalid_annotation_target
+@EventMapLoader() Map<DateTime, List<Event>> get events;
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +50,7 @@ abstract mixin class $CalendarCopyWith<$Res>  {
   factory $CalendarCopyWith(Calendar value, $Res Function(Calendar) _then) = _$CalendarCopyWithImpl;
 @useResult
 $Res call({
- String id, String owner, List<String> sharedWith, String name, Map<DateTime, List<Event>> events
+ String id, String owner,@SetConverter() Set<String> sharedWith, String name,@EventMapLoader() Map<DateTime, List<Event>> events
 });
 
 
@@ -71,7 +72,7 @@ class _$CalendarCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,owner: null == owner ? _self.owner : owner // ignore: cast_nullable_to_non_nullable
 as String,sharedWith: null == sharedWith ? _self.sharedWith : sharedWith // ignore: cast_nullable_to_non_nullable
-as List<String>,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as Set<String>,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,events: null == events ? _self.events : events // ignore: cast_nullable_to_non_nullable
 as Map<DateTime, List<Event>>,
   ));
@@ -84,21 +85,23 @@ as Map<DateTime, List<Event>>,
 @JsonSerializable()
 
 class _Calendar implements Calendar {
-   _Calendar({required this.id, required this.owner, final  List<String> sharedWith = const [], required this.name, required final  Map<DateTime, List<Event>> events}): _sharedWith = sharedWith,_events = events;
+   _Calendar({required this.id, required this.owner, @SetConverter() final  Set<String> sharedWith = const {}, required this.name, @EventMapLoader() final  Map<DateTime, List<Event>> events = const {}}): _sharedWith = sharedWith,_events = events;
   factory _Calendar.fromJson(Map<String, dynamic> json) => _$CalendarFromJson(json);
 
 @override final  String id;
 @override final  String owner;
- final  List<String> _sharedWith;
-@override@JsonKey() List<String> get sharedWith {
-  if (_sharedWith is EqualUnmodifiableListView) return _sharedWith;
+ final  Set<String> _sharedWith;
+@override@JsonKey()@SetConverter() Set<String> get sharedWith {
+  if (_sharedWith is EqualUnmodifiableSetView) return _sharedWith;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_sharedWith);
+  return EqualUnmodifiableSetView(_sharedWith);
 }
 
 @override final  String name;
+// ignore: invalid_annotation_target
  final  Map<DateTime, List<Event>> _events;
-@override Map<DateTime, List<Event>> get events {
+// ignore: invalid_annotation_target
+@override@JsonKey()@EventMapLoader() Map<DateTime, List<Event>> get events {
   if (_events is EqualUnmodifiableMapView) return _events;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableMapView(_events);
@@ -138,7 +141,7 @@ abstract mixin class _$CalendarCopyWith<$Res> implements $CalendarCopyWith<$Res>
   factory _$CalendarCopyWith(_Calendar value, $Res Function(_Calendar) _then) = __$CalendarCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String owner, List<String> sharedWith, String name, Map<DateTime, List<Event>> events
+ String id, String owner,@SetConverter() Set<String> sharedWith, String name,@EventMapLoader() Map<DateTime, List<Event>> events
 });
 
 
@@ -160,7 +163,7 @@ class __$CalendarCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,owner: null == owner ? _self.owner : owner // ignore: cast_nullable_to_non_nullable
 as String,sharedWith: null == sharedWith ? _self._sharedWith : sharedWith // ignore: cast_nullable_to_non_nullable
-as List<String>,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as Set<String>,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,events: null == events ? _self._events : events // ignore: cast_nullable_to_non_nullable
 as Map<DateTime, List<Event>>,
   ));

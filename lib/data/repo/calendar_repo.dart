@@ -109,7 +109,8 @@ class CalendarRepository {
     await docRef.set(updatedCalendar.toJson());
   }
 
-  Future<void> saveCalendar(Calendar calendar) async {
+  ///Makes a new calendar in the firestore
+  Future<void> createCalendar(Calendar calendar) async {
     final uid = auth.currentUser?.uid;
     if (uid == null) return;
 
@@ -119,14 +120,32 @@ class CalendarRepository {
         .set(calendar.toJson());
   }
 
-  Future<void> shareCalendar(String calendarId, String targetUID) async {
+  ///Shares a calendar with a user
+  Future<void> shareCalendar(
+    String calendarId,
+    String targetUid,
+    bool share,
+  ) async {
     final doc = FirebaseFirestore.instance
         .collection('calendars')
         .doc(calendarId);
 
     await doc.update({
-      'sharedWith': FieldValue.arrayUnion([targetUID]),
+      'sharedWith':
+          share
+              ? FieldValue.arrayUnion([targetUid])
+              : FieldValue.arrayRemove([targetUid]),
     });
+  }
+
+  Future<Calendar?> getCalendarById(String calendarId) async {
+    final doc = firestore.collection('calendars').doc(calendarId);
+    final snapshot = await doc.get();
+    if (!snapshot.exists) {
+      print('calendar not found :(');
+      return null;
+    }
+    return Calendar.fromJson(snapshot.data()!);
   }
 
   Future<void> unshareCalendar(String calendarId, String targetUID) async {

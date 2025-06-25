@@ -7,7 +7,6 @@ import 'package:timeshare/data/event/event.dart';
 import 'package:timeshare/providers.dart';
 import 'package:timeshare/ui/widgets/open_eventbuilder_dialog.dart';
 import 'package:timeshare/util.dart';
-import 'package:timeshare/ui/pages/eventspage.dart';
 import 'package:timeshare/ui/widgets/create_calendar_dialog.dart';
 
 //it is a dependency, don't let dartls lie to you
@@ -46,55 +45,6 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
     });
   }
 
-  //render a dialog box to pick a calendar for adding events.
-  void _openEventBuilder(List<Calendar> calendars) async {
-    Calendar? calendar = await showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text("select Calendar to add event to:"),
-            content: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.8,
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: ListView.builder(
-                itemCount: calendars.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadiusDirectional.circular(12),
-                    ),
-                    child: ListTile(
-                      title: Text(calendars[index].name),
-                      onTap: () {
-                        Navigator.pop(context, calendars[index]);
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-            actions: [
-              FilledButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Cancel'),
-              ),
-            ],
-          ),
-    );
-    if (calendar == null) return;
-    Navigator.push(
-      // ignore: use_build_context_synchronously
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) =>
-                EventsPage(title: calendar.name, calendarId: calendar.id),
-      ),
-    );
-  }
-
   //when a list tile is selected;
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
@@ -114,7 +64,7 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
     return IconButton(
       icon: Icon(Icons.delete),
       onPressed: () async {
-        final Event? toDelete = await showDialog<Event>(
+        await showDialog<Event>(
           context: context,
           builder:
               (context) => AlertDialog(
@@ -133,8 +83,25 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
                         ),
                         child: ListTile(
                           title: Text(events[index].name),
+                          subtitle: Text(
+                            DateFormat.yMMMd().format(events[index].time),
+                          ),
+                          trailing: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: events[index].color,
+                              shape: events[index].shape,
+                            ),
+                          ),
+
                           onTap: () {
-                            Navigator.pop(context, events[index]);
+                            ref
+                                .read(calendarNotifierProvider.notifier)
+                                .removeEvent(
+                                  calendarId: events[index].calendarId,
+                                  event: events[index],
+                                );
                           },
                         ),
                       );
@@ -143,11 +110,6 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
                 ),
               ),
         );
-        if (toDelete != null) {
-          ref
-              .read(calendarNotifierProvider.notifier)
-              .removeEvent(calendarId: toDelete.calendarId, event: toDelete);
-        }
       },
     );
   }
@@ -187,11 +149,12 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
       children: [
         //names of active calendars;
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               selectedCalendars.fold(
                 "Loaded Calendars: ",
-                (prev, cal) => '$prev ${cal.name}, ',
+                (prev, cal) => '$prev ${cal.name},',
               ),
             ),
             _editModeIndicator(),

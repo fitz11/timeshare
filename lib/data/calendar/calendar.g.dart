@@ -10,25 +10,22 @@ _Calendar _$CalendarFromJson(Map<String, dynamic> json) => _Calendar(
   id: json['id'] as String,
   owner: json['owner'] as String,
   sharedWith:
-      (json['sharedWith'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
+      json['sharedWith'] == null
+          ? const {}
+          : const SetConverter().fromJson(json['sharedWith'] as List),
   name: json['name'] as String,
-  events: (json['events'] as Map<String, dynamic>).map(
-    (k, e) => MapEntry(
-      DateTime.parse(k),
-      (e as List<dynamic>)
-          .map((e) => Event.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    ),
-  ),
+  events:
+      json['events'] == null
+          ? const {}
+          : const EventMapLoader().fromJson(
+            json['events'] as Map<String, dynamic>,
+          ),
 );
 
 Map<String, dynamic> _$CalendarToJson(_Calendar instance) => <String, dynamic>{
   'id': instance.id,
   'owner': instance.owner,
-  'sharedWith': instance.sharedWith,
+  'sharedWith': const SetConverter().toJson(instance.sharedWith),
   'name': instance.name,
-  'events': instance.events.map((k, e) => MapEntry(k.toIso8601String(), e)),
+  'events': const EventMapLoader().toJson(instance.events),
 };

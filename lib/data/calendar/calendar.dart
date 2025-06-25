@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/eventmap_converter.dart';
+import 'package:timeshare/data/set_converter.dart';
 
 part 'calendar.freezed.dart';
 part 'calendar.g.dart';
@@ -10,9 +12,10 @@ abstract class Calendar with _$Calendar {
   factory Calendar({
     required String id,
     required String owner,
-    @Default([]) List<String> sharedWith,
+    @SetConverter() @Default({}) Set<String> sharedWith,
     required String name,
-    required Map<DateTime, List<Event>> events,
+    // ignore: invalid_annotation_target
+    @EventMapLoader() @Default({}) Map<DateTime, List<Event>> events,
   }) = _Calendar;
 
   factory Calendar.fromJson(Map<String, dynamic> json) =>

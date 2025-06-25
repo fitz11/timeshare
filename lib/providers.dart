@@ -37,12 +37,12 @@ final userFriendsProvider = FutureProvider<List<AppUser>>((ref) async {
   return await repo.getFriendsOfUser(uid);
 });
 
-final userSearchProvider = FutureProvider.family<AppUser?, String>((
+final userSearchProvider = FutureProvider.family<List<AppUser>, String>((
   ref,
   email,
-) {
+) async {
   final repo = ref.read(userRepositoryProvider);
-  return repo.findUserByEmail(email);
+  return await repo.searchUserByEmail(email);
 });
 
 ///One day can help support batch read/writes to save
@@ -60,6 +60,7 @@ class CalendarNotifier extends StateNotifier<List<Calendar>> {
     required String ownerUid,
     required String name,
   }) async {
+    print('adding calendar ${ownerUid}_$name ...');
     final calendar = Calendar(
       id: '${ownerUid}_$name',
       owner: ownerUid,
@@ -68,6 +69,7 @@ class CalendarNotifier extends StateNotifier<List<Calendar>> {
     );
     await _repo.addCalendar(calendar);
     state = [...state, calendar];
+    print('added calendar!');
   }
 
   Future<void> addEventToCalendar({
@@ -108,6 +110,27 @@ class CalendarNotifier extends StateNotifier<List<Calendar>> {
         else
           cal,
     ];
+  }
+
+  Future<void> shareCalendar(
+    String calendarId,
+    String targetUid,
+    bool share,
+  ) async {
+    await _repo.shareCalendar(calendarId, targetUid, share);
+    state = [
+      for (final cal in state)
+        if (cal.id == calendarId)
+          cal.copyWith(
+            sharedWith:
+                share
+                    ? {...cal.sharedWith, targetUid}.toSet()
+                    : cal.sharedWith.where((id) => id != targetUid).toSet(),
+          )
+        else
+          cal,
+    ];
+    print('calendar $calendarId shared with $targetUid');
   }
 
   Map<DateTime, List<Event>> _removeEventFromMap(

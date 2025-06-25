@@ -36,10 +36,21 @@ class UserRepository {
     return AppUser.fromJson(doc.data()!);
   }
 
-  Future<AppUser?> findUserByEmail(String email) async {
-    final query = await _users.where('email', isEqualTo: email).limit(1).get();
-    if (query.docs.isEmpty) return null;
-    return AppUser.fromJson(query.docs.first.data());
+  Future<List<AppUser>> searchUserByEmail(String email) async {
+    if (email.isEmpty || email.length < 5) {
+      print('insufficient query: $email');
+      return [];
+    }
+    final query =
+        await _users
+            .where('email', isGreaterThanOrEqualTo: email)
+            .where('email', isLessThanOrEqualTo: '$email\uf8ff')
+            .limit(10)
+            .get();
+    if (query.docs.isEmpty) return [];
+    return query.docs
+        .map((doc) => AppUser.fromJson(doc.data()).copyWith(uid: doc.id))
+        .toList();
   }
 
   Future<List<AppUser>> getFriendsOfUser(String uid) async {

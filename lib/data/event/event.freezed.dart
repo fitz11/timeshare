@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Event {
 
- String get name; DateTime get time; String get calendarId; List<String>? get atendees;@ColorConverter() Color get color; BoxShape get shape;
+ String get name; DateTime get time; String get calendarId; List<String>? get atendees;@ColorConverter() Color get color;@ShapeConverter() BoxShape get shape;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +49,7 @@ abstract mixin class $EventCopyWith<$Res>  {
   factory $EventCopyWith(Event value, $Res Function(Event) _then) = _$EventCopyWithImpl;
 @useResult
 $Res call({
- String name, DateTime time, String calendarId, List<String>? atendees,@ColorConverter() Color color, BoxShape shape
+ String name, DateTime time, String calendarId, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape
 });
 
 
@@ -85,7 +85,7 @@ as BoxShape,
 @JsonSerializable()
 
 class _Event implements Event {
-   _Event({required this.name, required this.time, required this.calendarId, final  List<String>? atendees, @ColorConverter() this.color = Colors.black, this.shape = BoxShape.circle}): _atendees = atendees;
+   _Event({required this.name, required this.time, required this.calendarId, final  List<String>? atendees, @ColorConverter() this.color = Colors.black, @ShapeConverter() this.shape = BoxShape.circle}): _atendees = atendees;
   factory _Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
 @override final  String name;
@@ -101,7 +101,7 @@ class _Event implements Event {
 }
 
 @override@JsonKey()@ColorConverter() final  Color color;
-@override@JsonKey() final  BoxShape shape;
+@override@JsonKey()@ShapeConverter() final  BoxShape shape;
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
@@ -136,7 +136,7 @@ abstract mixin class _$EventCopyWith<$Res> implements $EventCopyWith<$Res> {
   factory _$EventCopyWith(_Event value, $Res Function(_Event) _then) = __$EventCopyWithImpl;
 @override @useResult
 $Res call({
- String name, DateTime time, String calendarId, List<String>? atendees,@ColorConverter() Color color, BoxShape shape
+ String name, DateTime time, String calendarId, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape
 });
 
 

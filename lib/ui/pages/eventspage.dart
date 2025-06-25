@@ -9,7 +9,6 @@ import 'package:timeshare/data/event/event.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:timeshare/providers.dart';
-import 'package:timeshare/ui/homepage.dart';
 
 ///this is a page that allows users to view/add events
 /// to the provided event list.

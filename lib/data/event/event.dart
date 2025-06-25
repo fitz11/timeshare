@@ -4,6 +4,7 @@ import 'package:timeshare/data/color_converter.dart';
 //it is a dependency, don't let dartls lie to you
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:timeshare/data/shape_converter.dart';
 
 part 'event.freezed.dart';
 part 'event.g.dart';
@@ -18,7 +19,7 @@ abstract class Event with _$Event {
     required String calendarId,
     List<String>? atendees,
     @ColorConverter() @Default(Colors.black) Color color,
-    @Default(BoxShape.circle) BoxShape shape,
+    @ShapeConverter() @Default(BoxShape.circle) BoxShape shape,
   }) = _Event;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);

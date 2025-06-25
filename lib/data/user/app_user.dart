@@ -13,10 +13,7 @@ abstract class AppUser with _$AppUser {
     String? photoUrl,
     @Default(false) bool isAdmin,
     // ignore: invalid_annotation_target
-    @JsonKey(
-      fromJson: TimestampConverter.fromTimestamp,
-      toJson: TimestampConverter.toTimestamp,
-    )
+    @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)
     required DateTime joinedAt,
     @Default([]) List<String> friends,
   }) = _AppUser;

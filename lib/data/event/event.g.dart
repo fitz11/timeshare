@@ -17,7 +17,9 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
           ? Colors.black
           : const ColorConverter().fromJson((json['color'] as num).toInt()),
   shape:
-      $enumDecodeNullable(_$BoxShapeEnumMap, json['shape']) ?? BoxShape.circle,
+      json['shape'] == null
+          ? BoxShape.circle
+          : const ShapeConverter().fromJson(json['shape'] as String),
 );
 
 Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
@@ -26,10 +28,5 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'calendarId': instance.calendarId,
   'atendees': instance.atendees,
   'color': const ColorConverter().toJson(instance.color),
-  'shape': _$BoxShapeEnumMap[instance.shape]!,
-};
-
-const _$BoxShapeEnumMap = {
-  BoxShape.rectangle: 'rectangle',
-  BoxShape.circle: 'circle',
+  'shape': const ShapeConverter().toJson(instance.shape),
 };

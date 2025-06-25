@@ -5,6 +5,7 @@ import 'package:timeshare/ui/pages/calendarpage.dart';
 import 'package:timeshare/ui/pages/friends_page.dart';
 import 'package:timeshare/ui/pages/profile_page.dart';
 import 'package:timeshare/ui/widgets/calendar_filter_sheet.dart';
+import 'package:timeshare/ui/widgets/user_search_dialog.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -36,6 +37,17 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
                 builder: (context) => const CalendarFilterSheet(),
               );
+            },
+          ),
+        ];
+      case 2:
+        return [
+          FilledButton(
+            child: Row(
+              children: [Icon(Icons.search), Text('Search for users')],
+            ),
+            onPressed: () {
+              showUserSearchDialog(context, ref);
             },
           ),
         ];

@@ -18,6 +18,7 @@ class FriendsPage extends ConsumerWidget {
               return ListTile(
                 title: Text(friend.displayName),
                 subtitle: Text(friend.email),
+                trailing: IconButton(onPressed: () {}, icon: Icon(Icons.share)),
               );
             },
           ),
