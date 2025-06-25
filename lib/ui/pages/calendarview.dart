@@ -1,23 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/classes/calendar/calendar.dart';
-import 'package:timeshare/classes/event/event.dart';
+import 'package:timeshare/data/calendar/calendar.dart';
+import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/providers.dart';
 import 'package:timeshare/util.dart';
-import 'package:timeshare/pages/eventspage.dart';
+import 'package:timeshare/ui/pages/eventspage.dart';
 
 //it is a dependency, don't let dartls lie to you
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
-class CalendarView extends StatefulWidget {
-  const CalendarView({super.key, required this.calendars});
-  final List<Calendar> calendars;
+class CalendarView extends ConsumerStatefulWidget {
+  const CalendarView({super.key});
 
   @override
   State<CalendarView> createState() => _CalendarViewState();
 }
 
-class _CalendarViewState extends State<CalendarView> {
+class _CalendarViewState extends ConsumerState<CalendarView> {
   //BOILERPLATE DEFNINITIONS FOR THE CALENDAR WIDGET
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
@@ -51,7 +53,16 @@ class _CalendarViewState extends State<CalendarView> {
     _selectedDay = _focusedDay;
 
     //initially loads all calendars supplied to the widget
-    _loadedCalendars = widget.calendars.toList();
+    Future.microtask(() async {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await ref
+            .read(calendarNotifierProvider.notifier)
+            .loadCalendars(uid: user.uid);
+      }
+    });
+    _loadedCalendars = ref.watch(calendarNotifierProvider);
+
     for (var cal in _loadedCalendars) {
       print('_loadedCalendars has : ${cal.name} ');
     }

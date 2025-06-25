@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Calendar {
 
- String get name; Map<DateTime, List<Event>> get events;
+ String get id; String get owner; List<String> get sharedWith; String get name; Map<DateTime, List<Event>> get events;
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $CalendarCopyWith<Calendar> get copyWith => _$CalendarCopyWithImpl<Calendar>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Calendar&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.events, events));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Calendar&&(identical(other.id, id) || other.id == id)&&(identical(other.owner, owner) || other.owner == owner)&&const DeepCollectionEquality().equals(other.sharedWith, sharedWith)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.events, events));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,const DeepCollectionEquality().hash(events));
+int get hashCode => Object.hash(runtimeType,id,owner,const DeepCollectionEquality().hash(sharedWith),name,const DeepCollectionEquality().hash(events));
 
 @override
 String toString() {
-  return 'Calendar(name: $name, events: $events)';
+  return 'Calendar(id: $id, owner: $owner, sharedWith: $sharedWith, name: $name, events: $events)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $CalendarCopyWith<$Res>  {
   factory $CalendarCopyWith(Calendar value, $Res Function(Calendar) _then) = _$CalendarCopyWithImpl;
 @useResult
 $Res call({
- String name, Map<DateTime, List<Event>> events
+ String id, String owner, List<String> sharedWith, String name, Map<DateTime, List<Event>> events
 });
 
 
@@ -66,9 +66,12 @@ class _$CalendarCopyWithImpl<$Res>
 
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? events = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? owner = null,Object? sharedWith = null,Object? name = null,Object? events = null,}) {
   return _then(_self.copyWith(
-name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,owner: null == owner ? _self.owner : owner // ignore: cast_nullable_to_non_nullable
+as String,sharedWith: null == sharedWith ? _self.sharedWith : sharedWith // ignore: cast_nullable_to_non_nullable
+as List<String>,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,events: null == events ? _self.events : events // ignore: cast_nullable_to_non_nullable
 as Map<DateTime, List<Event>>,
   ));
@@ -81,8 +84,17 @@ as Map<DateTime, List<Event>>,
 @JsonSerializable()
 
 class _Calendar implements Calendar {
-   _Calendar({required this.name, required final  Map<DateTime, List<Event>> events}): _events = events;
+   _Calendar({required this.id, required this.owner, final  List<String> sharedWith = const [], required this.name, required final  Map<DateTime, List<Event>> events}): _sharedWith = sharedWith,_events = events;
   factory _Calendar.fromJson(Map<String, dynamic> json) => _$CalendarFromJson(json);
+
+@override final  String id;
+@override final  String owner;
+ final  List<String> _sharedWith;
+@override@JsonKey() List<String> get sharedWith {
+  if (_sharedWith is EqualUnmodifiableListView) return _sharedWith;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_sharedWith);
+}
 
 @override final  String name;
  final  Map<DateTime, List<Event>> _events;
@@ -106,16 +118,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Calendar&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._events, _events));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Calendar&&(identical(other.id, id) || other.id == id)&&(identical(other.owner, owner) || other.owner == owner)&&const DeepCollectionEquality().equals(other._sharedWith, _sharedWith)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._events, _events));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,const DeepCollectionEquality().hash(_events));
+int get hashCode => Object.hash(runtimeType,id,owner,const DeepCollectionEquality().hash(_sharedWith),name,const DeepCollectionEquality().hash(_events));
 
 @override
 String toString() {
-  return 'Calendar(name: $name, events: $events)';
+  return 'Calendar(id: $id, owner: $owner, sharedWith: $sharedWith, name: $name, events: $events)';
 }
 
 
@@ -126,7 +138,7 @@ abstract mixin class _$CalendarCopyWith<$Res> implements $CalendarCopyWith<$Res>
   factory _$CalendarCopyWith(_Calendar value, $Res Function(_Calendar) _then) = __$CalendarCopyWithImpl;
 @override @useResult
 $Res call({
- String name, Map<DateTime, List<Event>> events
+ String id, String owner, List<String> sharedWith, String name, Map<DateTime, List<Event>> events
 });
 
 
@@ -143,9 +155,12 @@ class __$CalendarCopyWithImpl<$Res>
 
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? events = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? owner = null,Object? sharedWith = null,Object? name = null,Object? events = null,}) {
   return _then(_Calendar(
-name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,owner: null == owner ? _self.owner : owner // ignore: cast_nullable_to_non_nullable
+as String,sharedWith: null == sharedWith ? _self._sharedWith : sharedWith // ignore: cast_nullable_to_non_nullable
+as List<String>,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,events: null == events ? _self._events : events // ignore: cast_nullable_to_non_nullable
 as Map<DateTime, List<Event>>,
   ));

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/classes/event/event.dart';
+import 'package:timeshare/data/event/event.dart';
 
 part 'calendar.freezed.dart';
 part 'calendar.g.dart';
@@ -8,6 +8,9 @@ part 'calendar.g.dart';
 @freezed
 abstract class Calendar with _$Calendar {
   factory Calendar({
+    required String id,
+    required String owner,
+    @Default([]) List<String> sharedWith,
     required String name,
     required Map<DateTime, List<Event>> events,
   }) = _Calendar;
@@ -15,7 +18,12 @@ abstract class Calendar with _$Calendar {
   factory Calendar.fromJson(Map<String, dynamic> json) =>
       _$CalendarFromJson(json);
 
-  factory Calendar.fromList(String name, List<Event> eventlist) {
+  factory Calendar.fromEventList({
+    required String id,
+    required String name,
+    required String owner,
+    required List<Event> eventlist,
+  }) {
     final copiedList = eventlist.map((e) => e.copyWith());
     final eventmap = copiedList.fold<Map<DateTime, List<Event>>>({}, (
       map,
@@ -25,7 +33,7 @@ abstract class Calendar with _$Calendar {
       map.putIfAbsent(day, () => []).add(event);
       return map;
     });
-    return Calendar(name: name, events: eventmap);
+    return Calendar(id: id, name: name, owner: owner, events: eventmap);
   }
 
   //helper function to find if a calendar has an event

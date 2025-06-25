@@ -1,16 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/classes/calendar/calendar.dart';
-import 'package:timeshare/classes/event/event.dart';
+import 'package:timeshare/data/calendar/calendar.dart';
+import 'package:timeshare/data/event/event.dart';
 
 //FOR TESTING
 List<Event> testEvents = [
-  Event(title: 'Work', time: DateTime.utc(2025, 6, 15), atendees: ['David']),
-  Event(title: 'Brunch', time: DateTime.utc(2025, 6, 30), atendees: ['Maddie']),
+  Event(name: 'Work', time: DateTime.utc(2025, 6, 15), atendees: ['David']),
+  Event(name: 'Brunch', time: DateTime.utc(2025, 6, 30), atendees: ['Maddie']),
 ];
 
 //for testing
-Calendar testCalendar = Calendar.fromList('test', testEvents);
+Calendar testCalendar = Calendar.fromEventList(
+  id: '5X6JyQULsRd8kLJB4x8A9qXn7xI3_test',
+  name: 'test',
+  owner: '5X6JyQULsRd8kLJB4x8A9qXn7xI3',
+  eventlist: testEvents,
+);
 
 /// Returns a list of [DateTime] objects from [first] to [last], inclusive.
 List<DateTime> daysInRange(DateTime first, DateTime last) {
@@ -22,6 +26,3 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
 }
 
 DateTime today = normalizeDate(DateTime.now());
-
-//global for active user, cause why not?
-User? activeUser;
