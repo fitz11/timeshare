@@ -18,6 +18,9 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
+    print('Init called for Homepage');
+    ref.read(userRepositoryProvider);
+    ref.read(currentUserProvider);
   }
 
   ///builds app bar actions based on state

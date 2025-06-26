@@ -5,6 +5,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/calendar/calendar.dart';
 import 'package:timeshare/data/event/event.dart';
 import 'package:timeshare/providers.dart';
+import 'package:timeshare/ui/widgets/delete_event_dialog.dart';
 import 'package:timeshare/ui/widgets/open_eventbuilder_dialog.dart';
 import 'package:timeshare/util.dart';
 import 'package:timeshare/ui/widgets/create_calendar_dialog.dart';
@@ -61,56 +62,12 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
   }
 
   Widget _deleteButton(List<Event> events) {
-    return IconButton(
-      icon: Icon(Icons.delete),
-      onPressed: () async {
-        await showDialog<Event>(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: Text("select Event to delete (this is permanent)"),
-                content: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.8,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: ListView.builder(
-                    itemCount: events.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4.0),
-                        decoration: BoxDecoration(
-                          border: Border.all(),
-                          borderRadius: BorderRadiusDirectional.circular(12),
-                        ),
-                        child: ListTile(
-                          title: Text(events[index].name),
-                          subtitle: Text(
-                            DateFormat.yMMMd().format(events[index].time),
-                          ),
-                          trailing: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: events[index].color,
-                              shape: events[index].shape,
-                            ),
-                          ),
-
-                          onTap: () {
-                            ref
-                                .read(calendarNotifierProvider.notifier)
-                                .removeEvent(
-                                  calendarId: events[index].calendarId,
-                                  event: events[index],
-                                );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-        );
+    return FilledButton(
+      style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+      onPressed: () {
+        showDeleteDialog(context, ref, events);
       },
+      child: Icon(Icons.delete),
     );
   }
 
@@ -147,28 +104,30 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
 
     return Column(
       children: [
+        Center(
+          child: Text(
+            selectedCalendars.fold(
+              "Loaded Calendars: ",
+              (prev, cal) => '$prev ${cal.name},',
+            ),
+          ),
+        ),
         //names of active calendars;
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text(
-              selectedCalendars.fold(
-                "Loaded Calendars: ",
-                (prev, cal) => '$prev ${cal.name},',
-              ),
-            ),
             _editModeIndicator(),
             FilledButton(
               onPressed: () {
                 showCreateCalendarDialog(context, ref);
               },
-              child: Row(children: [Icon(Icons.add), Text('New Calendar')]),
+              child: Icon(Icons.calendar_month),
             ),
-            FilledButton(
+            FilledButton.tonal(
               onPressed: () {
                 openEventBuilder(context, allCalendars);
               },
-              child: Row(children: [Icon(Icons.add), Text('New Event')]),
+              child: Icon(Icons.calendar_today),
             ),
             _deleteButton(eventsList),
           ],

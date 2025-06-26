@@ -31,10 +31,10 @@ final currentUserProvider = FutureProvider<AppUser?>((ref) async {
 });
 
 final userFriendsProvider = FutureProvider<List<AppUser>>((ref) async {
+  print('__friends provider called__');
+  final user = ref.read(currentUserProvider);
   final repo = ref.read(userRepositoryProvider);
-  final uid = repo.currentUserId;
-  if (uid == null) return [];
-  return await repo.getFriendsOfUser(uid);
+  return await repo.getFriendsOfUser(user.value!.uid);
 });
 
 final userSearchProvider = FutureProvider.family<List<AppUser>, String>((

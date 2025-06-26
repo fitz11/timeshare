@@ -28,11 +28,13 @@ class UserRepository {
         'joinedAt': FieldValue.serverTimestamp(),
       });
     }
+    print('User ${user.email} created!');
   }
 
   Future<AppUser?> getUserById(String uid) async {
     final doc = await _users.doc(uid).get();
     if (!doc.exists) return null;
+    print(' -getUserBy id found $uid');
     return AppUser.fromJson(doc.data()!);
   }
 
@@ -55,12 +57,16 @@ class UserRepository {
 
   Future<List<AppUser>> getFriendsOfUser(String uid) async {
     final user = await getUserById(uid);
-    if (user == null || user.friends.isEmpty) return [];
+    if (user == null || user.friends.isEmpty) {
+      print('user == null || user.friends.isEmpty');
+      return [];
+    }
 
     final friendsDocs = await Future.wait(
       user.friends.map((friendId) => _users.doc(friendId).get()),
     );
 
+    print('attempting return from found friend docs');
     return friendsDocs
         .where((doc) => doc.exists)
         .map((doc) => AppUser.fromJson(doc.data()!))
