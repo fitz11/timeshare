@@ -27,8 +27,10 @@ class UserRepository {
         'displayName': user.displayName ?? user.email!.split('@')[0],
         'joinedAt': FieldValue.serverTimestamp(),
       });
+      print('User ${user.email} created!');
+    } else {
+      print('User ${user.email} already exists!');
     }
-    print('User ${user.email} created!');
   }
 
   Future<AppUser?> getUserById(String uid) async {
