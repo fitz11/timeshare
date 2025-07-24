@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/providers.dart';
+import 'package:timeshare/data/providers/providers.dart';
 
 void showCreateCalendarDialog(BuildContext context, WidgetRef ref) {
   final nameController = TextEditingController();

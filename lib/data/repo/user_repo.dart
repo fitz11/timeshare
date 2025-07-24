@@ -15,6 +15,11 @@ class UserRepository {
 
   String? get currentUserId => _auth.currentUser?.uid;
 
+  Future<AppUser?> get currentUser async {
+    if (currentUserId == null) return null;
+    return getUserById(currentUserId!);
+  }
+
   Future<void> createUserIfNeeded() async {
     final user = _auth.currentUser;
     if (user == null) return;

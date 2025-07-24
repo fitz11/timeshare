@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/providers.dart';
+import 'package:timeshare/data/providers/user_providers.dart';
 
 void showUserSearchDialog(BuildContext context, WidgetRef ref) {
   final controller = TextEditingController();

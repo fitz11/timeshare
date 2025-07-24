@@ -8,7 +8,7 @@ import 'package:timeshare/data/event/event.dart';
 //is in this import, so it thinks it has to go. I need it
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/providers.dart';
+import 'package:timeshare/data/providers/new_cal_providers.dart';
 
 ///this is a page that allows users to view/add events
 /// to the provided event list.
@@ -66,7 +66,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
         shape: shape,
       );
 
-      final calendars = ref.read(calendarNotifierProvider);
+      final calendars = ref.read(calendarNotifierProvider).requireValue;
       for (final cal in calendars) {
         for (final event in cal.getEvents()) {
           if (event == newEvent) {
@@ -154,6 +154,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
   Widget build(BuildContext context) {
     final calendar = ref
         .watch(calendarNotifierProvider)
+        .requireValue
         .firstWhere((cal) => cal.id == widget.calendarId);
     return Scaffold(
       //AppBar, has navigation

@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/providers.dart';
+import 'package:timeshare/data/providers/providers.dart';
 import 'package:timeshare/ui/pages/calendarpage.dart';
 import 'package:timeshare/ui/pages/friends_page.dart';
 import 'package:timeshare/ui/pages/profile_page.dart';
 import 'package:timeshare/ui/widgets/calendar_filter_sheet.dart';
 import 'package:timeshare/ui/widgets/user_search_dialog.dart';
 
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+class HomeFrame extends ConsumerStatefulWidget {
+  const HomeFrame({super.key});
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
+  ConsumerState<HomeFrame> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomeFrame> {
   @override
   void initState() {
     super.initState();
     print('Init called for Homepage');
-    ref.read(userRepositoryProvider);
-    ref.read(currentUserProvider);
   }
 
   ///builds app bar actions based on state

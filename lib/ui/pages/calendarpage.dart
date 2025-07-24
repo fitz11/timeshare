@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/calendar/calendar.dart';
 import 'package:timeshare/data/event/event.dart';
-import 'package:timeshare/providers.dart';
+import 'package:timeshare/data/providers/new_cal_providers.dart';
+import 'package:timeshare/data/providers/sel_cal_providers.dart';
 import 'package:timeshare/ui/widgets/delete_event_dialog.dart';
 import 'package:timeshare/ui/widgets/open_eventbuilder_dialog.dart';
 import 'package:timeshare/util.dart';
@@ -39,9 +40,7 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
     Future.microtask(() async {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        await ref
-            .read(calendarNotifierProvider.notifier)
-            .loadAllCalendars(uid: user.uid);
+        ref.read(calendarNotifierProvider.notifier);
       }
     });
   }
@@ -86,8 +85,8 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     final allCalendars = ref.watch(calendarNotifierProvider);
-    final selectedIds = ref.watch(selectedCalendarsProvider);
-    final selectedCalendars = allCalendars.where(
+    final selectedIds = ref.watch(selectedCalendarsNotifierProvider);
+    final selectedCalendars = allCalendars.requireValue.where(
       (cal) => selectedIds.contains(cal.id),
     );
     final eventsMap = ref.watch(visibleEventsMapProvider);
@@ -125,7 +124,7 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
             ),
             FilledButton.tonal(
               onPressed: () {
-                openEventBuilder(context, allCalendars);
+                openEventBuilder(context, allCalendars.requireValue);
               },
               child: Icon(Icons.calendar_today),
             ),
@@ -143,7 +142,7 @@ class _CalendarViewState extends ConsumerState<CalendarPage> {
           calendarFormat: _calendarFormat,
           rangeSelectionMode: RangeSelectionMode.disabled,
           eventLoader: getEventsForDay,
-          startingDayOfWeek: StartingDayOfWeek.monday,
+          startingDayOfWeek: StartingDayOfWeek.sunday,
           calendarStyle: const CalendarStyle(outsideDaysVisible: true),
           onDaySelected: _onDaySelected,
           onFormatChanged: (format) {

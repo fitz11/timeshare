@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/providers.dart';
+import 'package:timeshare/data/providers/new_user_providers.dart';
 import 'package:timeshare/ui/widgets/share_calendar_dialog.dart';
 
 class FriendsPage extends ConsumerWidget {
@@ -9,7 +9,7 @@ class FriendsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print('building Friend page');
-    final friendsAsync = ref.watch(userFriendsProvider);
+    final friendsAsync = ref.watch(userFriendsNotifierProvider);
 
     return friendsAsync.when(
       data:
