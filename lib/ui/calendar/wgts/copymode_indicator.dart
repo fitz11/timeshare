@@ -10,13 +10,16 @@ class CopyModeIndicator extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     bool copyMode = ref.watch(copyModeNotifierProvider);
     Event? copiedEvent = ref.watch(copyEventNotifierProvider);
+    String str = '';
+    if (copiedEvent != null) str = copiedEvent.name.trim();
+    if (str.length > 8) str = str.substring(0, 7);
     if (!copyMode) return SizedBox.shrink();
     return FilledButton(
       onPressed: () {
-        ref.read(copyModeNotifierProvider.notifier).change();
+        ref.read(copyModeNotifierProvider.notifier).off();
         ref.read(copyEventNotifierProvider.notifier).clear();
       },
-      child: Row(children: [Icon(Icons.copy), Text(copiedEvent!.name)]),
+      child: Row(children: [Icon(Icons.copy), Text(str)]),
     );
   }
 }

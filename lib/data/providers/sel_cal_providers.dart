@@ -40,6 +40,7 @@ Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
   final Map<DateTime, List<Event>> mergedEvents = {};
 
   for (final cal in visibleCalendars) {
+    cal.sortEvents();
     cal.events.forEach((date, eventList) {
       mergedEvents.update(
         date,
@@ -54,5 +55,7 @@ Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
 @riverpod
 List<Event> visibleEventsList(Ref ref) {
   final eventMap = ref.watch(visibleEventsMapProvider);
-  return eventMap.values.expand((list) => list).toList();
+  List<Event> eventsList = eventMap.values.expand((list) => list).toList();
+  eventsList.sort((a, b) => a.time.compareTo(b.time));
+  return eventsList;
 }

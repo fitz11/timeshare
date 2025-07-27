@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/providers/wgt/nav_providers.dart';
 import 'package:timeshare/ui/calendar/wgts/calendar_filter_sheet.dart';
+import 'package:timeshare/ui/calendar/wgts/copymode_indicator.dart';
+import 'package:timeshare/ui/core/buttons/open_drawer_button.dart';
 import 'package:timeshare/ui/widgets/user_search_dialog.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -17,11 +19,20 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     //switch to support more actions as needed
     switch (page) {
       case HomePages.calendar:
-        return [calFilterButton(context)];
+        return [CopyModeIndicator(), calFilterButton(context)];
       case HomePages.friends:
         return [friendSearchButton(context, ref)];
       default:
         return [];
+    }
+  }
+
+  Widget? _buildLeadingForIndex(BuildContext context, HomePages page) {
+    switch (page) {
+      case HomePages.calendar:
+        return OpenDrawerButton();
+      default:
+        return null;
     }
   }
 
@@ -30,8 +41,8 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final page = ref.watch(navIndexNotifierProvider);
     return AppBar(
       title: Text(page.name),
-      centerTitle: true,
       elevation: 8,
+      leading: _buildLeadingForIndex(context, page),
       actions: _buildActionsForIndex(context, ref, page),
     );
   }

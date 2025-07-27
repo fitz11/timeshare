@@ -30,5 +30,5 @@ BottomNavigationBarItem calendarItem() {
 }
 
 BottomNavigationBarItem friendsItem() {
-  return BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Friends');
+  return BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Friends');
 }

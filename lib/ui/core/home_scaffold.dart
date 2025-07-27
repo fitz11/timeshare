@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/providers/cal_providers.dart';
 import 'package:timeshare/data/providers/wgt/nav_providers.dart';
+import 'package:timeshare/ui/calendar/wgts/cal_drawer.dart';
 import 'package:timeshare/ui/core/widgets/home_appbar.dart';
 import 'package:timeshare/ui/core/widgets/home_navbar.dart';
 import 'package:timeshare/ui/calendar/calendar_page.dart';
@@ -32,6 +33,7 @@ class HomeScaffold extends ConsumerWidget {
       data:
           (data) => Scaffold(
             appBar: HomeAppBar(),
+            drawer: CalDrawer(),
             body: _buildBody(index),
             bottomNavigationBar: HomeBottomBar(),
           ),

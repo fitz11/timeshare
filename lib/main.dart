@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/auth_gate.dart';
 import 'package:timeshare/ui/core/home_scaffold.dart';
 import 'package:timeshare/ui/pages/auth.dart';
+import 'package:timeshare/ui/themes.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -24,9 +25,8 @@ class Timeshare extends ConsumerWidget {
     return MaterialApp(
       title: 'TimeShare',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       routes: {
         '/home': (context) => HomeScaffold(),
         '/login': (context) => AuthScreen(),

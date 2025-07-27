@@ -58,6 +58,7 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
       lastDay: end,
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       calendarFormat: CalendarFormat.month,
+      sixWeekMonthsEnforced: true,
       rangeSelectionMode: RangeSelectionMode.disabled,
       eventLoader: (day) {
         return eventsMap[normalizeDate(day)] ?? [];

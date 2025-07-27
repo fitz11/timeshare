@@ -10,7 +10,6 @@ class DeleteButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final events = ref.watch(visibleEventsListProvider);
     return FilledButton(
-      style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
       onPressed: () {
         showDeleteDialog(context, ref, events);
       },

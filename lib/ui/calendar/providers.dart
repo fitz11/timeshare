@@ -11,6 +11,8 @@ class CopyModeNotifier extends _$CopyModeNotifier {
   }
 
   void change() => state = !state;
+  void on() => state = true;
+  void off() => state = false;
 }
 
 @riverpod
