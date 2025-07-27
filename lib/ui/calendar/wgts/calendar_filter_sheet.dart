@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/providers.dart';
+import 'package:timeshare/data/providers/cal_providers.dart';
+import 'package:timeshare/data/providers/sel_cal_providers.dart';
 
 class CalendarFilterSheet extends ConsumerWidget {
   const CalendarFilterSheet({super.key});
@@ -8,7 +9,7 @@ class CalendarFilterSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allCalendars = ref.watch(calendarNotifierProvider);
-    final selectedIds = ref.watch(selectedCalendarsProvider); // Set<String>
+    final selectedIds = ref.watch(selectedCalIdsNotifierProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -20,13 +21,15 @@ class CalendarFilterSheet extends ConsumerWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          ...allCalendars.map((calendar) {
+          ...allCalendars.requireValue.map((calendar) {
             final isSelected = selectedIds.contains(calendar.id);
             return CheckboxListTile(
               title: Text(calendar.name),
               value: isSelected,
               onChanged: (checked) {
-                final notifier = ref.read(selectedCalendarsProvider.notifier);
+                final notifier = ref.read(
+                  selectedCalIdsNotifierProvider.notifier,
+                );
                 if (checked == true) {
                   notifier.add(calendar.id);
                 } else {

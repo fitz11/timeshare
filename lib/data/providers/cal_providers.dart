@@ -5,17 +5,17 @@ import 'package:timeshare/data/calendar/calendar.dart';
 import 'package:timeshare/data/event/event.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
 
-part 'new_cal_providers.g.dart';
+part 'cal_providers.g.dart';
 
 @riverpod
 CalendarRepository calendarRepository(Ref ref) => CalendarRepository();
 
-@riverpod
+@Riverpod(keepAlive: true)
 class CalendarNotifier extends _$CalendarNotifier {
   late final CalendarRepository crp;
 
   @override
-  Future<List<Calendar>> build() async {
+  FutureOr<List<Calendar>> build() async {
     crp = ref.watch(calendarRepositoryProvider);
     return await crp.getAllAvailableCalendars();
   }

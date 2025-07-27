@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeshare/data/providers/cal_providers.dart';
 import 'package:timeshare/data/user/app_user.dart';
-import 'package:timeshare/data/providers/providers.dart';
 
 void showShareCalendarDialog(
   BuildContext context,
@@ -13,6 +13,7 @@ void showShareCalendarDialog(
   final calendars =
       ref
           .read(calendarNotifierProvider)
+          .requireValue
           .where((cal) => cal.owner == currentUserId)
           .toList();
 

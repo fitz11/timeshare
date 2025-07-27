@@ -1,0 +1,28 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeshare/data/providers/sel_cal_providers.dart';
+import 'package:timeshare/ui/calendar/wgts/event_list_tile.dart';
+
+class EventList extends ConsumerWidget {
+  const EventList({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventsList = ref.watch(visibleEventsListProvider);
+    return Expanded(
+      child: ListView.builder(
+        itemCount: eventsList.length,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: EventListItem(event: eventsList[index]),
+          );
+        },
+      ),
+    );
+  }
+}

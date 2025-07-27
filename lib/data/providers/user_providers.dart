@@ -1,29 +1,61 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:timeshare/data/providers/firebase_providers.dart';
 import 'package:timeshare/data/repo/user_repo.dart';
 import 'package:timeshare/data/user/app_user.dart';
 
-final userRepositoryProvider = Provider<UserRepository>((ref) {
-  return UserRepository();
-});
+part 'user_providers.g.dart';
 
-final currentUserProvider = FutureProvider<AppUser?>((ref) async {
-  final repo = ref.read(userRepositoryProvider);
-  final uid = repo.currentUserId;
-  if (uid == null) return null;
-  return await repo.getUserById(uid);
-});
+@riverpod
+UserRepository userRepository(Ref ref) => UserRepository(
+  firestore: ref.watch(firestoreProvider),
+  auth: ref.watch(fbAuthProvider),
+);
 
-final userFriendsProvider = FutureProvider<List<AppUser>>((ref) async {
-  print('__friends provider called__');
-  final user = ref.read(currentUserProvider);
-  final repo = ref.read(userRepositoryProvider);
-  return await repo.getFriendsOfUser(user.value!.uid);
-});
+@riverpod
+Future<AppUser?> currentUser(Ref ref) =>
+    ref.watch(userRepositoryProvider).currentUser;
 
-final userSearchProvider = FutureProvider.family<List<AppUser>, String>((
-  ref,
-  email,
-) async {
-  final repo = ref.read(userRepositoryProvider);
-  return await repo.searchUserByEmail(email);
-});
+@riverpod
+class UserFriendsNotifier extends _$UserFriendsNotifier {
+  @override
+  FutureOr<List<AppUser>> build() async {
+    final repo = ref.watch(userRepositoryProvider);
+    final currentUser = ref.watch(currentUserProvider);
+    return await repo.getFriendsOfUser(currentUser.requireValue!.uid);
+  }
+
+  void addFriend({required String targetUid}) async {
+    final repo = ref.watch(userRepositoryProvider);
+    try {
+      final newFriend = await repo.getUserById(targetUid);
+      if (newFriend == null) throw Exception;
+      state = AsyncValue.data([
+        if (state.valueOrNull != null) ...state.requireValue,
+        newFriend,
+      ]);
+    } catch (e) {
+      print('failed to add friend $targetUid');
+    }
+  }
+
+  void removeFriend({required String targetUid}) async {
+    final repo = ref.watch(userRepositoryProvider);
+    final previousState = state;
+    state = AsyncValue.data(
+      state.requireValue.where((friend) => friend.uid != targetUid).toList(),
+    );
+
+    try {
+      await repo.removeFriend(targetUid);
+      print('Friend $targetUid removed!');
+    } catch (e) {
+      print('Failed to remove friend $targetUid');
+      state = previousState;
+    }
+  }
+}
+
+@riverpod
+Future<List<AppUser>> userSearch(Ref ref, String email) async =>
+    await ref.watch(userRepositoryProvider).searchUsersByEmail(email);

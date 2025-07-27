@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'new_user_providers.dart';
+part of 'user_providers.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userRepositoryHash() => r'e75530ca34ed2fc7744e8fd5e2a8e5d7f738dc62';
+String _$userRepositoryHash() => r'9cf2539fe55ff2d204d934b42bc6e6587118259c';
 
 /// See also [userRepository].
 @ProviderFor(userRepository)
@@ -40,7 +40,7 @@ final currentUserProvider = AutoDisposeFutureProvider<AppUser?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CurrentUserRef = AutoDisposeFutureProviderRef<AppUser?>;
-String _$userSearchHash() => r'a45505a12ac7429a0d7d6ed797cc8c93a9e828ae';
+String _$userSearchHash() => r'cc3e6d3bcb75a33440f5edc7a2437439b5f4be85';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -182,7 +182,7 @@ class _UserSearchProviderElement
 }
 
 String _$userFriendsNotifierHash() =>
-    r'08d270b684f1788edf4757166ccb484ab66aca35';
+    r'091aa92d76feac477ca8ba4589c3c1caaa5ce5ae';
 
 /// See also [UserFriendsNotifier].
 @ProviderFor(UserFriendsNotifier)

@@ -1,7 +1,7 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/new_user_providers.dart';
+import 'package:timeshare/data/providers/user_providers.dart';
 
 ///the '/login' route.
 class AuthScreen extends ConsumerWidget {
@@ -42,12 +42,12 @@ class AuthScreen extends ConsumerWidget {
       providers: [EmailAuthProvider()],
       actions: [
         AuthStateChangeAction<SignedIn>((context, state) async {
-          userRepo.createUserIfNeeded();
+          userRepo.signInOrRegister();
           Navigator.pushReplacementNamed(context, '/home');
         }),
 
         AuthStateChangeAction<UserCreated>((context, state) async {
-          userRepo.createUserIfNeeded();
+          userRepo.signInOrRegister();
           Navigator.pushReplacementNamed(context, '/home');
         }),
       ],

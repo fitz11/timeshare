@@ -17,14 +17,17 @@ class UserRepository {
 
   Future<AppUser?> get currentUser async {
     if (currentUserId == null) return null;
-    return getUserById(currentUserId!);
+    return await getUserById(currentUserId!);
   }
 
-  Future<void> createUserIfNeeded() async {
+  Future<void> signInOrRegister() async {
     final user = _auth.currentUser;
-    if (user == null) return;
+
+    if (user == null) throw (FirebaseAuthException);
 
     final doc = _users.doc(user.uid);
+
+    // register
     if (!(await doc.get()).exists) {
       await doc.set({
         'uid': user.uid,
@@ -33,19 +36,25 @@ class UserRepository {
         'joinedAt': FieldValue.serverTimestamp(),
       });
       print('User ${user.email} created!');
-    } else {
+    }
+    // sign in
+    else {
       print('User ${user.email} already exists!');
     }
   }
 
-  Future<AppUser?> getUserById(String uid) async {
+  /// retrieve selected AppUser from the firestore.
+  ///  if no uid is provided, it will default to the current user.
+  Future<AppUser?> getUserById([String uid = '']) async {
+    if (uid.isEmpty && currentUserId != null) uid = currentUserId!;
+    if (uid.isEmpty) return null;
     final doc = await _users.doc(uid).get();
     if (!doc.exists) return null;
     print(' -getUserBy id found $uid');
     return AppUser.fromJson(doc.data()!);
   }
 
-  Future<List<AppUser>> searchUserByEmail(String email) async {
+  Future<List<AppUser>> searchUsersByEmail(String email) async {
     if (email.isEmpty || email.length < 5) {
       print('insufficient query: $email');
       return [];
@@ -62,7 +71,9 @@ class UserRepository {
         .toList();
   }
 
-  Future<List<AppUser>> getFriendsOfUser(String uid) async {
+  Future<List<AppUser>> getFriendsOfUser([String uid = '']) async {
+    if (uid.isEmpty && currentUserId != null) uid = currentUserId!;
+    if (uid.isEmpty) return [];
     final user = await getUserById(uid);
     if (user == null || user.friends.isEmpty) {
       print('user == null || user.friends.isEmpty');

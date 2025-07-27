@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/auth_gate.dart';
-import 'package:timeshare/ui/home_frame.dart';
+import 'package:timeshare/ui/core/home_scaffold.dart';
 import 'package:timeshare/ui/pages/auth.dart';
 import 'firebase_options.dart';
 
@@ -28,7 +28,7 @@ class Timeshare extends ConsumerWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       routes: {
-        '/home': (context) => HomeFrame(),
+        '/home': (context) => HomeScaffold(),
         '/login': (context) => AuthScreen(),
       },
       home: const AuthGate(),

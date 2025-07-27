@@ -1,16 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:timeshare/data/calendar/calendar.dart';
 import 'package:timeshare/data/event/event.dart';
-import 'package:timeshare/data/providers/new_cal_providers.dart';
+import 'package:timeshare/data/providers/cal_providers.dart';
 
 part 'sel_cal_providers.g.dart';
 
 @riverpod
-class SelectedCalendarsNotifier extends _$SelectedCalendarsNotifier {
+class SelectedCalIdsNotifier extends _$SelectedCalIdsNotifier {
   @override
   Set<String> build() {
-    return <String>{};
+    final allCalendarIds = ref
+        .watch(calendarNotifierProvider)
+        .requireValue
+        .fold<Set<String>>({}, (prev, cal) => {...prev, cal.id});
+    return allCalendarIds;
   }
 
   void add(String id) => state = {...state, id};
@@ -19,9 +23,16 @@ class SelectedCalendarsNotifier extends _$SelectedCalendarsNotifier {
 }
 
 @riverpod
+List<Calendar> selectedCalendars(Ref ref) {
+  final selectedIds = ref.watch(selectedCalIdsNotifierProvider);
+  final allCalendars = ref.watch(calendarNotifierProvider).requireValue;
+  return allCalendars.where((cal) => selectedIds.contains(cal.id)).toList();
+}
+
+@riverpod
 Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
   final calendars = ref.watch(calendarNotifierProvider);
-  final selectedIds = ref.watch(selectedCalendarsNotifierProvider);
+  final selectedIds = ref.watch(selectedCalIdsNotifierProvider);
   final visibleCalendars = calendars.requireValue.where(
     (cal) => selectedIds.contains(cal.id),
   );
@@ -44,16 +55,4 @@ Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
 List<Event> visibleEventsList(Ref ref) {
   final eventMap = ref.watch(visibleEventsMapProvider);
   return eventMap.values.expand((list) => list).toList();
-}
-
-@riverpod
-DateTime selectedDay(Ref ref) {
-  return normalizeDate(DateTime.now());
-}
-
-@riverpod
-List<Event> eventsForSelectedDay(Ref ref) {
-  final selectedDay = ref.watch(selectedDayProvider);
-  final visibleEvents = ref.watch(visibleEventsMapProvider);
-  return visibleEvents[normalizeDate(selectedDay)] ?? [];
 }

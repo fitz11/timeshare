@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:timeshare/data/color_converter.dart';
+import 'package:timeshare/data/converters/color_converter.dart';
 //it is a dependency, don't let dartls lie to you
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/data/shape_converter.dart';
+import 'package:timeshare/data/converters/shape_converter.dart';
 
 part 'event.freezed.dart';
 part 'event.g.dart';

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'new_cal_providers.dart';
+part of 'cal_providers.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -26,12 +26,12 @@ final calendarRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CalendarRepositoryRef = AutoDisposeProviderRef<CalendarRepository>;
-String _$calendarNotifierHash() => r'82cf78668ffbc79440ef664fd4a3d7708be05b93';
+String _$calendarNotifierHash() => r'caab2f6e1791b536b55b20a41d466fea8fc0f2e6';
 
 /// See also [CalendarNotifier].
 @ProviderFor(CalendarNotifier)
 final calendarNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<CalendarNotifier, List<Calendar>>.internal(
+    AsyncNotifierProvider<CalendarNotifier, List<Calendar>>.internal(
       CalendarNotifier.new,
       name: r'calendarNotifierProvider',
       debugGetCreateSourceHash:
@@ -42,6 +42,6 @@ final calendarNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$CalendarNotifier = AutoDisposeAsyncNotifier<List<Calendar>>;
+typedef _$CalendarNotifier = AsyncNotifier<List<Calendar>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

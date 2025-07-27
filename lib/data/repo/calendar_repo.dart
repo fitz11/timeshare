@@ -80,13 +80,16 @@ class CalendarRepository {
     required String calendarId,
     required Event event,
   }) async {
+    print('removing calendar $calendarId...');
+
     final docRef = FirebaseFirestore.instance
         .collection('calendars')
         .doc(calendarId);
     final snapshot = await docRef.get();
 
     if (!snapshot.exists) {
-      throw Exception("Calendar not found");
+      print("Calendar not found: $calendarId");
+      return;
     }
 
     final calendarData = snapshot.data()!;
@@ -107,6 +110,7 @@ class CalendarRepository {
     final updatedCalendar = calendar.copyWith(events: updatedEvents);
 
     await docRef.set(updatedCalendar.toJson());
+    print('Calendar $calendarId had ${event.name} removed successfully.');
   }
 
   ///Makes a new calendar in the firestore

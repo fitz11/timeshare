@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/event/event.dart';
-import 'package:timeshare/data/eventmap_converter.dart';
-import 'package:timeshare/data/set_converter.dart';
+import 'package:timeshare/data/converters/eventmap_converter.dart';
+import 'package:timeshare/data/converters/set_converter.dart';
 
 part 'calendar.freezed.dart';
 part 'calendar.g.dart';
@@ -39,7 +39,7 @@ abstract class Calendar with _$Calendar {
     return Calendar(id: id, name: name, owner: owner, events: eventmap);
   }
 
-  //helper function to find if a calendar has an event
+  /// helper function to find which (if any) calendar has an event.
   static Calendar? findCalendarContainingEvent(
     Event event,
     List<Calendar> calendars,
@@ -54,6 +54,7 @@ abstract class Calendar with _$Calendar {
     return null;
   }
 
+  /// helper function to generate DateTimes over a range
   static List<DateTime> daysInRange(DateTime first, DateTime last) {
     final dayCount = last.difference(first).inDays + 1;
     return List.generate(
@@ -63,7 +64,7 @@ abstract class Calendar with _$Calendar {
   }
 }
 
-extension CalendarX on Calendar {
+extension MutCalendar on Calendar {
   Calendar addEvent(Event event) {
     final copiedEvent = event.copyWith();
     final date = normalizeDate(event.time);
@@ -114,6 +115,21 @@ extension CalendarX on Calendar {
       updatedEvents[date] = updatedList;
     }
     return copyWith(events: updatedEvents);
+  }
+
+  Calendar sortEvents([bool forward = true]) {
+    List<Event> sorted = getEvents();
+    if (forward) {
+      sorted.sort((a, b) => a.time.compareTo(b.time));
+    } else {
+      sorted.sort((a, b) => a.time.compareTo(b.time));
+    }
+    final eventmap = sorted.fold<Map<DateTime, List<Event>>>({}, (map, event) {
+      final day = normalizeDate(event.time);
+      map.putIfAbsent(day, () => []).add(event);
+      return map;
+    });
+    return copyWith(events: eventmap);
   }
 
   String dbgOutput() {

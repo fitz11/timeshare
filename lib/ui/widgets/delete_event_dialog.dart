@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/event/event.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/data/providers/providers.dart';
+import 'package:timeshare/data/providers/cal_providers.dart';
 
 void showDeleteDialog(
   BuildContext context,

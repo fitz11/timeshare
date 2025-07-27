@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:timeshare/data/timestamp_converter.dart';
+import 'package:timeshare/data/converters/timestamp_converter.dart';
 
 part 'app_user.freezed.dart';
 part 'app_user.g.dart';
