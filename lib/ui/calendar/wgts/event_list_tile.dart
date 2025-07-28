@@ -4,14 +4,14 @@ import 'package:timeshare/data/event/event.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/ui/calendar/providers.dart';
+import 'package:timeshare/data/providers/cal/cal_providers.dart';
 
 class EventListItem extends ConsumerWidget {
   final Event event;
   const EventListItem({super.key, required this.event});
 
   void _onTap(BuildContext context, WidgetRef ref) {
-    ref.read(copyModeNotifierProvider.notifier).change();
+    ref.read(copyModeNotifierProvider.notifier).on();
     ref.read(copyEventNotifierProvider.notifier).setCopyEvent(event);
     _showSnackBar(context);
   }

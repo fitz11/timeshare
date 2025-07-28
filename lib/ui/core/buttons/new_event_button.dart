@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/cal_providers.dart';
+import 'package:timeshare/data/providers/cal/cal_providers.dart';
 import 'package:timeshare/ui/widgets/open_eventbuilder_dialog.dart';
 
 class NewEventButton extends ConsumerWidget {
@@ -17,4 +17,3 @@ class NewEventButton extends ConsumerWidget {
     );
   }
 }
-

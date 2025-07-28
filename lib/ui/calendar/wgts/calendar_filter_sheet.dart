@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/cal_providers.dart';
-import 'package:timeshare/data/providers/sel_cal_providers.dart';
+import 'package:timeshare/data/providers/cal/cal_providers.dart';
 
 class CalendarFilterSheet extends ConsumerWidget {
   const CalendarFilterSheet({super.key});

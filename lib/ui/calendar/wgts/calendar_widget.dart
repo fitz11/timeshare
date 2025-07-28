@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/event/event.dart';
-import 'package:timeshare/data/providers/cal_providers.dart';
-import 'package:timeshare/data/providers/sel_cal_providers.dart';
-import 'package:timeshare/ui/calendar/providers.dart';
+import 'package:timeshare/data/providers/cal/cal_providers.dart';
 
 DateTime today = normalizeDate(DateTime.now());
 DateTime start = today.subtract(const Duration(days: 365));

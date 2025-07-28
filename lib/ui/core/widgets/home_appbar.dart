@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
-import 'package:timeshare/data/providers/wgt/nav_providers.dart';
+import 'package:timeshare/data/providers/nav/nav_providers.dart';
 import 'package:timeshare/ui/calendar/wgts/calendar_filter_sheet.dart';
 import 'package:timeshare/ui/calendar/wgts/copymode_indicator.dart';
 import 'package:timeshare/ui/core/buttons/open_drawer_button.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/wgt/nav_providers.dart';
+import 'package:timeshare/data/providers/nav/nav_providers.dart';
 
 class HomeBottomBar extends ConsumerWidget {
   const HomeBottomBar({super.key});

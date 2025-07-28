@@ -8,7 +8,7 @@ import 'package:timeshare/data/event/event.dart';
 //is in this import, so it thinks it has to go. I need it
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/data/providers/cal_providers.dart';
+import 'package:timeshare/data/providers/cal/cal_providers.dart';
 
 ///this is a page that allows users to view/add events
 /// to the provided event list.
