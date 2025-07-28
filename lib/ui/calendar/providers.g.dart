@@ -6,7 +6,7 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$copyModeNotifierHash() => r'10b9f1bccb71c8c11a530dd07c6c04cc4cc3655a';
+String _$copyModeNotifierHash() => r'6f2e7ef33ceb5bbbbe48364ace57d87370c88b6c';
 
 /// See also [CopyModeNotifier].
 @ProviderFor(CopyModeNotifier)

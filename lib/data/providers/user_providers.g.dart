@@ -6,11 +6,11 @@ part of 'user_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userRepositoryHash() => r'9cf2539fe55ff2d204d934b42bc6e6587118259c';
+String _$userRepositoryHash() => r'9a7d7d682ecd2b93c1751d8bd5c65cbf5351f220';
 
 /// See also [userRepository].
 @ProviderFor(userRepository)
-final userRepositoryProvider = AutoDisposeProvider<UserRepository>.internal(
+final userRepositoryProvider = Provider<UserRepository>.internal(
   userRepository,
   name: r'userRepositoryProvider',
   debugGetCreateSourceHash:
@@ -23,7 +23,7 @@ final userRepositoryProvider = AutoDisposeProvider<UserRepository>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef UserRepositoryRef = AutoDisposeProviderRef<UserRepository>;
+typedef UserRepositoryRef = ProviderRef<UserRepository>;
 String _$currentUserHash() => r'0ae7ecb805b8535e024dc917967f7c67697e6bd8';
 
 /// See also [currentUser].
@@ -181,8 +181,25 @@ class _UserSearchProviderElement
   String get email => (origin as UserSearchProvider).email;
 }
 
+String _$userNotifierHash() => r'3b6ec33ecfb42e14e8e60397530248baa3930d61';
+
+/// See also [UserNotifier].
+@ProviderFor(UserNotifier)
+final userNotifierProvider =
+    AutoDisposeAsyncNotifierProvider<UserNotifier, AppUser?>.internal(
+      UserNotifier.new,
+      name: r'userNotifierProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$userNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$UserNotifier = AutoDisposeAsyncNotifier<AppUser?>;
 String _$userFriendsNotifierHash() =>
-    r'091aa92d76feac477ca8ba4589c3c1caaa5ce5ae';
+    r'e2b0faaeb10308f2fd698104dd245630e705e2b3';
 
 /// See also [UserFriendsNotifier].
 @ProviderFor(UserFriendsNotifier)

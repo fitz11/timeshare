@@ -24,7 +24,7 @@ final selectedCalendarsProvider = AutoDisposeProvider<List<Calendar>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SelectedCalendarsRef = AutoDisposeProviderRef<List<Calendar>>;
-String _$visibleEventsMapHash() => r'845eac5fb04ece798e41a18d8b51f7c41e70d74f';
+String _$visibleEventsMapHash() => r'fc0ae1ef6e7534779f249547aee25574b78dfd18';
 
 /// See also [visibleEventsMap].
 @ProviderFor(visibleEventsMap)
@@ -44,7 +44,7 @@ final visibleEventsMapProvider =
 // ignore: unused_element
 typedef VisibleEventsMapRef =
     AutoDisposeProviderRef<Map<DateTime, List<Event>>>;
-String _$visibleEventsListHash() => r'ea63285e25c874e8824169771920fdfabfef10ef';
+String _$visibleEventsListHash() => r'5c02341187d2dcb0d7da0eed83e7e4eea4b7db1c';
 
 /// See also [visibleEventsList].
 @ProviderFor(visibleEventsList)
