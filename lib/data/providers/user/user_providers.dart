@@ -6,10 +6,7 @@ import 'package:timeshare/data/user/app_user.dart';
 part 'user_providers.g.dart';
 
 @Riverpod(keepAlive: true)
-UserRepository userRepository(Ref ref) => UserRepository(
-  firestore: ref.watch(firestoreProvider),
-  auth: ref.watch(fbAuthProvider),
-);
+UserRepository userRepository(Ref ref) => UserRepository();
 
 @riverpod
 Future<AppUser?> currentUser(Ref ref) =>
