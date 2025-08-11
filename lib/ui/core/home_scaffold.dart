@@ -9,7 +9,7 @@ import 'package:timeshare/ui/calendar/wgts/cal_drawer.dart';
 import 'package:timeshare/ui/core/widgets/home_appbar.dart';
 import 'package:timeshare/ui/core/widgets/home_navbar.dart';
 import 'package:timeshare/ui/calendar/calendar_page.dart';
-import 'package:timeshare/ui/pages/friends_page.dart';
+import 'package:timeshare/ui/friends/friends_page.dart';
 import 'package:timeshare/ui/pages/profile_page.dart';
 
 class HomeScaffold extends ConsumerWidget {
@@ -31,11 +31,11 @@ class HomeScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final initcals = ref.watch(calendarNotifierProvider);
+    final calendars = ref.watch(calendarNotifierProvider);
     final HomePages index = ref.watch(navIndexNotifierProvider);
     final friendsAsync = ref.watch(userFriendsNotifierProvider);
 
-    return initcals.when(
+    return calendars.when(
       data:
           (data) => Scaffold(
             appBar: HomeAppBar(),
