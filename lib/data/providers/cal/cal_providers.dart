@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/data/calendar/calendar.dart';
-import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/models/calendar/calendar.dart';
+import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
 
 part 'cal_providers.g.dart';

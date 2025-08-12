@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/ui/calendar/wgts/event_list_item.dart';
 
 class EventList extends StatelessWidget {

@@ -4,7 +4,7 @@ import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/providers/cal/cal_providers.dart';
 import 'package:timeshare/data/providers/nav/nav_providers.dart';
 import 'package:timeshare/data/providers/user/user_providers.dart';
-import 'package:timeshare/data/user/app_user.dart';
+import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/ui/calendar/wgts/cal_drawer.dart';
 import 'package:timeshare/ui/core/widgets/home_appbar.dart';
 import 'package:timeshare/ui/core/widgets/home_navbar.dart';

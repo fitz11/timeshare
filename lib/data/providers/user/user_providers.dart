@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timeshare/data/repo/user_repo.dart';
-import 'package:timeshare/data/user/app_user.dart';
+import 'package:timeshare/data/models/user/app_user.dart';
 
 part 'user_providers.g.dart';
 

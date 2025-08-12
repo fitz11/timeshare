@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/converters/eventmap_converter.dart';
 import 'package:timeshare/data/converters/set_converter.dart';
 

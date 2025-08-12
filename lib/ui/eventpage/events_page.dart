@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/data/calendar/calendar.dart';
-import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/models/calendar/calendar.dart';
+import 'package:timeshare/data/models/event/event.dart';
 
 //note: dartls does not recognize that the DateFormat lib
 //is in this import, so it thinks it has to go. I need it

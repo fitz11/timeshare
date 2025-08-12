@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/models/event/event.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';

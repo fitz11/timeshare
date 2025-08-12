@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/models/event/event.dart';
 
 class EventMapLoader
     implements JsonConverter<Map<DateTime, List<Event>>, Map<String, dynamic>> {

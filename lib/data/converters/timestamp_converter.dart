@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/models/event/event.dart';
 
 DateTime fromTimestamp(dynamic value) {
   if (value is DateTime) return value;

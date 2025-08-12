@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timeshare/data/calendar/calendar.dart';
+import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/ui/eventpage/events_page.dart';
 
 void openEventBuilder(BuildContext context, List<Calendar> calendars) async {

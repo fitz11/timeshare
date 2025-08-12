@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/data/calendar/calendar.dart';
-import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/data/models/calendar/calendar.dart';
+import 'package:timeshare/data/models/event/event.dart';
 
 class CalendarRepository {
   final FirebaseFirestore firestore;
