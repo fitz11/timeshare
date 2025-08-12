@@ -5,7 +5,7 @@ import 'package:timeshare/data/providers/nav/nav_providers.dart';
 import 'package:timeshare/ui/calendar/wgts/calendar_filter_sheet.dart';
 import 'package:timeshare/ui/calendar/wgts/copymode_indicator.dart';
 import 'package:timeshare/ui/core/buttons/open_drawer_button.dart';
-import 'package:timeshare/ui/widgets/user_search_dialog.dart';
+import 'package:timeshare/ui/dialogs/user_search_dialog.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key});
@@ -32,7 +32,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
       case HomePages.calendar:
         return OpenDrawerButton();
       default:
-        return null;
+        return SizedBox();
     }
   }
 

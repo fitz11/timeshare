@@ -210,9 +210,13 @@ Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
 List<Event> visibleEventsList(Ref ref) {
   final eventMap = ref.watch(visibleEventsMapProvider);
   final selectedDay = ref.watch(selectedDayNotifierProvider);
+  final afterToday = ref.watch(afterTodayNotifierProvider);
   if (selectedDay == null) {
     List<Event> eventsList = eventMap.values.expand((list) => list).toList();
     eventsList.sort((a, b) => a.time.compareTo(b.time));
+    if (afterToday) {
+      eventsList.removeWhere((event) => event.time.isBefore(DateTime.now()));
+    }
     return eventsList;
   } else {
     List<Event> eventsList = eventMap[selectedDay] ?? [];
@@ -229,6 +233,18 @@ class SelectedDayNotifier extends _$SelectedDayNotifier {
 
   void selectDay(DateTime selected) => state = normalizeDate(selected);
   void clear() => state = null;
+}
+
+@riverpod
+class AfterTodayNotifier extends _$AfterTodayNotifier {
+  @override
+  bool build() {
+    return true;
+  }
+
+  void on() => state = true;
+  void off() => state = false;
+  void toggle() => state = !state;
 }
 
 @riverpod

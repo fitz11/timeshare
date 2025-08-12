@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/ui/widgets/create_calendar_dialog.dart';
+import 'package:timeshare/ui/dialogs/create_calendar_dialog.dart';
 
 class NewCalButton extends ConsumerWidget {
   const NewCalButton({super.key});

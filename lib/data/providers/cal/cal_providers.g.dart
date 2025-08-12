@@ -64,7 +64,7 @@ final visibleEventsMapProvider =
 // ignore: unused_element
 typedef VisibleEventsMapRef =
     AutoDisposeProviderRef<Map<DateTime, List<Event>>>;
-String _$visibleEventsListHash() => r'5c02341187d2dcb0d7da0eed83e7e4eea4b7db1c';
+String _$visibleEventsListHash() => r'54298fa97c4eac13d988a55319bca874856f40a7';
 
 /// See also [visibleEventsList].
 @ProviderFor(visibleEventsList)
@@ -118,7 +118,7 @@ final selectedCalIdsNotifierProvider =
 
 typedef _$SelectedCalIdsNotifier = AutoDisposeNotifier<Set<String>>;
 String _$selectedDayNotifierHash() =>
-    r'3b94fb4b6c619e218214e62df03f7ae467e5ab81';
+    r'a4fb122554393c2a3543331b789e3a18f46a5fa6';
 
 /// See also [SelectedDayNotifier].
 @ProviderFor(SelectedDayNotifier)
@@ -135,6 +135,24 @@ final selectedDayNotifierProvider =
     );
 
 typedef _$SelectedDayNotifier = AutoDisposeNotifier<DateTime?>;
+String _$afterTodayNotifierHash() =>
+    r'fc41b18a6526249165ee73dd8ddea3fa4ca3b295';
+
+/// See also [AfterTodayNotifier].
+@ProviderFor(AfterTodayNotifier)
+final afterTodayNotifierProvider =
+    AutoDisposeNotifierProvider<AfterTodayNotifier, bool>.internal(
+      AfterTodayNotifier.new,
+      name: r'afterTodayNotifierProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$afterTodayNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$AfterTodayNotifier = AutoDisposeNotifier<bool>;
 String _$copyModeNotifierHash() => r'6f2e7ef33ceb5bbbbe48364ace57d87370c88b6c';
 
 /// See also [CopyModeNotifier].

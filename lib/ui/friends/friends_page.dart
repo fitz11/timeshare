@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/user/app_user.dart';
-import 'package:timeshare/ui/widgets/share_calendar_dialog.dart';
+import 'package:timeshare/ui/dialogs/share_calendar_dialog.dart';
 
 class FriendsPage extends ConsumerWidget {
   const FriendsPage({super.key, required this.friendsAsync});

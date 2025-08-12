@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeshare/ui/calendar/wgts/aftertoday_toggle.dart';
 import 'package:timeshare/ui/core/buttons/delete_event_button.dart';
 import 'package:timeshare/ui/core/buttons/new_cal_button.dart';
 import 'package:timeshare/ui/core/buttons/new_event_button.dart';
@@ -20,6 +21,7 @@ class CalDrawer extends ConsumerWidget {
           NewCalButton(),
           NewEventButton(),
           DeleteButton(),
+          AfterTodayToggle(),
         ],
       ),
     );
