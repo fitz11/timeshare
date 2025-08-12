@@ -13,7 +13,10 @@ class CalDrawer extends ConsumerWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(child: Text('Edit Calendar')),
+          SizedBox(
+            height: 60,
+            child: const DrawerHeader(child: Text('Edit Calendar')),
+          ),
           NewCalButton(),
           NewEventButton(),
           DeleteButton(),

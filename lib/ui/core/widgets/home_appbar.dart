@@ -39,8 +39,9 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final page = ref.watch(navIndexNotifierProvider);
+    final title = page.name[0].toUpperCase() + page.name.substring(1);
     return AppBar(
-      title: Text(page.name),
+      title: Text(title),
       elevation: 8,
       leading: _buildLeadingForIndex(context, page),
       actions: _buildActionsForIndex(context, ref, page),
