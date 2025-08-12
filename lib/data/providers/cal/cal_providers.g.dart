@@ -117,6 +117,24 @@ final selectedCalIdsNotifierProvider =
     );
 
 typedef _$SelectedCalIdsNotifier = AutoDisposeNotifier<Set<String>>;
+String _$selectedDayNotifierHash() =>
+    r'3b94fb4b6c619e218214e62df03f7ae467e5ab81';
+
+/// See also [SelectedDayNotifier].
+@ProviderFor(SelectedDayNotifier)
+final selectedDayNotifierProvider =
+    AutoDisposeNotifierProvider<SelectedDayNotifier, DateTime?>.internal(
+      SelectedDayNotifier.new,
+      name: r'selectedDayNotifierProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$selectedDayNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$SelectedDayNotifier = AutoDisposeNotifier<DateTime?>;
 String _$copyModeNotifierHash() => r'6f2e7ef33ceb5bbbbe48364ace57d87370c88b6c';
 
 /// See also [CopyModeNotifier].

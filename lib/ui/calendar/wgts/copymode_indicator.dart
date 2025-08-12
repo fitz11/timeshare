@@ -12,7 +12,7 @@ class CopyModeIndicator extends ConsumerWidget {
     Event? copiedEvent = ref.watch(copyEventNotifierProvider);
     String str = '';
     if (copiedEvent != null) str = copiedEvent.name.trim();
-    if (str.length > 8) str = str.substring(0, 7);
+    if (str.length > 10) str = str.substring(0, 9) + ("...");
     if (!copyMode) return SizedBox.shrink();
     return FilledButton(
       onPressed: () {

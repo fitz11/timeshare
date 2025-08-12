@@ -32,10 +32,12 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
     setState(() {
       _focusedDay = focusedDay;
       _selectedDay = selectedDay;
+      ref.read(selectedDayNotifierProvider.notifier).selectDay(selectedDay);
     });
+
     bool copyMode = ref.read(copyModeNotifierProvider);
-    Event? copied = ref.read(copyEventNotifierProvider);
-    if (copyMode && copied != null) _copyEvent();
+    Event? copiedEvent = ref.read(copyEventNotifierProvider);
+    if (copyMode && copiedEvent != null) _copyEvent();
   }
 
   void _copyEvent() {
@@ -49,21 +51,25 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedDay = ref.watch(selectedDayNotifierProvider);
     final eventsMap = ref.watch(visibleEventsMapProvider);
     return TableCalendar(
       focusedDay: _focusedDay,
       firstDay: start,
       lastDay: end,
-      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+      selectedDayPredicate: (day) => isSameDay(selectedDay, day),
       calendarFormat: CalendarFormat.month,
+      headerStyle: HeaderStyle(titleCentered: true, formatButtonVisible: false),
       sixWeekMonthsEnforced: true,
-      rangeSelectionMode: RangeSelectionMode.disabled,
-      eventLoader: (day) {
-        return eventsMap[normalizeDate(day)] ?? [];
-      },
       startingDayOfWeek: StartingDayOfWeek.sunday,
       calendarStyle: const CalendarStyle(outsideDaysVisible: true),
       onDaySelected: _onDaySelected,
+
+      eventLoader: (day) => eventsMap[normalizeDate(day)] ?? [],
+
+      onHeaderTapped:
+          (day) => ref.read(selectedDayNotifierProvider.notifier).clear(),
+
       onFormatChanged: (format) {
         if (_calendarFormat != format) {
           setState(() {

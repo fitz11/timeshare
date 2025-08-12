@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
-import 'package:timeshare/ui/calendar/wgts/event_list_tile.dart';
+import 'package:timeshare/data/event/event.dart';
+import 'package:timeshare/ui/calendar/wgts/event_list_item.dart';
 
-class EventList extends ConsumerWidget {
-  const EventList({super.key});
+class EventList extends StatelessWidget {
+  const EventList({
+    super.key,
+    required this.eventsList,
+    required this.selectedDay,
+  });
+  final List<Event> eventsList;
+  final DateTime? selectedDay;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final eventsList = ref.watch(visibleEventsListProvider);
+  Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
         itemCount: eventsList.length,

@@ -6,7 +6,7 @@ part of 'user_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userRepositoryHash() => r'9a7d7d682ecd2b93c1751d8bd5c65cbf5351f220';
+String _$userRepositoryHash() => r'6f33c0662d4bd5e514fd4f4f99ff0bcb31cd094d';
 
 /// See also [userRepository].
 @ProviderFor(userRepository)
@@ -199,7 +199,7 @@ final userNotifierProvider =
 
 typedef _$UserNotifier = AutoDisposeAsyncNotifier<AppUser?>;
 String _$userFriendsNotifierHash() =>
-    r'e2b0faaeb10308f2fd698104dd245630e705e2b3';
+    r'35923cbed2edb47a9dd612e05c440495d53d77a2';
 
 /// See also [UserFriendsNotifier].
 @ProviderFor(UserFriendsNotifier)

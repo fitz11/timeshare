@@ -23,7 +23,7 @@ class EventListItem extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text("Copied '${event.name}' - tap date to paste."),
-            Text('Select the Edit mode indicator to leave copy mode.'),
+            const Text('Select the Edit mode indicator to leave copy mode.'),
           ],
         ),
       ),
@@ -33,13 +33,13 @@ class EventListItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: Text(DateFormat.yMMMd().format(event.time)),
-      title: Text(event.name),
-      trailing: Container(
+      leading: Container(
         width: 8,
         height: 8,
         decoration: BoxDecoration(color: event.color, shape: event.shape),
       ),
+      title: Text(event.name),
+      trailing: Text(DateFormat.yMMMd().format(event.time)),
       onTap: () => _onTap(context, ref),
     );
   }

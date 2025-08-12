@@ -209,9 +209,26 @@ Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
 @riverpod
 List<Event> visibleEventsList(Ref ref) {
   final eventMap = ref.watch(visibleEventsMapProvider);
-  List<Event> eventsList = eventMap.values.expand((list) => list).toList();
-  eventsList.sort((a, b) => a.time.compareTo(b.time));
-  return eventsList;
+  final selectedDay = ref.watch(selectedDayNotifierProvider);
+  if (selectedDay == null) {
+    List<Event> eventsList = eventMap.values.expand((list) => list).toList();
+    eventsList.sort((a, b) => a.time.compareTo(b.time));
+    return eventsList;
+  } else {
+    List<Event> eventsList = eventMap[selectedDay] ?? [];
+    return eventsList;
+  }
+}
+
+@riverpod
+class SelectedDayNotifier extends _$SelectedDayNotifier {
+  @override
+  DateTime? build() {
+    return null;
+  }
+
+  void selectDay(DateTime selected) => state = normalizeDate(selected);
+  void clear() => state = null;
 }
 
 @riverpod
