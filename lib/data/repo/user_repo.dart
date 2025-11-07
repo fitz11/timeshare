@@ -39,7 +39,7 @@ class UserRepository {
     }
     // sign in
     else {
-      print('User ${user.email} already exists!');
+      print('Username ${user.email} already exists!');
     }
   }
 

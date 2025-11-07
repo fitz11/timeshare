@@ -1,37 +1,33 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/auth/auth_providers.dart';
+import 'package:timeshare/ui/core/home_scaffold.dart';
+import 'package:timeshare/ui/pages/auth.dart';
 
-class AuthGate extends ConsumerWidget {
+class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider);
-
-    return authState.when(
-      data: (user) {
-        if (user == null) {
-          // Not signed in
-          Future.microtask(
-            () => Navigator.pushReplacementNamed(context, '/login'),
-          );
-        } else {
-          // Signed in
-          Future.microtask(
-            () => Navigator.pushReplacementNamed(context, '/home'),
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Loading
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        // Return something while routing happens
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        // User logged in
+        if (snapshot.hasData) {
+          return const HomeScaffold();
+        }
+
+        // User is NOT logged in
+        return const AuthScreen();
       },
-      loading:
-          () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
     );
   }
 }

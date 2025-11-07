@@ -20,8 +20,6 @@ class Timeshare extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //here we define our available sign-in options (currently only email)
-
     return MaterialApp(
       title: 'TimeShare',
       debugShowCheckedModeBanner: false,
