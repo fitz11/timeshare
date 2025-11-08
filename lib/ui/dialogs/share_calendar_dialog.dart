@@ -10,12 +10,11 @@ void showShareCalendarDialog(
   AppUser friend,
 ) {
   final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  final calendars =
-      ref
-          .read(calendarNotifierProvider)
-          .requireValue
-          .where((cal) => cal.owner == currentUserId)
-          .toList();
+  final calendars = ref
+      .read(calendarProvider)
+      .requireValue
+      .where((cal) => cal.owner == currentUserId)
+      .toList();
 
   final Map<String, bool> sharedMap = {
     for (var cal in calendars) cal.id: cal.sharedWith.contains(friend.uid),
@@ -32,31 +31,30 @@ void showShareCalendarDialog(
               width: 300,
               height: 400,
               child: ListView(
-                children:
-                    calendars.map((calendar) {
-                      final isShared = sharedMap[calendar.id] ?? false;
-                      return CheckboxListTile(
-                        title: Text(calendar.name),
-                        value: isShared,
-                        onChanged: (value) async {
-                          if (value == null) return;
+                children: calendars.map((calendar) {
+                  final isShared = sharedMap[calendar.id] ?? false;
+                  return CheckboxListTile(
+                    title: Text(calendar.name),
+                    value: isShared,
+                    onChanged: (value) async {
+                      if (value == null) return;
 
-                          setState(() {
-                            sharedMap[calendar.id] = value;
-                          });
+                      setState(() {
+                        sharedMap[calendar.id] = value;
+                      });
 
-                          await ref
-                              .read(calendarNotifierProvider.notifier)
-                              .shareCalendar(calendar.id, friend.uid, value);
-                        },
-                      );
-                    }).toList(),
+                      await ref
+                          .read(calendarProvider.notifier)
+                          .shareCalendar(calendar.id, friend.uid, value);
+                    },
+                  );
+                }).toList(),
               ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Close"),
+                child: const Text('Close'),
               ),
             ],
           );

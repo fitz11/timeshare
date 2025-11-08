@@ -66,7 +66,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
         shape: shape,
       );
 
-      final calendars = ref.read(calendarNotifierProvider).requireValue;
+      final calendars = ref.read(calendarProvider).requireValue;
       for (final cal in calendars) {
         for (final event in cal.getEvents()) {
           if (event == newEvent) {
@@ -77,7 +77,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
       }
 
       await ref
-          .read(calendarNotifierProvider.notifier)
+          .read(calendarProvider.notifier)
           .addEventToCalendar(calendarId: widget.calendarId, event: newEvent);
       print('Event added!\n}');
     } else {
@@ -153,7 +153,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
   @override
   Widget build(BuildContext context) {
     final calendar = ref
-        .watch(calendarNotifierProvider)
+        .watch(calendarProvider)
         .requireValue
         .firstWhere((cal) => cal.id == widget.calendarId);
     return Scaffold(
@@ -174,7 +174,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
       body: Column(
         children: [
           //header
-          Center(child: Text("Add event to ${calendar.name} calendar")),
+          Center(child: Text('Add event to ${calendar.name} calendar')),
 
           //naming and submission field
           Padding(
@@ -245,29 +245,28 @@ class _EventsPageState extends ConsumerState<EventsPage> {
                 SizedBox(width: 20),
                 DropdownButton<Color>(
                   value: _selectedColor,
-                  items:
-                      [Colors.black, Colors.red, Colors.blue, Colors.green].map(
-                        (Color color) {
-                          return DropdownMenuItem<Color>(
-                            value: color,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 24,
-                                  height: 24,
-                                  margin: const EdgeInsets.only(right: 8),
-                                  decoration: BoxDecoration(
-                                    color: color,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.black26),
-                                  ),
+                  items: [Colors.black, Colors.red, Colors.blue, Colors.green]
+                      .map((Color color) {
+                        return DropdownMenuItem<Color>(
+                          value: color,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(right: 8),
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.black26),
                                 ),
-                                Text(colorToName(color)),
-                              ],
-                            ),
-                          );
-                        },
-                      ).toList(),
+                              ),
+                              Text(colorToName(color)),
+                            ],
+                          ),
+                        );
+                      })
+                      .toList(),
                   onChanged: (Color? newColor) {
                     setState(() {
                       _selectedColor = newColor!;

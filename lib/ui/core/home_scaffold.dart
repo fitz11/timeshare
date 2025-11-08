@@ -4,8 +4,8 @@ import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/providers/cal/cal_providers.dart';
 import 'package:timeshare/data/providers/nav/nav_providers.dart';
 import 'package:timeshare/data/providers/user/user_providers.dart';
-import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/ui/calendar/wgts/cal_drawer.dart';
+import 'package:timeshare/ui/core/widgets/fab.dart';
 import 'package:timeshare/ui/core/widgets/home_appbar.dart';
 import 'package:timeshare/ui/core/widgets/home_navbar.dart';
 import 'package:timeshare/ui/calendar/calendar_page.dart';
@@ -15,34 +15,31 @@ import 'package:timeshare/ui/pages/profile_page.dart';
 class HomeScaffold extends ConsumerWidget {
   const HomeScaffold({super.key});
 
-  Widget _buildBody(
-    HomePages currentIndex,
-    AsyncValue<List<AppUser>> friendsAsync,
-  ) {
+  Widget _buildBody(HomePages currentIndex) {
     switch (currentIndex) {
       case HomePages.profile:
         return ProfilePage();
       case HomePages.calendar:
         return CalendarPage();
       case HomePages.friends:
-        return FriendsPage(friendsAsync: friendsAsync);
+        return FriendsPage();
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calendars = ref.watch(calendarNotifierProvider);
-    final HomePages index = ref.watch(navIndexNotifierProvider);
-    final friendsAsync = ref.watch(userFriendsNotifierProvider);
+    final calendars = ref.watch(calendarProvider);
+    final HomePages index = ref.watch(navIndexProvider);
+    ref.watch(userFriendsProvider);
 
     return calendars.when(
-      data:
-          (data) => Scaffold(
-            appBar: HomeAppBar(),
-            drawer: CalDrawer(),
-            body: _buildBody(index, friendsAsync),
-            bottomNavigationBar: HomeBottomBar(),
-          ),
+      data: (data) => Scaffold(
+        appBar: HomeAppBar(),
+        drawer: CalDrawer(),
+        body: _buildBody(index),
+        floatingActionButton: Fab(),
+        bottomNavigationBar: HomeBottomBar(),
+      ),
       loading: () => Center(child: CircularProgressIndicator()),
       error: (e, st) => Center(child: const Text('error')),
     );

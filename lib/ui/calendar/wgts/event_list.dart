@@ -3,13 +3,8 @@ import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/ui/calendar/wgts/event_list_item.dart';
 
 class EventList extends StatelessWidget {
-  const EventList({
-    super.key,
-    required this.eventsList,
-    required this.selectedDay,
-  });
+  const EventList({super.key, required this.eventsList});
   final List<Event> eventsList;
-  final DateTime? selectedDay;
 
   @override
   Widget build(BuildContext context) {

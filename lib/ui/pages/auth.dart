@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/providers/user/user_providers.dart';
 
-///the '/login' route.
+/// The '/login' page.
 class AuthScreen extends ConsumerWidget {
   const AuthScreen({super.key});
 
@@ -27,7 +27,7 @@ class AuthScreen extends ConsumerWidget {
         return const Center(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text("Sign in to sync your events across devices."),
+            child: Text('Sign in to sync your events across devices.'),
           ),
         );
       },
@@ -35,7 +35,7 @@ class AuthScreen extends ConsumerWidget {
         return const Padding(
           padding: EdgeInsets.only(top: 16),
           child: Text(
-            "By signing in, you agree to our Terms of Service. Hint: There are none.",
+            'By signing in, you agree to our Terms of Service. Hint: There are none.',
           ),
         );
       },

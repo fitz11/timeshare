@@ -9,7 +9,6 @@ class CalendarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedDay = ref.watch(selectedDayNotifierProvider);
     final eventsMap = ref.watch(visibleEventsMapProvider);
     final eventsList = ref.watch(visibleEventsListProvider);
     return Column(
@@ -18,7 +17,7 @@ class CalendarPage extends ConsumerWidget {
 
         const Divider(),
 
-        EventList(eventsList: eventsList, selectedDay: selectedDay),
+        EventList(eventsList: eventsList),
       ],
     );
   }

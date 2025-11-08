@@ -10,5 +10,6 @@ class NavIndexNotifier extends _$NavIndexNotifier {
     return HomePages.calendar;
   }
 
-  void update(int newPage) => state = HomePages.values[newPage];
+  void updateWithInt(int newPage) => state = HomePages.values[newPage];
+  void update(HomePages newPage) => state = newPage;
 }

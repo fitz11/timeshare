@@ -7,12 +7,11 @@ class HomeBottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final page = ref.watch(navIndexNotifierProvider);
+    final page = ref.watch(navIndexProvider);
     return BottomNavigationBar(
       currentIndex: page.index,
-      onTap:
-          (newIndex) =>
-              ref.read(navIndexNotifierProvider.notifier).update(newIndex),
+      onTap: (newIndex) =>
+          ref.read(navIndexProvider.notifier).updateWithInt(newIndex),
       items: [profileItem(), calendarItem(), friendsItem()],
     );
   }

@@ -71,6 +71,7 @@ class UserRepository {
         .toList();
   }
 
+  /// Defaults to current user
   Future<List<AppUser>> getFriendsOfUser([String uid = '']) async {
     if (uid.isEmpty && currentUserId != null) uid = currentUserId!;
     if (uid.isEmpty) return [];

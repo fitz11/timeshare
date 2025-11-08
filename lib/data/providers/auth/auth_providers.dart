@@ -12,18 +12,9 @@ final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
 FirebaseAuth auth(Ref ref) => FirebaseAuth.instance;
 
 @riverpod
-Stream<User?> authState(Ref ref) {
-  final auth = ref.watch(authProvider);
-  return auth.authStateChanges();
-}
+Stream<User?> authState(Ref ref) => ref.watch(authProvider).authStateChanges();
 
 // final authStateProvider = StreamProvider<User?>((ref) {
 //   final auth = ref.watch(firebaseAuthProvider);
 //   return auth.authStateChanges();
 // });
-
-@riverpod
-class SignInController extends _$SignInController {
-  @override
-  FutureOr<void> build() {}
-}

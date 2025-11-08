@@ -1,22 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:timeshare/data/cache/calendar_cache.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 
 class CalendarRepository {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
-  final CalendarCache cache;
 
-  CalendarRepository({
-    FirebaseFirestore? firestore,
-    FirebaseAuth? auth,
-    CalendarCache? cache,
-  }) : firestore = firestore ?? FirebaseFirestore.instance,
-       auth = auth ?? FirebaseAuth.instance,
-       cache = cache ?? CalendarCache();
+  CalendarRepository({FirebaseFirestore? firestore, FirebaseAuth? auth})
+    : firestore = firestore ?? FirebaseFirestore.instance,
+      auth = auth ?? FirebaseAuth.instance;
 
   /// Provides a future of all available calendars for viewing.
   /// Defaults to using current user.
@@ -56,7 +50,7 @@ class CalendarRepository {
     final docRef = firestore.collection('calendars').doc(calendarId);
     final snapshot = await docRef.get();
 
-    if (!snapshot.exists) {
+    if (!snapshot.exists || snapshot.data() == null) {
       throw Exception("Calendar not found");
     }
 
@@ -94,9 +88,8 @@ class CalendarRepository {
         .doc(calendarId);
     final snapshot = await docRef.get();
 
-    if (!snapshot.exists) {
-      print("Calendar not found: $calendarId");
-      return;
+    if (!snapshot.exists || snapshot.data() == null) {
+      throw Exception('Failed to find calendar $calendarId');
     }
 
     final calendarData = snapshot.data()!;
@@ -161,6 +154,7 @@ class CalendarRepository {
   }
 
   /// Stop sharing a calendar with a given friend.
+  /// TODO: phase out. Feed bool to share calendar instead.
   Future<void> unshareCalendar(String calendarId, String targetUID) async {
     final doc = firestore.collection('calendars').doc(calendarId);
 

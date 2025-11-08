@@ -32,26 +32,24 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
     setState(() {
       _focusedDay = focusedDay;
       _selectedDay = selectedDay;
-      ref.read(selectedDayNotifierProvider.notifier).selectDay(selectedDay);
+      ref.read(selectedDayProvider.notifier).selectDay(selectedDay);
     });
 
-    bool copyMode = ref.read(copyModeNotifierProvider);
-    Event? copiedEvent = ref.read(copyEventNotifierProvider);
+    bool copyMode = ref.watch(copyModeProvider);
+    Event? copiedEvent = ref.watch(copyEventProvider);
     if (copyMode && copiedEvent != null) _copyEvent();
   }
 
   void _copyEvent() {
-    final copied = ref
-        .read(copyEventNotifierProvider)!
-        .copyWith(time: _selectedDay!);
+    final copied = ref.read(copyEventProvider)!.copyWith(time: _selectedDay!);
     ref
-        .read(calendarNotifierProvider.notifier)
+        .read(calendarProvider.notifier)
         .addEventToCalendar(calendarId: copied.calendarId, event: copied);
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedDay = ref.watch(selectedDayNotifierProvider);
+    final selectedDay = ref.watch(selectedDayProvider);
     final eventsMap = ref.watch(visibleEventsMapProvider);
     return TableCalendar(
       focusedDay: _focusedDay,
@@ -67,8 +65,7 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
       eventLoader: (day) => eventsMap[normalizeDate(day)] ?? [],
 
-      onHeaderTapped:
-          (day) => ref.read(selectedDayNotifierProvider.notifier).clear(),
+      onHeaderTapped: (day) => ref.refresh(copyEventProvider),
 
       onFormatChanged: (format) {
         if (_calendarFormat != format) {
@@ -89,18 +86,17 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children:
-                typedEvents.take(4).map((event) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 0.5),
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: event.color,
-                      shape: event.shape,
-                    ),
-                  );
-                }).toList(),
+            children: typedEvents.take(4).map((event) {
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: event.color,
+                  shape: event.shape,
+                ),
+              );
+            }).toList(),
           );
         },
       ),

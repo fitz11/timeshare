@@ -8,7 +8,7 @@ class NewEventButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allCalendars = ref.watch(calendarNotifierProvider);
+    final allCalendars = ref.watch(calendarProvider);
     return FilledButton.tonal(
       onPressed: () {
         openEventBuilder(context, allCalendars.requireValue);

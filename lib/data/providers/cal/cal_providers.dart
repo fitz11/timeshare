@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
@@ -8,16 +7,13 @@ import 'package:timeshare/data/repo/calendar_repo.dart';
 part 'cal_providers.g.dart';
 
 @riverpod
-CalendarRepository calendarRepository(Ref ref) => CalendarRepository();
-
-@Riverpod(keepAlive: true)
 class CalendarNotifier extends _$CalendarNotifier {
-  late final CalendarRepository crp;
+  late final CalendarRepository _crp;
 
   @override
-  FutureOr<List<Calendar>> build() async {
-    crp = ref.watch(calendarRepositoryProvider);
-    return await crp.getAllAvailableCalendars();
+  Future<List<Calendar>> build() async {
+    _crp = CalendarRepository();
+    return await _crp.getAllAvailableCalendars();
   }
 
   Future<void> addCalendar({
@@ -36,13 +32,13 @@ class CalendarNotifier extends _$CalendarNotifier {
 
     //update local state
     state = AsyncValue.data([
-      if (state.valueOrNull != null) ...state.value!,
+      if (state.value != null) ...state.value!,
       calendar,
     ]);
 
     //handle request errors
     try {
-      await crp.addCalendar(calendar);
+      await _crp.addCalendar(calendar);
       print('Success!');
     } catch (e) {
       state = previousState;
@@ -58,7 +54,7 @@ class CalendarNotifier extends _$CalendarNotifier {
     final previousState = state;
 
     state = AsyncValue.data([
-      if (state.valueOrNull != null)
+      if (state.value != null)
         for (final calendar in state.value!)
           if (calendar.id == calendarId)
             calendar.copyWith(
@@ -75,7 +71,7 @@ class CalendarNotifier extends _$CalendarNotifier {
     ]);
 
     try {
-      await crp.addEventToCalendar(calendarId: calendarId, event: event);
+      await _crp.addEventToCalendar(calendarId: calendarId, event: event);
       print('Success adding event');
     } catch (e) {
       state = previousState;
@@ -91,7 +87,7 @@ class CalendarNotifier extends _$CalendarNotifier {
     final previousState = state;
 
     state = AsyncValue.data([
-      if (state.valueOrNull != null)
+      if (state.value != null)
         for (final calendar in state.value!)
           if (calendar.id == calendarId)
             calendar.copyWith(
@@ -102,7 +98,7 @@ class CalendarNotifier extends _$CalendarNotifier {
     ]);
 
     try {
-      await crp.removeEventFromCalendar(calendarId: calendarId, event: event);
+      await _crp.removeEventFromCalendar(calendarId: calendarId, event: event);
       print('Success removing event');
     } catch (e) {
       state = previousState;
@@ -119,20 +115,19 @@ class CalendarNotifier extends _$CalendarNotifier {
     print('setting share state for $calendarId with $targetUid to $share');
 
     state = AsyncValue.data([
-      if (state.valueOrNull != null)
+      if (state.value != null)
         for (final cal in state.value!)
           if (cal.id == calendarId)
             cal.copyWith(
-              sharedWith:
-                  share
-                      ? {...cal.sharedWith, targetUid}.toSet()
-                      : cal.sharedWith.where((id) => id != targetUid).toSet(),
+              sharedWith: share
+                  ? {...cal.sharedWith, targetUid}.toSet()
+                  : cal.sharedWith.where((id) => id != targetUid).toSet(),
             )
           else
             cal,
     ]);
     try {
-      await crp.shareCalendar(calendarId, targetUid, share);
+      await _crp.shareCalendar(calendarId, targetUid, share);
       print('calendar share state updated success');
     } catch (e) {
       state = previousState;
@@ -145,10 +140,11 @@ class CalendarNotifier extends _$CalendarNotifier {
     Event event,
   ) {
     final day = normalizeDate(event.time);
-    final updatedEvents = Map<DateTime, List<Event>>.from(original);
+    final updatedEvents = Map<DateTime, List<Event>>.of(original);
 
-    final updatedList =
-        (updatedEvents[day] ?? []).where((e) => e != event).toList();
+    final updatedList = (updatedEvents[day] ?? [])
+        .where((e) => e != event)
+        .toList();
 
     if (updatedList.isEmpty) {
       updatedEvents.remove(day);
@@ -165,28 +161,26 @@ class SelectedCalIdsNotifier extends _$SelectedCalIdsNotifier {
   @override
   Set<String> build() {
     final allCalendarIds = ref
-        .watch(calendarNotifierProvider)
+        .watch(calendarProvider)
         .requireValue
         .fold<Set<String>>({}, (prev, cal) => {...prev, cal.id});
     return allCalendarIds;
   }
 
-  void add(String id) => state = {...state, id};
+  void add(String id) => state.add(id);
   void remove(String id) => state = state.where((e) => e != id).toSet();
   void clear() => state = {};
-}
 
-@riverpod
-List<Calendar> selectedCalendars(Ref ref) {
-  final selectedIds = ref.watch(selectedCalIdsNotifierProvider);
-  final allCalendars = ref.watch(calendarNotifierProvider).requireValue;
-  return allCalendars.where((cal) => selectedIds.contains(cal.id)).toList();
+  List<Calendar> selectedCalendars() {
+    final allCalendars = ref.watch(calendarProvider).requireValue;
+    return allCalendars.where((cal) => state.contains(cal.id)).toList();
+  }
 }
 
 @riverpod
 Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
-  final calendars = ref.watch(calendarNotifierProvider);
-  final selectedIds = ref.watch(selectedCalIdsNotifierProvider);
+  final calendars = ref.watch(calendarProvider);
+  final selectedIds = ref.watch(selectedCalIdsProvider);
   final visibleCalendars = calendars.requireValue.where(
     (cal) => selectedIds.contains(cal.id),
   );
@@ -209,8 +203,8 @@ Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
 @riverpod
 List<Event> visibleEventsList(Ref ref) {
   final eventMap = ref.watch(visibleEventsMapProvider);
-  final selectedDay = ref.watch(selectedDayNotifierProvider);
-  final afterToday = ref.watch(afterTodayNotifierProvider);
+  final selectedDay = ref.watch(selectedDayProvider);
+  final afterToday = ref.watch(afterTodayProvider);
   if (selectedDay == null) {
     List<Event> eventsList = eventMap.values.expand((list) => list).toList();
     eventsList.sort((a, b) => a.time.compareTo(b.time));
@@ -259,6 +253,19 @@ class CopyModeNotifier extends _$CopyModeNotifier {
   void off() => state = false;
 }
 
+// TODO: implement delete mode
+@riverpod
+class DeleteModeNotifier extends _$DeleteModeNotifier {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void change() => state = !state;
+  void on() => state = true;
+  void off() => state = false;
+}
+
 @riverpod
 class CopyEventNotifier extends _$CopyEventNotifier {
   @override
@@ -267,5 +274,4 @@ class CopyEventNotifier extends _$CopyEventNotifier {
   }
 
   void setCopyEvent(Event e) => state = e.copyWith();
-  void clear() => state = null;
 }

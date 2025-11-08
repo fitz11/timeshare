@@ -7,8 +7,8 @@ class CalendarFilterSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allCalendars = ref.watch(calendarNotifierProvider);
-    final selectedIds = ref.watch(selectedCalIdsNotifierProvider);
+    final allCalendars = ref.watch(calendarProvider);
+    final selectedIds = ref.watch(selectedCalIdsProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -16,7 +16,7 @@ class CalendarFilterSheet extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min, // makes it a modal "sheet"
         children: [
           const Text(
-            "Select calendars",
+            'Select calendars',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
@@ -26,9 +26,7 @@ class CalendarFilterSheet extends ConsumerWidget {
               title: Text(calendar.name),
               value: isSelected,
               onChanged: (checked) {
-                final notifier = ref.read(
-                  selectedCalIdsNotifierProvider.notifier,
-                );
+                final notifier = ref.read(selectedCalIdsProvider.notifier);
                 if (checked == true) {
                   notifier.add(calendar.id);
                 } else {

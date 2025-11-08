@@ -1,11 +1,10 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timeshare/data/repo/user_repo.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
 
 part 'user_providers.g.dart';
 
-@Riverpod(keepAlive: true)
+@riverpod
 UserRepository userRepository(Ref ref) => UserRepository();
 
 @riverpod
@@ -13,17 +12,9 @@ Future<AppUser?> currentUser(Ref ref) =>
     ref.watch(userRepositoryProvider).currentUser;
 
 @riverpod
-class UserNotifier extends _$UserNotifier {
-  @override
-  FutureOr<AppUser?> build() async {
-    return await ref.read(userRepositoryProvider).getUserById();
-  }
-}
-
-@riverpod
 class UserFriendsNotifier extends _$UserFriendsNotifier {
   @override
-  FutureOr<List<AppUser>> build() async {
+  Future<List<AppUser>> build() async {
     final repo = ref.read(userRepositoryProvider);
     return await repo.getFriendsOfUser();
   }
@@ -34,7 +25,7 @@ class UserFriendsNotifier extends _$UserFriendsNotifier {
       final newFriend = await repo.getUserById(targetUid);
       if (newFriend == null) throw Exception;
       state = AsyncValue.data([
-        if (state.valueOrNull != null) ...state.requireValue,
+        if (state.value != null) ...state.requireValue,
         newFriend,
       ]);
     } catch (e) {

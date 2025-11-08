@@ -11,8 +11,8 @@ class EventListItem extends ConsumerWidget {
   const EventListItem({super.key, required this.event});
 
   void _onTap(BuildContext context, WidgetRef ref) {
-    ref.read(copyModeNotifierProvider.notifier).on();
-    ref.read(copyEventNotifierProvider.notifier).setCopyEvent(event);
+    ref.read(copyModeProvider.notifier).on();
+    ref.read(copyEventProvider.notifier).setCopyEvent(event);
     _showSnackBar(context);
   }
 
