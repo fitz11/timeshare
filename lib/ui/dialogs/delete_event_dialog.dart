@@ -39,7 +39,7 @@ void showDeleteDialog(
                 ),
                 onTap: () {
                   ref
-                      .read(calendarProvider.notifier)
+                      .read(calendarMutationsProvider.notifier)
                       .removeEvent(
                         calendarId: events[index].calendarId,
                         event: events[index],

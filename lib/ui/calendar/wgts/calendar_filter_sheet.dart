@@ -7,8 +7,8 @@ class CalendarFilterSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allCalendars = ref.watch(calendarProvider);
-    final selectedIds = ref.watch(selectedCalIdsProvider);
+    final allCalendars = ref.watch(calendarsProvider);
+    final selectedIds = ref.watch(selectedCalendarIdsProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -26,12 +26,7 @@ class CalendarFilterSheet extends ConsumerWidget {
               title: Text(calendar.name),
               value: isSelected,
               onChanged: (checked) {
-                final notifier = ref.read(selectedCalIdsProvider.notifier);
-                if (checked == true) {
-                  notifier.add(calendar.id);
-                } else {
-                  notifier.remove(calendar.id);
-                }
+                ref.read(selectedCalendarIdsProvider.notifier).toggle(calendar.id);
               },
             );
           }),

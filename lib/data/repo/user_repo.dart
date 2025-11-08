@@ -111,4 +111,15 @@ class UserRepository {
       'friends': FieldValue.arrayRemove([targetUid]),
     });
   }
+
+  /// Update the display name for the current user
+  Future<void> updateDisplayName(String newDisplayName) async {
+    final currentUid = currentUserId;
+    if (currentUid == null) return;
+
+    final userRef = _users.doc(currentUid);
+    await userRef.update({
+      'displayName': newDisplayName,
+    });
+  }
 }

@@ -8,74 +8,187 @@ part of 'cal_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Repository provider
 
-@ProviderFor(CalendarNotifier)
-const calendarProvider = CalendarNotifierProvider._();
+@ProviderFor(calendarRepository)
+const calendarRepositoryProvider = CalendarRepositoryProvider._();
 
-final class CalendarNotifierProvider
-    extends $AsyncNotifierProvider<CalendarNotifier, List<Calendar>> {
-  const CalendarNotifierProvider._()
+/// Repository provider
+
+final class CalendarRepositoryProvider
+    extends
+        $FunctionalProvider<
+          CalendarRepository,
+          CalendarRepository,
+          CalendarRepository
+        >
+    with $Provider<CalendarRepository> {
+  /// Repository provider
+  const CalendarRepositoryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'calendarProvider',
+        name: r'calendarRepositoryProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$calendarNotifierHash();
+  String debugGetCreateSourceHash() => _$calendarRepositoryHash();
 
   @$internal
   @override
-  CalendarNotifier create() => CalendarNotifier();
-}
+  $ProviderElement<CalendarRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
-String _$calendarNotifierHash() => r'9aa8a0375ee16fdbd8a75dca05c86a1419f47531';
-
-abstract class _$CalendarNotifier extends $AsyncNotifier<List<Calendar>> {
-  FutureOr<List<Calendar>> build();
-  @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
-    final ref = this.ref as $Ref<AsyncValue<List<Calendar>>, List<Calendar>>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<List<Calendar>>, List<Calendar>>,
-              AsyncValue<List<Calendar>>,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, created);
+  CalendarRepository create(Ref ref) {
+    return calendarRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CalendarRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CalendarRepository>(value),
+    );
   }
 }
 
-@ProviderFor(SelectedCalIdsNotifier)
-const selectedCalIdsProvider = SelectedCalIdsNotifierProvider._();
+String _$calendarRepositoryHash() =>
+    r'822cb81867829df105b4a163f38de794b87f8122';
 
-final class SelectedCalIdsNotifierProvider
-    extends $NotifierProvider<SelectedCalIdsNotifier, Set<String>> {
-  const SelectedCalIdsNotifierProvider._()
+/// Main calendar stream - automatically updates when Firestore changes
+/// Keep alive to prevent re-initialization when navigating away
+
+@ProviderFor(calendars)
+const calendarsProvider = CalendarsProvider._();
+
+/// Main calendar stream - automatically updates when Firestore changes
+/// Keep alive to prevent re-initialization when navigating away
+
+final class CalendarsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Calendar>>,
+          List<Calendar>,
+          Stream<List<Calendar>>
+        >
+    with $FutureModifier<List<Calendar>>, $StreamProvider<List<Calendar>> {
+  /// Main calendar stream - automatically updates when Firestore changes
+  /// Keep alive to prevent re-initialization when navigating away
+  const CalendarsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'selectedCalIdsProvider',
+        name: r'calendarsProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$selectedCalIdsNotifierHash();
+  String debugGetCreateSourceHash() => _$calendarsHash();
 
   @$internal
   @override
-  SelectedCalIdsNotifier create() => SelectedCalIdsNotifier();
+  $StreamProviderElement<List<Calendar>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Calendar>> create(Ref ref) {
+    return calendars(ref);
+  }
+}
+
+String _$calendarsHash() => r'4e532657317293ffabbd52d135a67b1443d8b0fb';
+
+/// Calendar mutations - simplified without optimistic updates
+/// The stream will automatically update the UI when Firestore changes
+
+@ProviderFor(CalendarMutations)
+const calendarMutationsProvider = CalendarMutationsProvider._();
+
+/// Calendar mutations - simplified without optimistic updates
+/// The stream will automatically update the UI when Firestore changes
+final class CalendarMutationsProvider
+    extends $AsyncNotifierProvider<CalendarMutations, void> {
+  /// Calendar mutations - simplified without optimistic updates
+  /// The stream will automatically update the UI when Firestore changes
+  const CalendarMutationsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'calendarMutationsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$calendarMutationsHash();
+
+  @$internal
+  @override
+  CalendarMutations create() => CalendarMutations();
+}
+
+String _$calendarMutationsHash() => r'd60b2264432551c075451c96a5e472b8d3e630ab';
+
+/// Calendar mutations - simplified without optimistic updates
+/// The stream will automatically update the UI when Firestore changes
+
+abstract class _$CalendarMutations extends $AsyncNotifier<void> {
+  FutureOr<void> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    build();
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, null);
+  }
+}
+
+/// Selected calendar IDs - which calendars are visible
+
+@ProviderFor(SelectedCalendarIds)
+const selectedCalendarIdsProvider = SelectedCalendarIdsProvider._();
+
+/// Selected calendar IDs - which calendars are visible
+final class SelectedCalendarIdsProvider
+    extends $NotifierProvider<SelectedCalendarIds, Set<String>> {
+  /// Selected calendar IDs - which calendars are visible
+  const SelectedCalendarIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedCalendarIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedCalendarIdsHash();
+
+  @$internal
+  @override
+  SelectedCalendarIds create() => SelectedCalendarIds();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(Set<String> value) {
@@ -86,10 +199,12 @@ final class SelectedCalIdsNotifierProvider
   }
 }
 
-String _$selectedCalIdsNotifierHash() =>
-    r'd787829fad64a42c0f16c7686c186c097b5df348';
+String _$selectedCalendarIdsHash() =>
+    r'02d979d96f10ba5eef430dc9d3f78fe0b02ccb57';
 
-abstract class _$SelectedCalIdsNotifier extends $Notifier<Set<String>> {
+/// Selected calendar IDs - which calendars are visible
+
+abstract class _$SelectedCalendarIds extends $Notifier<Set<String>> {
   Set<String> build();
   @$mustCallSuper
   @override
@@ -108,100 +223,16 @@ abstract class _$SelectedCalIdsNotifier extends $Notifier<Set<String>> {
   }
 }
 
-@ProviderFor(visibleEventsMap)
-const visibleEventsMapProvider = VisibleEventsMapProvider._();
+/// Selected day in the calendar
 
-final class VisibleEventsMapProvider
-    extends
-        $FunctionalProvider<
-          Map<DateTime, List<Event>>,
-          Map<DateTime, List<Event>>,
-          Map<DateTime, List<Event>>
-        >
-    with $Provider<Map<DateTime, List<Event>>> {
-  const VisibleEventsMapProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'visibleEventsMapProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+@ProviderFor(SelectedDay)
+const selectedDayProvider = SelectedDayProvider._();
 
-  @override
-  String debugGetCreateSourceHash() => _$visibleEventsMapHash();
-
-  @$internal
-  @override
-  $ProviderElement<Map<DateTime, List<Event>>> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
-
-  @override
-  Map<DateTime, List<Event>> create(Ref ref) {
-    return visibleEventsMap(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Map<DateTime, List<Event>> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<Map<DateTime, List<Event>>>(value),
-    );
-  }
-}
-
-String _$visibleEventsMapHash() => r'5245106d97dd330333f1b8d7297f472965288939';
-
-@ProviderFor(visibleEventsList)
-const visibleEventsListProvider = VisibleEventsListProvider._();
-
-final class VisibleEventsListProvider
-    extends $FunctionalProvider<List<Event>, List<Event>, List<Event>>
-    with $Provider<List<Event>> {
-  const VisibleEventsListProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'visibleEventsListProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$visibleEventsListHash();
-
-  @$internal
-  @override
-  $ProviderElement<List<Event>> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  List<Event> create(Ref ref) {
-    return visibleEventsList(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<Event> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<List<Event>>(value),
-    );
-  }
-}
-
-String _$visibleEventsListHash() => r'333bd211f28d747acbfcc9352608e4e48d126d30';
-
-@ProviderFor(SelectedDayNotifier)
-const selectedDayProvider = SelectedDayNotifierProvider._();
-
-final class SelectedDayNotifierProvider
-    extends $NotifierProvider<SelectedDayNotifier, DateTime?> {
-  const SelectedDayNotifierProvider._()
+/// Selected day in the calendar
+final class SelectedDayProvider
+    extends $NotifierProvider<SelectedDay, DateTime?> {
+  /// Selected day in the calendar
+  const SelectedDayProvider._()
     : super(
         from: null,
         argument: null,
@@ -213,11 +244,11 @@ final class SelectedDayNotifierProvider
       );
 
   @override
-  String debugGetCreateSourceHash() => _$selectedDayNotifierHash();
+  String debugGetCreateSourceHash() => _$selectedDayHash();
 
   @$internal
   @override
-  SelectedDayNotifier create() => SelectedDayNotifier();
+  SelectedDay create() => SelectedDay();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(DateTime? value) {
@@ -228,10 +259,11 @@ final class SelectedDayNotifierProvider
   }
 }
 
-String _$selectedDayNotifierHash() =>
-    r'a4fb122554393c2a3543331b789e3a18f46a5fa6';
+String _$selectedDayHash() => r'ede8b179013d72ab750b0380daf7619a86d48ef2';
 
-abstract class _$SelectedDayNotifier extends $Notifier<DateTime?> {
+/// Selected day in the calendar
+
+abstract class _$SelectedDay extends $Notifier<DateTime?> {
   DateTime? build();
   @$mustCallSuper
   @override
@@ -250,28 +282,32 @@ abstract class _$SelectedDayNotifier extends $Notifier<DateTime?> {
   }
 }
 
-@ProviderFor(AfterTodayNotifier)
-const afterTodayProvider = AfterTodayNotifierProvider._();
+/// Filter toggle - show only events after today
 
-final class AfterTodayNotifierProvider
-    extends $NotifierProvider<AfterTodayNotifier, bool> {
-  const AfterTodayNotifierProvider._()
+@ProviderFor(AfterTodayFilter)
+const afterTodayFilterProvider = AfterTodayFilterProvider._();
+
+/// Filter toggle - show only events after today
+final class AfterTodayFilterProvider
+    extends $NotifierProvider<AfterTodayFilter, bool> {
+  /// Filter toggle - show only events after today
+  const AfterTodayFilterProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'afterTodayProvider',
+        name: r'afterTodayFilterProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$afterTodayNotifierHash();
+  String debugGetCreateSourceHash() => _$afterTodayFilterHash();
 
   @$internal
   @override
-  AfterTodayNotifier create() => AfterTodayNotifier();
+  AfterTodayFilter create() => AfterTodayFilter();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
@@ -282,10 +318,11 @@ final class AfterTodayNotifierProvider
   }
 }
 
-String _$afterTodayNotifierHash() =>
-    r'bd116d8d4d91188fe5bfbb11aa3b81c7f4aab233';
+String _$afterTodayFilterHash() => r'a1e9f1a53df4ed20f2898530b5b127cc0ecc4c70';
 
-abstract class _$AfterTodayNotifier extends $Notifier<bool> {
+/// Filter toggle - show only events after today
+
+abstract class _$AfterTodayFilter extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override
@@ -304,52 +341,59 @@ abstract class _$AfterTodayNotifier extends $Notifier<bool> {
   }
 }
 
-@ProviderFor(CopyModeNotifier)
-const copyModeProvider = CopyModeNotifierProvider._();
+/// Interaction mode (normal, copy, delete)
 
-final class CopyModeNotifierProvider
-    extends $NotifierProvider<CopyModeNotifier, bool> {
-  const CopyModeNotifierProvider._()
+@ProviderFor(InteractionModeState)
+const interactionModeStateProvider = InteractionModeStateProvider._();
+
+/// Interaction mode (normal, copy, delete)
+final class InteractionModeStateProvider
+    extends $NotifierProvider<InteractionModeState, InteractionMode> {
+  /// Interaction mode (normal, copy, delete)
+  const InteractionModeStateProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'copyModeProvider',
+        name: r'interactionModeStateProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$copyModeNotifierHash();
+  String debugGetCreateSourceHash() => _$interactionModeStateHash();
 
   @$internal
   @override
-  CopyModeNotifier create() => CopyModeNotifier();
+  InteractionModeState create() => InteractionModeState();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
+  Override overrideWithValue(InteractionMode value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
+      providerOverride: $SyncValueProvider<InteractionMode>(value),
     );
   }
 }
 
-String _$copyModeNotifierHash() => r'6f2e7ef33ceb5bbbbe48364ace57d87370c88b6c';
+String _$interactionModeStateHash() =>
+    r'de69aa2fca074a42fd407773ae4e05a61fecd1be';
 
-abstract class _$CopyModeNotifier extends $Notifier<bool> {
-  bool build();
+/// Interaction mode (normal, copy, delete)
+
+abstract class _$InteractionModeState extends $Notifier<InteractionMode> {
+  InteractionMode build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<bool, bool>;
+    final ref = this.ref as $Ref<InteractionMode, InteractionMode>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
+              AnyNotifier<InteractionMode, InteractionMode>,
+              InteractionMode,
               Object?,
               Object?
             >;
@@ -357,82 +401,32 @@ abstract class _$CopyModeNotifier extends $Notifier<bool> {
   }
 }
 
-@ProviderFor(DeleteModeNotifier)
-const deleteModeProvider = DeleteModeNotifierProvider._();
+/// Event being copied (when in copy mode)
 
-final class DeleteModeNotifierProvider
-    extends $NotifierProvider<DeleteModeNotifier, bool> {
-  const DeleteModeNotifierProvider._()
+@ProviderFor(CopyEventState)
+const copyEventStateProvider = CopyEventStateProvider._();
+
+/// Event being copied (when in copy mode)
+final class CopyEventStateProvider
+    extends $NotifierProvider<CopyEventState, Event?> {
+  /// Event being copied (when in copy mode)
+  const CopyEventStateProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'deleteModeProvider',
+        name: r'copyEventStateProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$deleteModeNotifierHash();
+  String debugGetCreateSourceHash() => _$copyEventStateHash();
 
   @$internal
   @override
-  DeleteModeNotifier create() => DeleteModeNotifier();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
-  }
-}
-
-String _$deleteModeNotifierHash() =>
-    r'1667a9927e7c7bae0fd3ce1e6cb17cf5ceea9964';
-
-abstract class _$DeleteModeNotifier extends $Notifier<bool> {
-  bool build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final created = build();
-    final ref = this.ref as $Ref<bool, bool>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, created);
-  }
-}
-
-@ProviderFor(CopyEventNotifier)
-const copyEventProvider = CopyEventNotifierProvider._();
-
-final class CopyEventNotifierProvider
-    extends $NotifierProvider<CopyEventNotifier, Event?> {
-  const CopyEventNotifierProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'copyEventProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$copyEventNotifierHash();
-
-  @$internal
-  @override
-  CopyEventNotifier create() => CopyEventNotifier();
+  CopyEventState create() => CopyEventState();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(Event? value) {
@@ -443,9 +437,11 @@ final class CopyEventNotifierProvider
   }
 }
 
-String _$copyEventNotifierHash() => r'40828c298d390eafa02c65b375533c70356c0a45';
+String _$copyEventStateHash() => r'3c98b1d100de285a00222149dc03b4b34a81926d';
 
-abstract class _$CopyEventNotifier extends $Notifier<Event?> {
+/// Event being copied (when in copy mode)
+
+abstract class _$CopyEventState extends $Notifier<Event?> {
   Event? build();
   @$mustCallSuper
   @override
@@ -463,3 +459,52 @@ abstract class _$CopyEventNotifier extends $Notifier<Event?> {
     element.handleValue(ref, created);
   }
 }
+
+/// Consolidated visible events - combines all selected calendars
+/// This replaces both visibleEventsMapProvider and visibleEventsListProvider
+
+@ProviderFor(visibleEvents)
+const visibleEventsProvider = VisibleEventsProvider._();
+
+/// Consolidated visible events - combines all selected calendars
+/// This replaces both visibleEventsMapProvider and visibleEventsListProvider
+
+final class VisibleEventsProvider
+    extends $FunctionalProvider<VisibleEvents, VisibleEvents, VisibleEvents>
+    with $Provider<VisibleEvents> {
+  /// Consolidated visible events - combines all selected calendars
+  /// This replaces both visibleEventsMapProvider and visibleEventsListProvider
+  const VisibleEventsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'visibleEventsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$visibleEventsHash();
+
+  @$internal
+  @override
+  $ProviderElement<VisibleEvents> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  VisibleEvents create(Ref ref) {
+    return visibleEvents(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(VisibleEvents value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<VisibleEvents>(value),
+    );
+  }
+}
+
+String _$visibleEventsHash() => r'3512f87181ee0883cae8d5d54a8c2986ba2b5c4b';

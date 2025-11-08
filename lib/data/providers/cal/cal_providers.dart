@@ -3,107 +3,64 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
+import 'package:timeshare/data/enums.dart';
 
 part 'cal_providers.g.dart';
 
+/// Repository provider
 @riverpod
-class CalendarNotifier extends _$CalendarNotifier {
-  late final CalendarRepository _crp;
+CalendarRepository calendarRepository(Ref ref) => CalendarRepository();
 
+/// Main calendar stream - automatically updates when Firestore changes
+/// Keep alive to prevent re-initialization when navigating away
+@riverpod
+Stream<List<Calendar>> calendars(Ref ref) {
+  // Keep provider alive to prevent disposal when not watched
+  ref.keepAlive();
+  final repo = ref.watch(calendarRepositoryProvider);
+  return repo.watchAllAvailableCalendars();
+}
+
+/// Calendar mutations - simplified without optimistic updates
+/// The stream will automatically update the UI when Firestore changes
+@riverpod
+class CalendarMutations extends _$CalendarMutations {
   @override
-  Future<List<Calendar>> build() async {
-    _crp = CalendarRepository();
-    return await _crp.getAllAvailableCalendars();
+  FutureOr<void> build() {
+    // No initial state needed
   }
 
   Future<void> addCalendar({
     required String ownerUid,
     required String name,
   }) async {
-    print('Adding calendar ${ownerUid}_$name ...');
-    final previousState = state;
-
+    final repo = ref.read(calendarRepositoryProvider);
     final calendar = Calendar(
       id: '${ownerUid}_$name',
       owner: ownerUid,
       name: name,
       events: <DateTime, List<Event>>{},
     );
-
-    //update local state
-    state = AsyncValue.data([
-      if (state.value != null) ...state.value!,
-      calendar,
-    ]);
-
-    //handle request errors
-    try {
-      await _crp.addCalendar(calendar);
-      print('Success!');
-    } catch (e) {
-      state = previousState;
-      print('error sending to firestore: $e');
-    }
+    await repo.addCalendar(calendar);
+    // Stream will automatically update, no need to manually update state
   }
 
   Future<void> addEventToCalendar({
     required String calendarId,
     required Event event,
   }) async {
-    print('Adding event to calendar: ${calendarId}_${event.name} ...');
-    final previousState = state;
-
-    state = AsyncValue.data([
-      if (state.value != null)
-        for (final calendar in state.value!)
-          if (calendar.id == calendarId)
-            calendar.copyWith(
-              events: {
-                ...calendar.events,
-                normalizeDate(event.time): [
-                  ...(calendar.events[normalizeDate(event.time)] ?? []),
-                  event,
-                ],
-              },
-            )
-          else
-            calendar,
-    ]);
-
-    try {
-      await _crp.addEventToCalendar(calendarId: calendarId, event: event);
-      print('Success adding event');
-    } catch (e) {
-      state = previousState;
-      print('error adding event to firestore: $e');
-    }
+    final repo = ref.read(calendarRepositoryProvider);
+    await repo.addEventToCalendar(calendarId: calendarId, event: event);
+    // Stream will automatically update
   }
 
   Future<void> removeEvent({
     required String calendarId,
     required Event event,
   }) async {
-    print('removing ${event.name} from $calendarId ...');
-    final previousState = state;
-
-    state = AsyncValue.data([
-      if (state.value != null)
-        for (final calendar in state.value!)
-          if (calendar.id == calendarId)
-            calendar.copyWith(
-              events: _removeEventFromMap(calendar.events, event),
-            )
-          else
-            calendar,
-    ]);
-
-    try {
-      await _crp.removeEventFromCalendar(calendarId: calendarId, event: event);
-      print('Success removing event');
-    } catch (e) {
-      state = previousState;
-      print('error adding event to firestore: $e');
-    }
+    final repo = ref.read(calendarRepositoryProvider);
+    await repo.removeEventFromCalendar(calendarId: calendarId, event: event);
+    // Stream will automatically update
   }
 
   Future<void> shareCalendar(
@@ -111,167 +68,153 @@ class CalendarNotifier extends _$CalendarNotifier {
     String targetUid,
     bool share,
   ) async {
-    final previousState = state;
-    print('setting share state for $calendarId with $targetUid to $share');
-
-    state = AsyncValue.data([
-      if (state.value != null)
-        for (final cal in state.value!)
-          if (cal.id == calendarId)
-            cal.copyWith(
-              sharedWith: share
-                  ? {...cal.sharedWith, targetUid}.toSet()
-                  : cal.sharedWith.where((id) => id != targetUid).toSet(),
-            )
-          else
-            cal,
-    ]);
-    try {
-      await _crp.shareCalendar(calendarId, targetUid, share);
-      print('calendar share state updated success');
-    } catch (e) {
-      state = previousState;
-      print('error sharing calendar: $e');
-    }
-  }
-
-  Map<DateTime, List<Event>> _removeEventFromMap(
-    Map<DateTime, List<Event>> original,
-    Event event,
-  ) {
-    final day = normalizeDate(event.time);
-    final updatedEvents = Map<DateTime, List<Event>>.of(original);
-
-    final updatedList = (updatedEvents[day] ?? [])
-        .where((e) => e != event)
-        .toList();
-
-    if (updatedList.isEmpty) {
-      updatedEvents.remove(day);
-    } else {
-      updatedEvents[day] = updatedList;
-    }
-
-    return updatedEvents;
+    final repo = ref.read(calendarRepositoryProvider);
+    await repo.shareCalendar(calendarId, targetUid, share);
+    // Stream will automatically update
   }
 }
 
+/// Selected calendar IDs - which calendars are visible
 @riverpod
-class SelectedCalIdsNotifier extends _$SelectedCalIdsNotifier {
+class SelectedCalendarIds extends _$SelectedCalendarIds {
   @override
   Set<String> build() {
-    final allCalendarIds = ref
-        .watch(calendarProvider)
-        .requireValue
-        .fold<Set<String>>({}, (prev, cal) => {...prev, cal.id});
-    return allCalendarIds;
+    // Initialize with all calendar IDs when calendars are loaded
+    final calendarsAsync = ref.watch(calendarsProvider);
+    return calendarsAsync.when(
+      data: (calendars) => calendars.map((cal) => cal.id).toSet(),
+      loading: () => <String>{},
+      error: (_, __) => <String>{},
+    );
   }
 
-  void add(String id) => state.add(id);
-  void remove(String id) => state = state.where((e) => e != id).toSet();
-  void clear() => state = {};
-
-  List<Calendar> selectedCalendars() {
-    final allCalendars = ref.watch(calendarProvider).requireValue;
-    return allCalendars.where((cal) => state.contains(cal.id)).toList();
-  }
-}
-
-@riverpod
-Map<DateTime, List<Event>> visibleEventsMap(Ref ref) {
-  final calendars = ref.watch(calendarProvider);
-  final selectedIds = ref.watch(selectedCalIdsProvider);
-  final visibleCalendars = calendars.requireValue.where(
-    (cal) => selectedIds.contains(cal.id),
-  );
-
-  final Map<DateTime, List<Event>> mergedEvents = {};
-
-  for (final cal in visibleCalendars) {
-    cal.sortEvents();
-    cal.events.forEach((date, eventList) {
-      mergedEvents.update(
-        date,
-        (existing) => [...existing, ...eventList],
-        ifAbsent: () => [...eventList],
-      );
-    });
-  }
-  return mergedEvents;
-}
-
-@riverpod
-List<Event> visibleEventsList(Ref ref) {
-  final eventMap = ref.watch(visibleEventsMapProvider);
-  final selectedDay = ref.watch(selectedDayProvider);
-  final afterToday = ref.watch(afterTodayProvider);
-  if (selectedDay == null) {
-    List<Event> eventsList = eventMap.values.expand((list) => list).toList();
-    eventsList.sort((a, b) => a.time.compareTo(b.time));
-    if (afterToday) {
-      eventsList.removeWhere((event) => event.time.isBefore(DateTime.now()));
+  void toggle(String id) {
+    final current = state;
+    if (current.contains(id)) {
+      state = current.where((e) => e != id).toSet();
+    } else {
+      state = {...current, id};
     }
-    return eventsList;
-  } else {
-    List<Event> eventsList = eventMap[selectedDay] ?? [];
-    return eventsList;
   }
+
+  void selectAll() {
+    final calendarsAsync = ref.watch(calendarsProvider);
+    calendarsAsync.when(
+      data: (calendars) {
+        state = calendars.map((cal) => cal.id).toSet();
+      },
+      loading: () {},
+      error: (_, __) {},
+    );
+  }
+
+  void clear() => state = {};
 }
 
+/// Selected day in the calendar
 @riverpod
-class SelectedDayNotifier extends _$SelectedDayNotifier {
+class SelectedDay extends _$SelectedDay {
   @override
-  DateTime? build() {
-    return null;
-  }
+  DateTime? build() => null;
 
-  void selectDay(DateTime selected) => state = normalizeDate(selected);
+  void select(DateTime day) => state = normalizeDate(day);
   void clear() => state = null;
 }
 
+/// Filter toggle - show only events after today
 @riverpod
-class AfterTodayNotifier extends _$AfterTodayNotifier {
+class AfterTodayFilter extends _$AfterTodayFilter {
   @override
-  bool build() {
-    return true;
-  }
+  bool build() => true;
 
-  void on() => state = true;
-  void off() => state = false;
   void toggle() => state = !state;
+  void set(bool value) => state = value;
 }
 
+/// Interaction mode (normal, copy, delete)
 @riverpod
-class CopyModeNotifier extends _$CopyModeNotifier {
+class InteractionModeState extends _$InteractionModeState {
   @override
-  bool build() {
-    return false;
-  }
+  InteractionMode build() => InteractionMode.normal;
 
-  void change() => state = !state;
-  void on() => state = true;
-  void off() => state = false;
+  void setMode(InteractionMode mode) => state = mode;
+  void setNormal() => state = InteractionMode.normal;
+  void setCopy() => state = InteractionMode.copy;
+  void setDelete() => state = InteractionMode.delete;
 }
 
-// TODO: implement delete mode
+/// Event being copied (when in copy mode)
 @riverpod
-class DeleteModeNotifier extends _$DeleteModeNotifier {
+class CopyEventState extends _$CopyEventState {
   @override
-  bool build() {
-    return false;
-  }
+  Event? build() => null;
 
-  void change() => state = !state;
-  void on() => state = true;
-  void off() => state = false;
+  void set(Event event) => state = event.copyWith();
+  void clear() => state = null;
 }
 
+/// Consolidated visible events - combines all selected calendars
+/// This replaces both visibleEventsMapProvider and visibleEventsListProvider
 @riverpod
-class CopyEventNotifier extends _$CopyEventNotifier {
-  @override
-  Event? build() {
-    return null;
-  }
+VisibleEvents visibleEvents(Ref ref) {
+  final calendarsAsync = ref.watch(calendarsProvider);
+  final selectedIds = ref.watch(selectedCalendarIdsProvider);
+  final selectedDay = ref.watch(selectedDayProvider);
+  final afterToday = ref.watch(afterTodayFilterProvider);
 
-  void setCopyEvent(Event e) => state = e.copyWith();
+  return calendarsAsync.when(
+    data: (allCalendars) {
+      // Filter to selected calendars
+      final visibleCalendars = allCalendars
+          .where((cal) => selectedIds.contains(cal.id))
+          .toList();
+
+      // Merge events from all visible calendars
+      final Map<DateTime, List<Event>> eventMap = {};
+      for (final cal in visibleCalendars) {
+        cal.sortEvents();
+        cal.events.forEach((date, eventList) {
+          eventMap.update(
+            date,
+            (existing) => [...existing, ...eventList],
+            ifAbsent: () => [...eventList],
+          );
+        });
+      }
+
+      // Generate list based on selected day and filter
+      List<Event> eventList;
+      if (selectedDay != null) {
+        // Show events for selected day only
+        eventList = eventMap[selectedDay] ?? [];
+      } else {
+        // Show all events, sorted by time
+        eventList = eventMap.values.expand((list) => list).toList();
+        eventList.sort((a, b) => a.time.compareTo(b.time));
+        
+        // Apply "after today" filter if enabled
+        if (afterToday) {
+          final now = DateTime.now();
+          eventList = eventList
+              .where((event) => event.time.isAfter(now))
+              .toList();
+        }
+      }
+
+      return VisibleEvents(map: eventMap, list: eventList);
+    },
+    loading: () => const VisibleEvents(map: {}, list: []),
+    error: (_, __) => const VisibleEvents(map: {}, list: []),
+  );
+}
+
+/// Data class for visible events (replaces separate map and list providers)
+class VisibleEvents {
+  final Map<DateTime, List<Event>> map;
+  final List<Event> list;
+
+  const VisibleEvents({
+    required this.map,
+    required this.list,
+  });
 }

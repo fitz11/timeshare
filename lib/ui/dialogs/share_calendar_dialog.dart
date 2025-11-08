@@ -11,7 +11,7 @@ void showShareCalendarDialog(
 ) {
   final currentUserId = FirebaseAuth.instance.currentUser!.uid;
   final calendars = ref
-      .read(calendarProvider)
+      .read(calendarsProvider)
       .requireValue
       .where((cal) => cal.owner == currentUserId)
       .toList();
@@ -44,7 +44,7 @@ void showShareCalendarDialog(
                       });
 
                       await ref
-                          .read(calendarProvider.notifier)
+                          .read(calendarMutationsProvider.notifier)
                           .shareCalendar(calendar.id, friend.uid, value);
                     },
                   );

@@ -66,7 +66,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
         shape: shape,
       );
 
-      final calendars = ref.read(calendarProvider).requireValue;
+      final calendars = ref.read(calendarsProvider).requireValue;
       for (final cal in calendars) {
         for (final event in cal.getEvents()) {
           if (event == newEvent) {
@@ -77,7 +77,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
       }
 
       await ref
-          .read(calendarProvider.notifier)
+          .read(calendarMutationsProvider.notifier)
           .addEventToCalendar(calendarId: widget.calendarId, event: newEvent);
       print('Event added!\n}');
     } else {
@@ -153,7 +153,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
   @override
   Widget build(BuildContext context) {
     final calendar = ref
-        .watch(calendarProvider)
+        .watch(calendarsProvider)
         .requireValue
         .firstWhere((cal) => cal.id == widget.calendarId);
     return Scaffold(

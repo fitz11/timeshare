@@ -27,7 +27,7 @@ void showCreateCalendarDialog(BuildContext context, WidgetRef ref) {
             final uid = FirebaseAuth.instance.currentUser!.uid;
 
             await ref
-                .read(calendarProvider.notifier)
+                .read(calendarMutationsProvider.notifier)
                 .addCalendar(ownerUid: uid, name: name);
 
             // ignore: use_build_context_synchronously

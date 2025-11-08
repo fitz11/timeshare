@@ -7,11 +7,13 @@ class AfterTodayToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool afterToday = ref.watch(afterTodayProvider);
-    return CheckboxListTile(
+    bool afterToday = ref.watch(afterTodayFilterProvider);
+    return SwitchListTile(
+      secondary: const Icon(Icons.filter_alt_outlined),
       value: afterToday,
-      onChanged: (val) => ref.read(afterTodayProvider.notifier).toggle(),
-      title: const Text('Hide events before today'),
+      onChanged: (val) => ref.read(afterTodayFilterProvider.notifier).set(val),
+      title: const Text('Hide past events'),
+      subtitle: const Text('Show only upcoming events'),
     );
   }
 }

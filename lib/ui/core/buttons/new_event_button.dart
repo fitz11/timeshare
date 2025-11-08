@@ -8,12 +8,28 @@ class NewEventButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allCalendars = ref.watch(calendarProvider);
-    return FilledButton.tonal(
-      onPressed: () {
-        openEventBuilder(context, allCalendars.requireValue);
-      },
-      child: Row(children: [Icon(Icons.calendar_today), Text('New Event')]),
+    final allCalendars = ref.watch(calendarsProvider);
+    return allCalendars.when(
+      data: (calendars) => ListTile(
+        leading: const Icon(Icons.event),
+        title: const Text('New Event'),
+        subtitle: const Text('Add an event to a calendar'),
+        onTap: () {
+          Navigator.pop(context); // Close drawer
+          openEventBuilder(context, calendars);
+        },
+      ),
+      loading: () => const ListTile(
+        leading: CircularProgressIndicator(),
+        title: Text('New Event'),
+        enabled: false,
+      ),
+      error: (error, stackTrace) => const ListTile(
+        leading: Icon(Icons.error_outline),
+        title: Text('New Event'),
+        subtitle: Text('Unable to load calendars'),
+        enabled: false,
+      ),
     );
   }
 }

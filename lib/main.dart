@@ -23,8 +23,9 @@ class Timeshare extends ConsumerWidget {
     return MaterialApp(
       title: 'TimeShare',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
-      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      theme: buildTheme(lightColorScheme, Brightness.light),
+      darkTheme: buildTheme(darkColorScheme, Brightness.dark),
+      themeMode: ThemeMode.system, // Automatically switch based on system settings
       routes: {
         '/home': (context) => HomeScaffold(),
         '/login': (context) => AuthScreen(),

@@ -10,45 +10,109 @@ class AuthScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userRepo = ref.watch(userRepositoryProvider);
+    
     return SignInScreen(
       showAuthActionSwitch: true,
       headerBuilder: (context, constraints, shrinkOffset) {
-        return const Center(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Text(
-              'Welcome to TimeShare!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Logo
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/timeshareimg.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        Icons.calendar_month,
+                        size: 60,
+                        color: Theme.of(context).colorScheme.primary,
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              // App Name
+              Text(
+                'TimeShare',
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              
+              // Tagline
+              Text(
+                'Share your calendar, share your time',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ],
           ),
         );
       },
       subtitleBuilder: (context, action) {
-        return const Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text('Sign in to sync your events across devices.'),
+        final isSignIn = action == AuthAction.signIn;
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Text(
+            isSignIn
+                ? 'Sign in to access your calendars and events'
+                : 'Create an account to start sharing your calendar',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
         );
       },
       footerBuilder: (context, action) {
-        return const Padding(
-          padding: EdgeInsets.only(top: 16),
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Text(
-            'By signing in, you agree to our Terms of Service. Hint: There are none.',
+            'By continuing, you agree to our Terms of Service and Privacy Policy',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
         );
       },
       providers: [EmailAuthProvider()],
       actions: [
         AuthStateChangeAction<SignedIn>((context, state) async {
-          userRepo.signInOrRegister();
-          Navigator.pushReplacementNamed(context, '/home');
+          await userRepo.signInOrRegister();
+          if (context.mounted) {
+            Navigator.pushReplacementNamed(context, '/home');
+          }
         }),
 
         AuthStateChangeAction<UserCreated>((context, state) async {
-          userRepo.signInOrRegister();
-          Navigator.pushReplacementNamed(context, '/home');
+          await userRepo.signInOrRegister();
+          if (context.mounted) {
+            Navigator.pushReplacementNamed(context, '/home');
+          }
         }),
       ],
     );

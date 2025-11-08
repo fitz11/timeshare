@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
-import 'package:timeshare/ui/eventpage/events_page.dart';
+import 'package:timeshare/ui/dialogs/create_event_dialog.dart';
 
 void openEventBuilder(BuildContext context, List<Calendar> calendars) async {
-  Calendar? calendar = await showDialog(
+  // First, show dialog to select calendar
+  Calendar? calendar = await showDialog<Calendar>(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text('select Calendar to add event to:'),
+      title: const Text('Select Calendar'),
       content: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.8,
         width: MediaQuery.of(context).size.width * 0.8,
         child: ListView.builder(
+          shrinkWrap: true,
           itemCount: calendars.length,
           itemBuilder: (context, index) {
-            return Container(
+            return Card(
               margin: const EdgeInsets.symmetric(vertical: 4.0),
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadiusDirectional.circular(12),
-              ),
               child: ListTile(
+                leading: const Icon(Icons.calendar_month),
                 title: Text(calendars[index].name),
                 onTap: () {
                   Navigator.pop(context, calendars[index]);
@@ -29,21 +27,17 @@ void openEventBuilder(BuildContext context, List<Calendar> calendars) async {
           },
         ),
       ),
-      actions: [
-        FilledButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Cancel'),
-        ),
-      ],
     ),
   );
-  if (calendar == null) return;
-  Navigator.push(
-    // ignore: use_build_context_synchronously
-    context,
-    MaterialPageRoute(
-      builder: (context) =>
-          EventsPage(title: calendar.name, calendarId: calendar.id),
-    ),
-  );
+
+  // If calendar was selected, show the create event dialog
+  if (calendar != null && context.mounted) {
+    showDialog(
+      context: context,
+      builder: (context) => CreateEventDialog(
+        calendarId: calendar.id,
+        calendarName: calendar.name,
+      ),
+    );
+  }
 }

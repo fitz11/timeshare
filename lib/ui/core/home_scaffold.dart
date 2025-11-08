@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/providers/cal/cal_providers.dart';
 import 'package:timeshare/data/providers/nav/nav_providers.dart';
-import 'package:timeshare/data/providers/user/user_providers.dart';
 import 'package:timeshare/ui/calendar/wgts/cal_drawer.dart';
 import 'package:timeshare/ui/core/widgets/fab.dart';
 import 'package:timeshare/ui/core/widgets/home_appbar.dart';
@@ -28,14 +27,15 @@ class HomeScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calendars = ref.watch(calendarProvider);
+    // Providers are already initialized in AuthGate, just watch them here
+    final calendars = ref.watch(calendarsProvider);
     final HomePages index = ref.watch(navIndexProvider);
-    ref.watch(userFriendsProvider);
 
     return calendars.when(
       data: (data) => Scaffold(
         appBar: HomeAppBar(),
-        drawer: CalDrawer(),
+        // Only show drawer on calendar page
+        drawer: index == HomePages.calendar ? const CalDrawer() : null,
         body: _buildBody(index),
         floatingActionButton: Fab(),
         bottomNavigationBar: HomeBottomBar(),

@@ -7,11 +7,14 @@ class NewCalButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return FilledButton(
-      onPressed: () {
+    return ListTile(
+      leading: Icon(Icons.calendar_month),
+      title: const Text('New Calendar'),
+      subtitle: const Text('Create a new calendar'),
+      onTap: () {
+        Navigator.pop(context); // Close drawer
         showCreateCalendarDialog(context, ref);
       },
-      child: Row(children: [Icon(Icons.calendar_month), Text('New Calendar')]),
     );
   }
 }

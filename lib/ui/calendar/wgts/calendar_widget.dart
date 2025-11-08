@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/providers/cal/cal_providers.dart';
+import 'package:timeshare/data/enums.dart';
 
 DateTime today = normalizeDate(DateTime.now());
 DateTime start = today.subtract(const Duration(days: 365));
@@ -17,55 +18,69 @@ class CalendarWidget extends ConsumerStatefulWidget {
 }
 
 class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
-  //BOILERPLATE DEFNINITIONS FOR THE CALENDAR WIDGET
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = today;
-  DateTime? _selectedDay;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   // when a calendar day is selected;
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
       _focusedDay = focusedDay;
-      _selectedDay = selectedDay;
-      ref.read(selectedDayProvider.notifier).selectDay(selectedDay);
     });
 
-    bool copyMode = ref.watch(copyModeProvider);
-    Event? copiedEvent = ref.watch(copyEventProvider);
-    if (copyMode && copiedEvent != null) _copyEvent();
+    // Update selected day in provider (single source of truth)
+    ref.read(selectedDayProvider.notifier).select(selectedDay);
+
+    // Handle copy mode
+    final mode = ref.read(interactionModeStateProvider);
+    final copiedEvent = ref.read(copyEventStateProvider);
+    if (mode == InteractionMode.copy && copiedEvent != null) {
+      _copyEvent(selectedDay, copiedEvent);
+    }
   }
 
-  void _copyEvent() {
-    final copied = ref.read(copyEventProvider)!.copyWith(time: _selectedDay!);
-    ref
-        .read(calendarProvider.notifier)
-        .addEventToCalendar(calendarId: copied.calendarId, event: copied);
+  void _copyEvent(DateTime targetDate, Event sourceEvent) {
+    final copied = sourceEvent.copyWith(time: targetDate);
+    ref.read(calendarMutationsProvider.notifier).addEventToCalendar(
+      calendarId: copied.calendarId,
+      event: copied,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final selectedDay = ref.watch(selectedDayProvider);
-    final eventsMap = ref.watch(visibleEventsMapProvider);
+    final copyMode = ref.watch(interactionModeStateProvider);
+    
+    // Change header color to blue when in copy mode
+    final headerStyle = copyMode == InteractionMode.copy
+        ? HeaderStyle(
+            titleCentered: true,
+            formatButtonVisible: false,
+            titleTextStyle: TextStyle(
+              color: Colors.blue,
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+            leftChevronIcon: Icon(Icons.chevron_left, color: Colors.blue),
+            rightChevronIcon: Icon(Icons.chevron_right, color: Colors.blue),
+          )
+        : HeaderStyle(titleCentered: true, formatButtonVisible: false);
+    
     return TableCalendar(
       focusedDay: _focusedDay,
       firstDay: start,
       lastDay: end,
       selectedDayPredicate: (day) => isSameDay(selectedDay, day),
       calendarFormat: CalendarFormat.month,
-      headerStyle: HeaderStyle(titleCentered: true, formatButtonVisible: false),
+      headerStyle: headerStyle,
       sixWeekMonthsEnforced: true,
       startingDayOfWeek: StartingDayOfWeek.sunday,
       calendarStyle: const CalendarStyle(outsideDaysVisible: true),
       onDaySelected: _onDaySelected,
 
-      eventLoader: (day) => eventsMap[normalizeDate(day)] ?? [],
+      eventLoader: (day) => widget.eventsMap[normalizeDate(day)] ?? [],
 
-      onHeaderTapped: (day) => ref.refresh(copyEventProvider),
+      onHeaderTapped: (day) => ref.read(copyEventStateProvider.notifier).clear(),
 
       onFormatChanged: (format) {
         if (_calendarFormat != format) {
@@ -75,7 +90,9 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
         }
       },
       onPageChanged: (focusedDay) {
-        _focusedDay = focusedDay;
+        setState(() {
+          _focusedDay = focusedDay;
+        });
       },
 
       //this part defines the custom markers based on events.

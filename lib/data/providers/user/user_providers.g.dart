@@ -50,40 +50,6 @@ final class UserRepositoryProvider
 
 String _$userRepositoryHash() => r'e75530ca34ed2fc7744e8fd5e2a8e5d7f738dc62';
 
-@ProviderFor(currentUser)
-const currentUserProvider = CurrentUserProvider._();
-
-final class CurrentUserProvider
-    extends
-        $FunctionalProvider<AsyncValue<AppUser?>, AppUser?, FutureOr<AppUser?>>
-    with $FutureModifier<AppUser?>, $FutureProvider<AppUser?> {
-  const CurrentUserProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'currentUserProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$currentUserHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<AppUser?> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<AppUser?> create(Ref ref) {
-    return currentUser(ref);
-  }
-}
-
-String _$currentUserHash() => r'0ae7ecb805b8535e024dc917967f7c67697e6bd8';
-
 @ProviderFor(UserFriendsNotifier)
 const userFriendsProvider = UserFriendsNotifierProvider._();
 
@@ -109,7 +75,7 @@ final class UserFriendsNotifierProvider
 }
 
 String _$userFriendsNotifierHash() =>
-    r'c2c43f8d51faf7bb9bb4fbe046e26a6e8e6ed5f6';
+    r'2a642be762b4787b179b72631f9d467ee5eca8fc';
 
 abstract class _$UserFriendsNotifier extends $AsyncNotifier<List<AppUser>> {
   FutureOr<List<AppUser>> build();
@@ -203,4 +169,50 @@ final class UserSearchFamily extends $Family
 
   @override
   String toString() => r'userSearchProvider';
+}
+
+@ProviderFor(CurrentUserNotifier)
+const currentUserProvider = CurrentUserNotifierProvider._();
+
+final class CurrentUserNotifierProvider
+    extends $AsyncNotifierProvider<CurrentUserNotifier, AppUser?> {
+  const CurrentUserNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentUserProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentUserNotifierHash();
+
+  @$internal
+  @override
+  CurrentUserNotifier create() => CurrentUserNotifier();
+}
+
+String _$currentUserNotifierHash() =>
+    r'37ee07b20c9fad0a1ab22f508a31811a89dd0a90';
+
+abstract class _$CurrentUserNotifier extends $AsyncNotifier<AppUser?> {
+  FutureOr<AppUser?> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<AsyncValue<AppUser?>, AppUser?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<AppUser?>, AppUser?>,
+              AsyncValue<AppUser?>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
 }

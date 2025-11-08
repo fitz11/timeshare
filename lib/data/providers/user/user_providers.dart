@@ -8,13 +8,11 @@ part 'user_providers.g.dart';
 UserRepository userRepository(Ref ref) => UserRepository();
 
 @riverpod
-Future<AppUser?> currentUser(Ref ref) =>
-    ref.watch(userRepositoryProvider).currentUser;
-
-@riverpod
 class UserFriendsNotifier extends _$UserFriendsNotifier {
   @override
   Future<List<AppUser>> build() async {
+    // Keep provider alive to prevent disposal when not watched
+    ref.keepAlive();
     final repo = ref.read(userRepositoryProvider);
     return await repo.getFriendsOfUser();
   }
@@ -53,3 +51,28 @@ class UserFriendsNotifier extends _$UserFriendsNotifier {
 @riverpod
 Future<List<AppUser>> userSearch(Ref ref, String email) async =>
     await ref.watch(userRepositoryProvider).searchUsersByEmail(email);
+
+@riverpod
+class CurrentUserNotifier extends _$CurrentUserNotifier {
+  @override
+  Future<AppUser?> build() async {
+    ref.keepAlive();
+    final repo = ref.watch(userRepositoryProvider);
+    return await repo.currentUser;
+  }
+
+  Future<void> updateDisplayName(String newDisplayName) async {
+    final repo = ref.read(userRepositoryProvider);
+    final currentUid = repo.currentUserId;
+    if (currentUid == null) return;
+
+    try {
+      await repo.updateDisplayName(newDisplayName);
+      // Refresh the current user data
+      ref.invalidateSelf();
+    } catch (e) {
+      print('Failed to update display name: $e');
+      rethrow;
+    }
+  }
+}

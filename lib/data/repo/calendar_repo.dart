@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -12,8 +13,81 @@ class CalendarRepository {
     : firestore = firestore ?? FirebaseFirestore.instance,
       auth = auth ?? FirebaseAuth.instance;
 
+  /// Provides a stream of all available calendars for viewing.
+  /// Automatically updates when calendars change in Firestore.
+  /// Defaults to using current user.
+  Stream<List<Calendar>> watchAllAvailableCalendars({String? uid}) {
+    uid = uid ?? auth.currentUser?.uid;
+    if (uid == null) return Stream.value([]);
+
+    // Watch owned calendars
+    final ownedStream = firestore
+        .collection('calendars')
+        .where('owner', isEqualTo: uid)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              return Calendar.fromJson(doc.data());
+            }).toList());
+
+    // Watch shared calendars
+    final sharedStream = firestore
+        .collection('calendars')
+        .where('sharedWith', arrayContains: uid)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              return Calendar.fromJson(doc.data());
+            }).toList());
+
+    // Combine both streams using StreamController
+    final controller = StreamController<List<Calendar>>();
+    final seenIds = <String>{};
+    List<Calendar> ownedCalendars = [];
+    List<Calendar> sharedCalendars = [];
+
+    void emitCombined() {
+      final combined = <Calendar>[];
+      seenIds.clear();
+      
+      // Add owned calendars first
+      for (final calendar in ownedCalendars) {
+        if (!seenIds.contains(calendar.id)) {
+          seenIds.add(calendar.id);
+          combined.add(calendar);
+        }
+      }
+      
+      // Add shared calendars (avoiding duplicates)
+      for (final calendar in sharedCalendars) {
+        if (!seenIds.contains(calendar.id)) {
+          seenIds.add(calendar.id);
+          combined.add(calendar);
+        }
+      }
+      
+      controller.add(combined);
+    }
+
+    final ownedSub = ownedStream.listen((calendars) {
+      ownedCalendars = calendars;
+      emitCombined();
+    });
+
+    final sharedSub = sharedStream.listen((calendars) {
+      sharedCalendars = calendars;
+      emitCombined();
+    });
+
+    controller.onCancel = () {
+      ownedSub.cancel();
+      sharedSub.cancel();
+    };
+
+    return controller.stream;
+  }
+
   /// Provides a future of all available calendars for viewing.
   /// Defaults to using current user.
+  /// Kept for backwards compatibility or one-time fetches.
   Future<List<Calendar>> getAllAvailableCalendars({String? uid}) async {
     uid = uid ?? auth.currentUser?.uid;
     if (uid == null) return [];
