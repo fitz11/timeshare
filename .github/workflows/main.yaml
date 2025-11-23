@@ -1,0 +1,49 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches: [ main ] # Trigger on push to the main branch
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_ios:
+    name: Build iOS IPA
+    runs-on: macos-latest # Must use a macOS runner for iOS builds
+
+    steps:
+      # 1. Checkout the source code
+      - uses: actions/checkout@v4
+
+      # 2. Set up the Flutter environment
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable' # Or a specific version like '3.22.0'
+
+      # 3. Get Dart dependencies
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      # 4. Clean previous build artifacts (Good practice)
+      - name: Clean Build
+        run: flutter clean
+
+      # 5. Install and update CocoaPods (THE CRITICAL STEP)
+      - name: Install and Update Pods
+        run: |
+          cd ios
+          pod install --repo-update
+        # Note: 'cd ios' is necessary for pod install to run in the correct directory
+
+      # 6. Build the iOS Archive (Use --no-codesign if handling signing later/with Fastlane)
+      - name: Build iOS
+        run: flutter build ipa --release --no-codesign 
+        # You'll need to handle code signing with secrets/certificates for a real deployment
+        
+      # 7. (Optional) Upload the artifact for manual download or distribution
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-ipa
+          path: build/ios/ipa/*.ipa
