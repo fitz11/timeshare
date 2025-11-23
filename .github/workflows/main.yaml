@@ -15,7 +15,11 @@ jobs:
       # 1. Checkout the source code
       - uses: actions/checkout@v4
 
-      # 2. Cache Flutter/Dart Dependencies
+      # 2. Get Dart dependencies
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      # 3. Cache Flutter/Dart Dependencies
       - name: Cache Dart dependencies
         uses: actions/cache@v4
         with:
@@ -27,14 +31,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      # 3. Set up the Flutter environment
+      # 4. Set up the Flutter environment
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.35.7' # Or a specific version like '3.22.0'
           channel: 'stable'
 
-      # 4. Cache CocoaPods Native Dependencies
+      # 5. Cache CocoaPods Native Dependencies
       - name: Cache CocoaPods
         uses: actions/cache@v4
         with:
@@ -46,19 +50,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
 
-      # 4. Get Dart dependencies
-      - name: Install Flutter dependencies
-        run: flutter pub get
-
-      # 5. Clean previous build artifacts (Good practice)
+      # 6. Clean previous build artifacts (Good practice)
       - name: Clean Build
         run: flutter clean
 
-      # 6. Ensure Native Build Files are Generated
+      # 7. Ensure Native Build Files are Generated
       - name: Ensure Generated Native Files Exist
         run: flutter build ios --no-codesign --simulator
 
-      # 7. Install and update CocoaPods (THE CRITICAL STEP)
+      # 8. Install and update CocoaPods (THE CRITICAL STEP)
       - name: Install and Update Pods
         run: |
           cd ios
@@ -66,12 +66,12 @@ jobs:
           cd ..
         # Note: 'cd ios' is necessary for pod install to run in the correct directory
 
-      # 8. Build the iOS Archive (Use --no-codesign if handling signing later/with Fastlane)
+      # 9. Build the iOS Archive (Use --no-codesign if handling signing later/with Fastlane)
       - name: Build iOS
         run: flutter build ipa --release --no-codesign 
         # You'll need to handle code signing with secrets/certificates for a real deployment
         
-      # 9. (Optional) Upload the artifact for manual download or distribution
+      # 10. (Optional) Upload the artifact for manual download or distribution
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
