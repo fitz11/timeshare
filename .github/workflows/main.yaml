@@ -60,7 +60,7 @@ jobs:
       - name: Install and Update Pods
         run: |
           cd ios
-          pod install --repo-update # Initial run *MUST* use --repo-update flag
+          pod install # Initial run *MUST* use --repo-update flag
           cd ..
         # Note: 'cd ios' is necessary for pod install to run in the correct directory
 
