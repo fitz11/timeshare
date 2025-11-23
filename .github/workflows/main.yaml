@@ -19,7 +19,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable' # Or a specific version like '3.22.0'
+          flutter-version: '3.35.7' # Or a specific version like '3.22.0'
+          channel: 'stable'
 
       # 3. Get Dart dependencies
       - name: Install Flutter dependencies
