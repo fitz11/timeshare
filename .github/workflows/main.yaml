@@ -15,11 +15,18 @@ jobs:
       # 1. Checkout the source code
       - uses: actions/checkout@v4
 
-      # 2. Get Dart dependencies
+      # 2. Set up the Flutter environment
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.7' # Or a specific version like '3.22.0'
+          channel: 'stable'
+
+      # 3. Get Dart dependencies
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      # 3. Cache Flutter/Dart Dependencies
+      # 4. Cache Flutter/Dart Dependencies
       - name: Cache Dart dependencies
         uses: actions/cache@v4
         with:
@@ -31,14 +38,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      # 4. Set up the Flutter environment
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.35.7' # Or a specific version like '3.22.0'
-          channel: 'stable'
+      # 5. Clean previous build artifacts (Good practice)
+      - name: Clean Build
+        run: flutter clean
 
-      # 5. Cache CocoaPods Native Dependencies
+      # 6. Cache CocoaPods Native Dependencies
       - name: Cache CocoaPods
         uses: actions/cache@v4
         with:
@@ -49,10 +53,6 @@ jobs:
             ~/.cocoapods/repos
           restore-keys: |
             ${{ runner.os }}-pods-
-
-      # 6. Clean previous build artifacts (Good practice)
-      - name: Clean Build
-        run: flutter clean
 
       # 7. Ensure Native Build Files are Generated
       - name: Ensure Generated Native Files Exist
