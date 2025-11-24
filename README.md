@@ -5,15 +5,12 @@ A simple calendar sharing thing. Designed to be easier to edit than others.
 No current support for time, only date.
 
 ## General flow structure:
-**Database**
-↑ ↓
-
-**Repositories**
-↑ ↓
-
-**Notifiers & Providers**
-↑ ↓
-
+**Database**<br>
+↑ ↓<br>
+**Repositories**<br>
+↑ ↓<br>
+**Notifiers & Providers**<br>
+↑ ↓<br>
 **UI elements**
 
 ## Elements explained
