@@ -10,19 +10,18 @@ class AuthScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userRepo = ref.watch(userRepositoryProvider);
-    
+
     return SignInScreen(
       showAuthActionSwitch: true,
       headerBuilder: (context, constraints, shrinkOffset) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        return Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Logo
               Container(
-                width: 120,
-                height: 120,
+                width: 100,
+                height: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -48,25 +47,16 @@ class AuthScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              
+
+              // const SizedBox(height: 24),
+
               // App Name
               Text(
                 'TimeShare',
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              
-              // Tagline
-              Text(
-                'Share your calendar, share your time',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ],
           ),
@@ -75,15 +65,15 @@ class AuthScreen extends ConsumerWidget {
       subtitleBuilder: (context, action) {
         final isSignIn = action == AuthAction.signIn;
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Text(
             isSignIn
                 ? 'Sign in to access your calendars and events'
                 : 'Create an account to start sharing your calendar',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         );
       },
@@ -94,8 +84,8 @@ class AuthScreen extends ConsumerWidget {
             'By continuing, you agree to our Terms of Service and Privacy Policy',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         );
       },
