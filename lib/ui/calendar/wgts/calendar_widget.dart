@@ -55,25 +55,11 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
         ? HeaderStyle(
             titleCentered: true,
             formatButtonVisible: false,
-            titleTextStyle: TextStyle(
-              color: Colors.blue,
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
+            titleTextStyle: TextStyle(fontSize: 17, color: Colors.blue),
             leftChevronIcon: Icon(Icons.chevron_left, color: Colors.blue),
             rightChevronIcon: Icon(Icons.chevron_right, color: Colors.blue),
           )
-        : HeaderStyle(
-            titleCentered: true,
-            formatButtonVisible: false,
-            titleTextStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
-            leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
-            rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
-          );
+        : HeaderStyle(titleCentered: true, formatButtonVisible: false);
 
     return TableCalendar(
       focusedDay: _focusedDay,
@@ -89,8 +75,10 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
       eventLoader: (day) => widget.eventsMap[normalizeDate(day)] ?? [],
 
-      onHeaderTapped: (day) =>
-          ref.read(copyEventStateProvider.notifier).clear(),
+      onHeaderTapped: (day) {
+        ref.read(copyEventStateProvider.notifier).clear();
+        ref.read(interactionModeStateProvider.notifier).setNormal();
+      },
 
       onFormatChanged: (format) {
         if (_calendarFormat != format) {

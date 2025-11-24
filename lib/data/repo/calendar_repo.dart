@@ -229,14 +229,14 @@ class CalendarRepository {
   }
 
   /// Stop sharing a calendar with a given friend.
-  /// TODO: phase out. Feed bool to share calendar instead.
-  Future<void> unshareCalendar(String calendarId, String targetUID) async {
-    final doc = firestore.collection('calendars').doc(calendarId);
-
-    await doc.update({
-      'sharedWith': FieldValue.arrayRemove([targetUID]),
-    });
-  }
+  /// PHASED OUT: retained if needed to revert
+  // Future<void> unshareCalendar(String calendarId, String targetUID) async {
+  //   final doc = firestore.collection('calendars').doc(calendarId);
+  //
+  //   await doc.update({
+  //     'sharedWith': FieldValue.arrayRemove([targetUID]),
+  //   });
+  // }
 
   /// Deletes a calendar. Only the owner can delete a calendar.
   Future<void> deleteCalendar(String calendarId) async {
