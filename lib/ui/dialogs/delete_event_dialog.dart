@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/models/event/event.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:timeshare/data/providers/cal/cal_providers.dart';
 
-void showDeleteDialog(
-  BuildContext context,
-  WidgetRef ref,
-  List<Event> events,
-) async {
-  await showDialog<Event>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('select Event to delete (this is permanent)'),
+class DeleteEventDialog extends ConsumerWidget {
+  const DeleteEventDialog({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final events = ref.watch(visibleEventsProvider).list;
+    return AlertDialog(
+      title: Text('Select Event to delete'),
       content: SizedBox(
         height: MediaQuery.of(context).size.height * 0.5,
         width: MediaQuery.of(context).size.width * 0.8,
@@ -51,6 +49,6 @@ void showDeleteDialog(
           },
         ),
       ),
-    ),
-  );
+    );
+  }
 }

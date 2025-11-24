@@ -27,7 +27,6 @@ class AuthGate extends ConsumerWidget {
           // This prevents re-initialization when navigating away
           ref.watch(calendarsProvider);
           ref.watch(userFriendsProvider);
-          
           return const HomeScaffold();
         }
 

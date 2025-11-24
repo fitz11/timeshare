@@ -200,7 +200,7 @@ final class SelectedCalendarIdsProvider
 }
 
 String _$selectedCalendarIdsHash() =>
-    r'02d979d96f10ba5eef430dc9d3f78fe0b02ccb57';
+    r'85bfb00d921a2100216858abf1502e615b9ffa23';
 
 /// Selected calendar IDs - which calendars are visible
 
@@ -507,4 +507,4 @@ final class VisibleEventsProvider
   }
 }
 
-String _$visibleEventsHash() => r'3512f87181ee0883cae8d5d54a8c2986ba2b5c4b';
+String _$visibleEventsHash() => r'3946b19aab10ded5f2ed6b09e5c7ceb99eb93154';

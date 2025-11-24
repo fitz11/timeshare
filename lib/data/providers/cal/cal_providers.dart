@@ -77,24 +77,22 @@ class CalendarMutations extends _$CalendarMutations {
 /// Selected calendar IDs - which calendars are visible
 @riverpod
 class SelectedCalendarIds extends _$SelectedCalendarIds {
+  bool _isLoaded = false;
+
   @override
   Set<String> build() {
-    // Initialize with all calendar IDs when calendars are loaded
-    final calendarsAsync = ref.watch(calendarsProvider);
-    return calendarsAsync.when(
-      data: (calendars) => calendars.map((cal) => cal.id).toSet(),
-      loading: () => <String>{},
-      error: (_, _) => <String>{},
-    );
-  }
+    final asyncCalendars = ref.watch(calendarsProvider);
+    if (_isLoaded) {
+      return state;
+    }
 
-  // Unimplemented: plan to revise build and initialization to manage initialization
-  // TODO: transition
-  void init(AsyncValue<List<Calendar>> provider) {
-    state = provider.when(
-      data: (calendars) => calendars.map((cal) => cal.id).toSet(),
-      loading: () => <String>{},
-      error: (_, _) => <String>{},
+    return asyncCalendars.when(
+      data: (calendars) {
+        _isLoaded = true;
+        return calendars.map((c) => c.id).toSet();
+      },
+      loading: () => {},
+      error: (_, _) => {},
     );
   }
 

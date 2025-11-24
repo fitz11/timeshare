@@ -10,25 +10,28 @@ class DeleteButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final visibleEvents = ref.watch(visibleEventsProvider);
     final hasEvents = visibleEvents.list.isNotEmpty;
-    
+
     return ListTile(
       leading: Icon(
         Icons.delete_outline,
-        color: hasEvents 
-            ? Theme.of(context).colorScheme.error 
+        color: hasEvents
+            ? Theme.of(context).colorScheme.error
             : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
       ),
       title: const Text('Delete Event'),
       subtitle: Text(
-        hasEvents 
+        hasEvents
             ? 'Remove an event from your calendar'
             : 'No events available to delete',
       ),
       enabled: hasEvents,
       onTap: hasEvents
           ? () {
-              Navigator.pop(context); // Close drawer
-              showDeleteDialog(context, ref, visibleEvents.list);
+              showDialog(
+                context: context,
+                builder: (context) => DeleteEventDialog(),
+              );
+              Navigator.pop(context);
             }
           : null,
     );

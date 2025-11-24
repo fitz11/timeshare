@@ -10,29 +10,35 @@ class CalendarFilterSheet extends ConsumerWidget {
     final allCalendars = ref.watch(calendarsProvider);
     final selectedIds = ref.watch(selectedCalendarIdsProvider);
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // makes it a modal "sheet"
-        children: [
-          const Text(
-            'Select calendars',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          ...allCalendars.requireValue.map((calendar) {
-            final isSelected = selectedIds.contains(calendar.id);
-            return CheckboxListTile(
-              title: Text(calendar.name),
-              value: isSelected,
-              onChanged: (checked) {
-                ref.read(selectedCalendarIdsProvider.notifier).toggle(calendar.id);
-              },
-            );
-          }),
-          const SizedBox(height: 8),
-        ],
+    return allCalendars.when(
+      data: (calendars) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // makes it a modal "sheet"
+          children: [
+            const Text(
+              'Select calendars',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            ...calendars.map((calendar) {
+              final isSelected = selectedIds.contains(calendar.id);
+              return CheckboxListTile(
+                title: Text(calendar.name),
+                value: isSelected,
+                onChanged: (checked) {
+                  ref
+                      .read(selectedCalendarIdsProvider.notifier)
+                      .toggle(calendar.id);
+                },
+              );
+            }),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
+      loading: () => SizedBox(),
+      error: (_, _) => SizedBox(),
     );
   }
 }

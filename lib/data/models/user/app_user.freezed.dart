@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppUser {
 
- String get uid; String get email; String get displayName; String? get photoUrl; bool get isAdmin;
+ String get uid; String get email; String get displayName; String? get photoUrl; bool get isAdmin;// ignore: invalid_annotation_target
 @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime get joinedAt; List<String> get friends;
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
@@ -224,6 +224,7 @@ class _AppUser implements AppUser {
 @override final  String displayName;
 @override final  String? photoUrl;
 @override@JsonKey() final  bool isAdmin;
+// ignore: invalid_annotation_target
 @override@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) final  DateTime joinedAt;
  final  List<String> _friends;
 @override@JsonKey() List<String> get friends {
