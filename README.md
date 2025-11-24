@@ -6,14 +6,11 @@ No current support for time, only date.
 
 ## General flow structure:
 **Database**
-|| ||
-|| ||
+↑ ↓
 **Repositories**
-|| ||
-|| ||
+↑ ↓
 **Notifiers & Providers**
-|| ||
-|| ||
+↑ ↓
 **UI elements**
 
 ## Elements explained
