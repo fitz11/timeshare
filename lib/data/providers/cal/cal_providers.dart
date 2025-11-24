@@ -84,7 +84,17 @@ class SelectedCalendarIds extends _$SelectedCalendarIds {
     return calendarsAsync.when(
       data: (calendars) => calendars.map((cal) => cal.id).toSet(),
       loading: () => <String>{},
-      error: (_, __) => <String>{},
+      error: (_, _) => <String>{},
+    );
+  }
+
+  // Unimplemented: plan to revise build and initialization to manage initialization
+  // TODO: transition
+  void init(AsyncValue<List<Calendar>> provider) {
+    state = provider.when(
+      data: (calendars) => calendars.map((cal) => cal.id).toSet(),
+      loading: () => <String>{},
+      error: (_, _) => <String>{},
     );
   }
 
@@ -104,7 +114,7 @@ class SelectedCalendarIds extends _$SelectedCalendarIds {
         state = calendars.map((cal) => cal.id).toSet();
       },
       loading: () {},
-      error: (_, __) {},
+      error: (_, _) {},
     );
   }
 
@@ -191,7 +201,7 @@ VisibleEvents visibleEvents(Ref ref) {
         // Show all events, sorted by time
         eventList = eventMap.values.expand((list) => list).toList();
         eventList.sort((a, b) => a.time.compareTo(b.time));
-        
+
         // Apply "after today" filter if enabled
         if (afterToday) {
           final now = DateTime.now();
@@ -204,7 +214,7 @@ VisibleEvents visibleEvents(Ref ref) {
       return VisibleEvents(map: eventMap, list: eventList);
     },
     loading: () => const VisibleEvents(map: {}, list: []),
-    error: (_, __) => const VisibleEvents(map: {}, list: []),
+    error: (_, _) => const VisibleEvents(map: {}, list: []),
   );
 }
 
@@ -213,8 +223,5 @@ class VisibleEvents {
   final Map<DateTime, List<Event>> map;
   final List<Event> list;
 
-  const VisibleEvents({
-    required this.map,
-    required this.list,
-  });
+  const VisibleEvents({required this.map, required this.list});
 }

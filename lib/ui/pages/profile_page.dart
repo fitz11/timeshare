@@ -20,9 +20,7 @@ class ProfilePage extends ConsumerWidget {
         }
         return _buildProfileContent(context, ref, user);
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => _buildErrorState(context, error.toString()),
     );
   }
@@ -47,7 +45,7 @@ class ProfilePage extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 16),
-          
+
           // Profile Header Card
           Card(
             child: Padding(
@@ -57,14 +55,18 @@ class ProfilePage extends ConsumerWidget {
                   // Avatar
                   CircleAvatar(
                     radius: 48,
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer,
+                    foregroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onPrimaryContainer,
                     child: user.photoUrl != null
                         ? ClipOval(
                             child: Image.network(
                               user.photoUrl!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Text(
+                              errorBuilder: (_, _, _) => Text(
                                 initials.isEmpty ? '?' : initials,
                                 style: const TextStyle(
                                   fontSize: 32,
@@ -82,28 +84,28 @@ class ProfilePage extends ConsumerWidget {
                           ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Display Name
                   Text(
                     user.displayName,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 4),
-                  
+
                   // Email
                   Text(
                     user.email,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Account Information Card
           Card(
             child: Column(
@@ -117,7 +119,7 @@ class ProfilePage extends ConsumerWidget {
                   ),
                 ),
                 const Divider(height: 1),
-                
+
                 // Display Name Section
                 ListTile(
                   leading: const Icon(Icons.person_outline),
@@ -126,9 +128,9 @@ class ProfilePage extends ConsumerWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showEditDisplayNameDialog(context, ref, user),
                 ),
-                
+
                 const Divider(height: 1),
-                
+
                 // Email Section (read-only)
                 ListTile(
                   leading: const Icon(Icons.email_outlined),
@@ -136,24 +138,22 @@ class ProfilePage extends ConsumerWidget {
                   subtitle: Text(user.email),
                   enabled: false,
                 ),
-                
+
                 const Divider(height: 1),
-                
+
                 // Joined Date
                 ListTile(
                   leading: const Icon(Icons.calendar_today_outlined),
                   title: const Text('Member Since'),
-                  subtitle: Text(
-                    DateFormat.yMMMd().format(user.joinedAt),
-                  ),
+                  subtitle: Text(DateFormat.yMMMd().format(user.joinedAt)),
                   enabled: false,
                 ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Statistics Card
           Card(
             child: Column(
@@ -167,7 +167,7 @@ class ProfilePage extends ConsumerWidget {
                   ),
                 ),
                 const Divider(height: 1),
-                
+
                 ListTile(
                   leading: const Icon(Icons.people_outline),
                   title: const Text('Friends'),
@@ -180,9 +180,9 @@ class ProfilePage extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Logout Button
           Card(
             color: Theme.of(context).colorScheme.errorContainer,
@@ -201,7 +201,7 @@ class ProfilePage extends ConsumerWidget {
               onTap: () => _showLogoutDialog(context),
             ),
           ),
-          
+
           const SizedBox(height: 16),
         ],
       ),
@@ -230,8 +230,8 @@ class ProfilePage extends ConsumerWidget {
               error,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -245,7 +245,7 @@ class ProfilePage extends ConsumerWidget {
     AppUser user,
   ) {
     final controller = TextEditingController(text: user.displayName);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -273,7 +273,7 @@ class ProfilePage extends ConsumerWidget {
                 );
                 return;
               }
-              
+
               if (newName == user.displayName) {
                 Navigator.pop(context);
                 return;
@@ -283,7 +283,7 @@ class ProfilePage extends ConsumerWidget {
                 await ref
                     .read(currentUserProvider.notifier)
                     .updateDisplayName(newName);
-                
+
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(

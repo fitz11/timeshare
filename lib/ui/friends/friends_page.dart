@@ -30,9 +30,7 @@ class FriendsPage extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => _buildErrorState(context, ref, error),
     );
   }
@@ -53,16 +51,16 @@ class FriendsPage extends ConsumerWidget {
             Text(
               'No Friends Yet',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Search for users to add them as friends',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -92,8 +90,8 @@ class FriendsPage extends ConsumerWidget {
               error.toString(),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
@@ -107,11 +105,7 @@ class FriendsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildFriendCard(
-    BuildContext context,
-    WidgetRef ref,
-    AppUser friend,
-  ) {
+  Widget _buildFriendCard(BuildContext context, WidgetRef ref, AppUser friend) {
     // Get initials for avatar
     final initials = friend.displayName
         .split(' ')
@@ -131,7 +125,7 @@ class FriendsPage extends ConsumerWidget {
                   child: Image.network(
                     friend.photoUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Text(initials),
+                    errorBuilder: (_, _, _) => Text(initials),
                   ),
                 )
               : Text(
@@ -202,9 +196,9 @@ class FriendsPage extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () {
-              ref.read(userFriendsProvider.notifier).removeFriend(
-                    targetUid: friend.uid,
-                  );
+              ref
+                  .read(userFriendsProvider.notifier)
+                  .removeFriend(targetUid: friend.uid);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

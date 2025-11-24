@@ -27,6 +27,6 @@ abstract class Event with _$Event {
 
 extension EventX on Event {
   String dbgOutput() {
-    return "$name: $calendarId : ${DateFormat.yMMMd().format(time)} : ${color.toARGB32()} : ${shape.toString()}\n";
+    return '$name: $calendarId : ${DateFormat.yMMMd().format(time)} : ${color.toARGB32()} : ${shape.toString()}\n';
   }
 }

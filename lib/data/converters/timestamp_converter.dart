@@ -4,7 +4,7 @@ import 'package:timeshare/data/models/event/event.dart';
 DateTime fromTimestamp(dynamic value) {
   if (value is DateTime) return value;
   if (value is Timestamp) return value.toDate();
-  throw Exception("invalid timestamp: $value");
+  throw Exception('invalid timestamp: $value');
 }
 
 DateTime toTimestamp(DateTime date) => date.toUtc();

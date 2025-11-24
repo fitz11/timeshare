@@ -23,7 +23,9 @@ class EventListItem extends ConsumerWidget {
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("Copied '${event.name}' - tap a date on the calendar to paste."),
+            Text(
+              "Copied '${event.name}' - tap a date on the calendar to paste.",
+            ),
             const Text('Tap the calendar header to exit copy mode.'),
           ],
         ),
@@ -36,12 +38,13 @@ class EventListItem extends ConsumerWidget {
     final calendars = ref.watch(calendarsProvider);
     final copyMode = ref.watch(interactionModeStateProvider);
     final copiedEvent = ref.watch(copyEventStateProvider);
-    
+
     // Check if this event is the one being copied (Freezed provides value equality)
-    final isCopied = copyMode == InteractionMode.copy && 
-                     copiedEvent != null && 
-                     copiedEvent == event;
-    
+    final isCopied =
+        copyMode == InteractionMode.copy &&
+        copiedEvent != null &&
+        copiedEvent == event;
+
     // Find the calendar name for this event
     final calendarName = calendars.when(
       data: (calList) {
@@ -55,7 +58,7 @@ class EventListItem extends ConsumerWidget {
         }
       },
       loading: () => 'Loading...',
-      error: (_, __) => 'Error',
+      error: (_, _) => 'Error',
     );
 
     return ListTile(

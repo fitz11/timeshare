@@ -40,18 +40,17 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
   void _copyEvent(DateTime targetDate, Event sourceEvent) {
     final copied = sourceEvent.copyWith(time: targetDate);
-    ref.read(calendarMutationsProvider.notifier).addEventToCalendar(
-      calendarId: copied.calendarId,
-      event: copied,
-    );
+    ref
+        .read(calendarMutationsProvider.notifier)
+        .addEventToCalendar(calendarId: copied.calendarId, event: copied);
   }
 
   @override
   Widget build(BuildContext context) {
     final selectedDay = ref.watch(selectedDayProvider);
     final copyMode = ref.watch(interactionModeStateProvider);
-    
-    // Change header color to blue when in copy mode
+
+    // Change header color to blue when in copy mode, and black in normal
     final headerStyle = copyMode == InteractionMode.copy
         ? HeaderStyle(
             titleCentered: true,
@@ -64,8 +63,18 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
             leftChevronIcon: Icon(Icons.chevron_left, color: Colors.blue),
             rightChevronIcon: Icon(Icons.chevron_right, color: Colors.blue),
           )
-        : HeaderStyle(titleCentered: true, formatButtonVisible: false);
-    
+        : HeaderStyle(
+            titleCentered: true,
+            formatButtonVisible: false,
+            titleTextStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+            leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
+            rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
+          );
+
     return TableCalendar(
       focusedDay: _focusedDay,
       firstDay: start,
@@ -80,7 +89,8 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
       eventLoader: (day) => widget.eventsMap[normalizeDate(day)] ?? [],
 
-      onHeaderTapped: (day) => ref.read(copyEventStateProvider.notifier).clear(),
+      onHeaderTapped: (day) =>
+          ref.read(copyEventStateProvider.notifier).clear(),
 
       onFormatChanged: (format) {
         if (_calendarFormat != format) {

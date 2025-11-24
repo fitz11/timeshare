@@ -25,18 +25,22 @@ class CalendarRepository {
         .collection('calendars')
         .where('owner', isEqualTo: uid)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              return Calendar.fromJson(doc.data());
-            }).toList());
+        .map(
+          (snapshot) => snapshot.docs.map((doc) {
+            return Calendar.fromJson(doc.data());
+          }).toList(),
+        );
 
     // Watch shared calendars
     final sharedStream = firestore
         .collection('calendars')
         .where('sharedWith', arrayContains: uid)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              return Calendar.fromJson(doc.data());
-            }).toList());
+        .map(
+          (snapshot) => snapshot.docs.map((doc) {
+            return Calendar.fromJson(doc.data());
+          }).toList(),
+        );
 
     // Combine both streams using StreamController
     final controller = StreamController<List<Calendar>>();
@@ -47,7 +51,7 @@ class CalendarRepository {
     void emitCombined() {
       final combined = <Calendar>[];
       seenIds.clear();
-      
+
       // Add owned calendars first
       for (final calendar in ownedCalendars) {
         if (!seenIds.contains(calendar.id)) {
@@ -55,7 +59,7 @@ class CalendarRepository {
           combined.add(calendar);
         }
       }
-      
+
       // Add shared calendars (avoiding duplicates)
       for (final calendar in sharedCalendars) {
         if (!seenIds.contains(calendar.id)) {
@@ -63,7 +67,7 @@ class CalendarRepository {
           combined.add(calendar);
         }
       }
-      
+
       controller.add(combined);
     }
 
@@ -92,17 +96,15 @@ class CalendarRepository {
     uid = uid ?? auth.currentUser?.uid;
     if (uid == null) return [];
 
-    final ownedSnapshot =
-        await firestore
-            .collection('calendars')
-            .where('owner', isEqualTo: uid)
-            .get();
+    final ownedSnapshot = await firestore
+        .collection('calendars')
+        .where('owner', isEqualTo: uid)
+        .get();
 
-    final sharedSnapshot =
-        await firestore
-            .collection('calendars')
-            .where('sharedWith', arrayContains: uid)
-            .get();
+    final sharedSnapshot = await firestore
+        .collection('calendars')
+        .where('sharedWith', arrayContains: uid)
+        .get();
 
     final combined = [...ownedSnapshot.docs, ...sharedSnapshot.docs];
     return combined.map((doc) {
@@ -125,7 +127,7 @@ class CalendarRepository {
     final snapshot = await docRef.get();
 
     if (!snapshot.exists || snapshot.data() == null) {
-      throw Exception("Calendar not found");
+      throw Exception('Calendar not found');
     }
 
     // Get the existing calendar data
@@ -209,10 +211,9 @@ class CalendarRepository {
         .doc(calendarId);
 
     await doc.update({
-      'sharedWith':
-          share
-              ? FieldValue.arrayUnion([targetUid])
-              : FieldValue.arrayRemove([targetUid]),
+      'sharedWith': share
+          ? FieldValue.arrayUnion([targetUid])
+          : FieldValue.arrayRemove([targetUid]),
     });
   }
 
@@ -241,7 +242,7 @@ class CalendarRepository {
   Future<void> deleteCalendar(String calendarId) async {
     final ref = firestore.collection('calendars').doc(calendarId);
     final snapshot = await ref.get();
-    if (!snapshot.exists) throw Exception("Calendar not found.");
+    if (!snapshot.exists) throw Exception('Calendar not found.');
     final data = snapshot.data();
     if (data?['ownerId'] != auth.currentUser!.uid) {
       throw Exception('You are not the owner of the calendar.');

@@ -28,16 +28,10 @@ class _FabState extends ConsumerState<Fab> with SingleTickerProviderStateMixin {
       duration: const Duration(milliseconds: 200),
     );
     _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _rotationAnimation = Tween<double>(begin: 0.0, end: 0.125).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
   }
 
@@ -70,7 +64,7 @@ class _FabState extends ConsumerState<Fab> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final page = ref.watch(navIndexProvider);
-    
+
     // Only show FAB on calendar page
     if (page != HomePages.calendar) {
       return const SizedBox.shrink();
@@ -81,7 +75,7 @@ class _FabState extends ConsumerState<Fab> with SingleTickerProviderStateMixin {
     return calendars.when(
       data: (calendarsList) => _buildSpeedDial(context, calendarsList),
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 
@@ -162,10 +156,7 @@ class _FabState extends ConsumerState<Fab> with SingleTickerProviderStateMixin {
                 ),
               ],
             ),
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
+            child: Text(label, style: Theme.of(context).textTheme.labelLarge),
           ),
           const SizedBox(width: 8),
           FloatingActionButton(

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Calendar {
 
- String get id; String get owner;@SetConverter() Set<String> get sharedWith; String get name;// ignore: invalid_annotation_target
+ String get id; String get owner;@SetConverter() Set<String> get sharedWith; String get name;
 @EventMapLoader() Map<DateTime, List<Event>> get events;
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
@@ -227,9 +227,7 @@ class _Calendar implements Calendar {
 }
 
 @override final  String name;
-// ignore: invalid_annotation_target
  final  Map<DateTime, List<Event>> _events;
-// ignore: invalid_annotation_target
 @override@JsonKey()@EventMapLoader() Map<DateTime, List<Event>> get events {
   if (_events is EqualUnmodifiableMapView) return _events;
   // ignore: implicit_dynamic_type
