@@ -22,7 +22,7 @@ class CalendarFilterSheet extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             ...calendars.map((calendar) {
-              final isSelected = selectedIds.contains(calendar.id);
+              final isSelected = selectedIds.value?.contains(calendar.id);
               return CheckboxListTile(
                 title: Text(calendar.name),
                 value: isSelected,

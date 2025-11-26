@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
@@ -15,8 +17,6 @@ CalendarRepository calendarRepository(Ref ref) => CalendarRepository();
 /// Keep alive to prevent re-initialization when navigating away
 @riverpod
 Stream<List<Calendar>> calendars(Ref ref) {
-  // Keep provider alive to prevent disposal when not watched
-  ref.keepAlive();
   final repo = ref.watch(calendarRepositoryProvider);
   return repo.watchAllAvailableCalendars();
 }
@@ -77,31 +77,19 @@ class CalendarMutations extends _$CalendarMutations {
 /// Selected calendar IDs - which calendars are visible
 @riverpod
 class SelectedCalendarIds extends _$SelectedCalendarIds {
-  bool _isLoaded = false;
-
   @override
-  Set<String> build() {
-    final asyncCalendars = ref.watch(calendarsProvider);
-    if (_isLoaded) {
-      return state;
-    }
-
-    return asyncCalendars.when(
-      data: (calendars) {
-        _isLoaded = true;
-        return calendars.map((c) => c.id).toSet();
-      },
-      loading: () => {},
-      error: (_, _) => {},
+  FutureOr<Set<String>> build() {
+    return ref.watch(
+      calendarsProvider.selectAsync((cal) => cal.map((c) => c.id).toSet()),
     );
   }
 
   void toggle(String id) {
-    final current = state;
+    final current = state.requireValue;
     if (current.contains(id)) {
-      state = current.where((e) => e != id).toSet();
+      state = AsyncValue.data(current.where((e) => e != id).toSet());
     } else {
-      state = {...current, id};
+      state = AsyncValue.data({...current, id});
     }
   }
 
@@ -109,14 +97,14 @@ class SelectedCalendarIds extends _$SelectedCalendarIds {
     final calendarsAsync = ref.watch(calendarsProvider);
     calendarsAsync.when(
       data: (calendars) {
-        state = calendars.map((cal) => cal.id).toSet();
+        state = AsyncValue.data(calendars.map((cal) => cal.id).toSet());
       },
       loading: () {},
       error: (_, _) {},
     );
   }
 
-  void clear() => state = {};
+  void clear() => state = AsyncValue.data({});
 }
 
 /// Selected day in the calendar
@@ -174,7 +162,7 @@ VisibleEvents visibleEvents(Ref ref) {
     data: (allCalendars) {
       // Filter to selected calendars
       final visibleCalendars = allCalendars
-          .where((cal) => selectedIds.contains(cal.id))
+          .where((cal) => selectedIds.value?.contains(cal.id) ?? false)
           .toList();
 
       // Merge events from all visible calendars

@@ -106,7 +106,7 @@ final class CalendarsProvider
   }
 }
 
-String _$calendarsHash() => r'4e532657317293ffabbd52d135a67b1443d8b0fb';
+String _$calendarsHash() => r'5e495f5e702dd3d6b6aafdd0822d8bde8f63b365';
 
 /// Calendar mutations - simplified without optimistic updates
 /// The stream will automatically update the UI when Firestore changes
@@ -170,7 +170,7 @@ const selectedCalendarIdsProvider = SelectedCalendarIdsProvider._();
 
 /// Selected calendar IDs - which calendars are visible
 final class SelectedCalendarIdsProvider
-    extends $NotifierProvider<SelectedCalendarIds, Set<String>> {
+    extends $AsyncNotifierProvider<SelectedCalendarIds, Set<String>> {
   /// Selected calendar IDs - which calendars are visible
   const SelectedCalendarIdsProvider._()
     : super(
@@ -189,33 +189,25 @@ final class SelectedCalendarIdsProvider
   @$internal
   @override
   SelectedCalendarIds create() => SelectedCalendarIds();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Set<String> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<Set<String>>(value),
-    );
-  }
 }
 
 String _$selectedCalendarIdsHash() =>
-    r'85bfb00d921a2100216858abf1502e615b9ffa23';
+    r'b6583859865a866f01653af48c187e66e4b42c69';
 
 /// Selected calendar IDs - which calendars are visible
 
-abstract class _$SelectedCalendarIds extends $Notifier<Set<String>> {
-  Set<String> build();
+abstract class _$SelectedCalendarIds extends $AsyncNotifier<Set<String>> {
+  FutureOr<Set<String>> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<Set<String>, Set<String>>;
+    final ref = this.ref as $Ref<AsyncValue<Set<String>>, Set<String>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<Set<String>, Set<String>>,
-              Set<String>,
+              AnyNotifier<AsyncValue<Set<String>>, Set<String>>,
+              AsyncValue<Set<String>>,
               Object?,
               Object?
             >;
@@ -507,4 +499,4 @@ final class VisibleEventsProvider
   }
 }
 
-String _$visibleEventsHash() => r'3946b19aab10ded5f2ed6b09e5c7ceb99eb93154';
+String _$visibleEventsHash() => r'd096fa3dcb43a16ef42fc46569750945e04af347';
