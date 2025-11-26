@@ -43,6 +43,7 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
     ref
         .read(calendarMutationsProvider.notifier)
         .addEventToCalendar(calendarId: copied.calendarId, event: copied);
+    ref.read(copyEventStateProvider.notifier).set(copied);
   }
 
   @override
@@ -55,7 +56,11 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
         ? HeaderStyle(
             titleCentered: true,
             formatButtonVisible: false,
-            titleTextStyle: TextStyle(fontSize: 17, color: Colors.blue),
+            titleTextStyle: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
             leftChevronIcon: Icon(Icons.chevron_left, color: Colors.blue),
             rightChevronIcon: Icon(Icons.chevron_right, color: Colors.blue),
           )
@@ -77,6 +82,9 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
       onHeaderTapped: (day) {
         ref.read(copyEventStateProvider.notifier).clear();
+        if (ref.read(interactionModeStateProvider) == InteractionMode.normal) {
+          ref.read(selectedDayProvider.notifier).clear();
+        }
         ref.read(interactionModeStateProvider.notifier).setNormal();
       },
 

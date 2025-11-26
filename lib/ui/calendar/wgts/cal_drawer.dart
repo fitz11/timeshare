@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/ui/calendar/wgts/aftertoday_toggle.dart';
-import 'package:timeshare/ui/core/buttons/delete_event_button.dart';
-import 'package:timeshare/ui/core/buttons/new_cal_button.dart';
-import 'package:timeshare/ui/core/buttons/new_event_button.dart';
 
 class CalDrawer extends ConsumerWidget {
   const CalDrawer({super.key});
@@ -32,58 +29,58 @@ class CalDrawer extends ConsumerWidget {
                 Text(
                   'Calendar',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   'Manage your calendars and events',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
               ],
             ),
           ),
-          
-          // Create section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              'Create',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ),
-          const NewCalButton(),
-          const SizedBox(height: 4),
-          const NewEventButton(),
-          
-          const Divider(),
-          
-          // Manage section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              'Manage',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ),
-          const DeleteButton(),
-          
-          const Divider(),
-          
+
+          // Create section ---CURRENTLY DEPRECATED---
+          // Padding(
+          //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          //   child: Text(
+          //     'Create',
+          //     style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          //       color: Theme.of(context).colorScheme.onSurfaceVariant,
+          //     ),
+          //   ),
+          // ),
+          // const NewCalButton(),
+          // const SizedBox(height: 4),
+          // const NewEventButton(),
+          //
+          // const Divider(),
+
+          // Manage section ---CURRENTLY DEPRECATED---
+          // Padding(
+          //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          //   child: Text(
+          //     'Manage',
+          //     style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          //           color: Theme.of(context).colorScheme.onSurfaceVariant,
+          //         ),
+          //   ),
+          // ),
+          // const DeleteButton(),
+          //
+          // const Divider(),
+
           // Settings section
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Text(
               'Settings',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
           const AfterTodayToggle(),

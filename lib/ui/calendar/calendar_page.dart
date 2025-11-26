@@ -11,6 +11,8 @@ class CalendarPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final calendars = ref.watch(calendarsProvider);
     final visibleEvents = ref.watch(visibleEventsProvider);
+    ref.watch(interactionModeStateProvider);
+    ref.watch(copyEventStateProvider);
     return calendars.when(
       data: (_) => Column(
         children: [

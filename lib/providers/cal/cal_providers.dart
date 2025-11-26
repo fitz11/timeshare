@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
@@ -17,6 +15,7 @@ CalendarRepository calendarRepository(Ref ref) => CalendarRepository();
 /// Keep alive to prevent re-initialization when navigating away
 @riverpod
 Stream<List<Calendar>> calendars(Ref ref) {
+  ref.keepAlive();
   final repo = ref.watch(calendarRepositoryProvider);
   return repo.watchAllAvailableCalendars();
 }
@@ -153,6 +152,7 @@ class CopyEventState extends _$CopyEventState {
 /// This replaces both visibleEventsMapProvider and visibleEventsListProvider
 @riverpod
 VisibleEvents visibleEvents(Ref ref) {
+  ref.keepAlive();
   final calendarsAsync = ref.watch(calendarsProvider);
   final selectedIds = ref.watch(selectedCalendarIdsProvider);
   final selectedDay = ref.watch(selectedDayProvider);
