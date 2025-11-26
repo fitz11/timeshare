@@ -9,15 +9,20 @@ class CalendarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final calendars = ref.watch(calendarsProvider);
     final visibleEvents = ref.watch(visibleEventsProvider);
-    return Column(
-      children: [
-        CalendarWidget(eventsMap: visibleEvents.map),
+    return calendars.when(
+      data: (_) => Column(
+        children: [
+          CalendarWidget(eventsMap: visibleEvents.map),
 
-        const Divider(),
+          const Divider(),
 
-        EventList(eventsList: visibleEvents.list),
-      ],
+          EventList(),
+        ],
+      ),
+      loading: () => Center(child: CircularProgressIndicator()),
+      error: (_, _) => SizedBox(),
     );
   }
 }
