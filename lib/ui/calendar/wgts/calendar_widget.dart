@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/data/enums.dart';
 
 DateTime today = normalizeDate(DateTime.now());

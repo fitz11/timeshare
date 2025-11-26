@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
 
 /// Dialog for creating a new event
 class CreateEventDialog extends ConsumerStatefulWidget {
@@ -49,7 +49,8 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
 
   void _updateCanSubmit() {
     setState(() {
-      _canSubmit = _selectedDate != null && _eventNameController.text.isNotEmpty;
+      _canSubmit =
+          _selectedDate != null && _eventNameController.text.isNotEmpty;
     });
   }
 
@@ -203,39 +204,40 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 12,
-                      children: [
-                        Colors.black,
-                        Colors.red,
-                        Colors.blue,
-                        Colors.green,
-                      ].map((color) {
-                        final isSelected = _selectedColor == color;
-                        return ChoiceChip(
-                          label: Text(_colorToName(color)),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            if (selected) {
-                              setState(() {
-                                _selectedColor = color;
-                              });
-                            }
-                          },
-                          avatar: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Colors.grey,
-                                width: isSelected ? 2 : 1,
+                      children:
+                          [
+                            Colors.black,
+                            Colors.red,
+                            Colors.blue,
+                            Colors.green,
+                          ].map((color) {
+                            final isSelected = _selectedColor == color;
+                            return ChoiceChip(
+                              label: Text(_colorToName(color)),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  setState(() {
+                                    _selectedColor = color;
+                                  });
+                                }
+                              },
+                              avatar: Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Colors.grey,
+                                    width: isSelected ? 2 : 1,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                            );
+                          }).toList(),
                     ),
                   ],
                 ),
@@ -274,4 +276,3 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
     );
   }
 }
-

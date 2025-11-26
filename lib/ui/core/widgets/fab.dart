@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
-import 'package:timeshare/data/providers/nav/nav_providers.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/nav/nav_providers.dart';
 import 'package:timeshare/ui/dialogs/create_calendar_dialog.dart';
 import 'package:timeshare/ui/dialogs/open_eventbuilder_dialog.dart';
 

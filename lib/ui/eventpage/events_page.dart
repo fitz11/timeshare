@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
 
 //note: dartls does not recognize that the DateFormat lib
 //is in this import, so it thinks it has to go. I need it
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
 
 ///this is a page that allows users to view/add events
 /// to the provided event list.

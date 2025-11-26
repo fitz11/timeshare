@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
-import 'package:timeshare/data/providers/user/user_providers.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/user/user_providers.dart';
 import 'package:timeshare/ui/core/home_scaffold.dart';
-import 'package:timeshare/ui/pages/auth.dart';
+import 'package:timeshare/ui/login/login_screen.dart';
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});

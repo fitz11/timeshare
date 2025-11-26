@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/ui/calendar/wgts/calendar_widget.dart';
 import 'package:timeshare/ui/calendar/wgts/event_list.dart';
 

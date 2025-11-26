@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/user/user_providers.dart';
+import 'package:timeshare/providers/user/user_providers.dart';
 
 void showUserSearchDialog(BuildContext context, WidgetRef ref) {
   final controller = TextEditingController();
@@ -49,34 +49,31 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
                       final asyncUsers = ref.watch(userSearchProvider(query));
 
                       return asyncUsers.when(
-                        data:
-                            (users) => ListView.builder(
-                              itemCount: users.length,
-                              itemBuilder: (context, index) {
-                                final user = users[index];
-                                return ListTile(
-                                  title: Text(user.displayName),
-                                  subtitle: Text(user.email),
-                                  onTap: () async {
-                                    await ref
-                                        .read(userRepositoryProvider)
-                                        .addFriend(user.uid);
-                                    Navigator.pop(context);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          '${user.displayName} * ${user.email} added as a friend!',
-                                        ),
-                                      ),
-                                    );
-                                  },
+                        data: (users) => ListView.builder(
+                          itemCount: users.length,
+                          itemBuilder: (context, index) {
+                            final user = users[index];
+                            return ListTile(
+                              title: Text(user.displayName),
+                              subtitle: Text(user.email),
+                              onTap: () async {
+                                await ref
+                                    .read(userRepositoryProvider)
+                                    .addFriend(user.uid);
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      '${user.displayName} * ${user.email} added as a friend!',
+                                    ),
+                                  ),
                                 );
                               },
-                            ),
-                        loading:
-                            () => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                            );
+                          },
+                        ),
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
                         error: (e, st) => Center(child: Text('Error: $e')),
                       );
                     },

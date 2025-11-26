@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
 
 class DeleteEventDialog extends ConsumerWidget {
   const DeleteEventDialog({super.key});

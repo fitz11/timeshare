@@ -5,7 +5,7 @@ import 'package:timeshare/data/enums.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:timeshare/data/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
 
 class EventListItem extends ConsumerWidget {
   final Event event;

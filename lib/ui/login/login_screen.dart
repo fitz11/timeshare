@@ -1,7 +1,7 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/providers/user/user_providers.dart';
+import 'package:timeshare/providers/user/user_providers.dart';
 
 /// The '/login' page.
 class AuthScreen extends ConsumerWidget {
