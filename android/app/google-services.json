@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:360570170039:android:40874b470c53938a813b32",
+        "mobilesdk_app_id": "1:360570170039:android:97b750739af5ef8d813b32",
         "android_client_info": {
-          "package_name": "com.example.timeshare"
+          "package_name": "com.ccurn.timeshare"
         }
       },
       "oauth_client": [

@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCJgUlNUy__onEuKO3sHwaPIooCL_GIxVI',
-    appId: '1:360570170039:android:40874b470c53938a813b32',
+    appId: '1:360570170039:android:97b750739af5ef8d813b32',
     messagingSenderId: '360570170039',
     projectId: 'timeshare-32d37',
     storageBucket: 'timeshare-32d37.firebasestorage.app',

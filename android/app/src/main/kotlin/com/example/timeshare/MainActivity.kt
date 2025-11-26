@@ -1,4 +1,4 @@
-package com.example.timeshare
+package com.ccurn.timeshare
 
 import io.flutter.embedding.android.FlutterActivity
 
