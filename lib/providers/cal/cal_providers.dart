@@ -49,8 +49,23 @@ class CalendarMutations extends _$CalendarMutations {
     required Event event,
   }) async {
     final repo = ref.read(calendarRepositoryProvider);
-    await repo.addEventToCalendar(calendarId: calendarId, event: event);
-    // Stream will automatically update
+
+    // Section to check if calendar already has given event
+    final calendarToAdd = ref
+        .read(calendarsProvider)
+        .value
+        ?.firstWhere((cal) => cal.id == calendarId);
+    // Break if no calendar to add to (Maybe provider doesn't have the value)
+    if (calendarToAdd == null) {
+      print('null calendarToAdd');
+      return;
+    }
+    final calendarEvents = calendarToAdd.events[event.time] ?? [];
+    if (!calendarEvents.contains(event)) {
+      await repo.addEventToCalendar(calendarId: calendarId, event: event);
+      return;
+    }
+    print('duplicate event noted');
   }
 
   Future<void> removeEvent({
@@ -59,7 +74,6 @@ class CalendarMutations extends _$CalendarMutations {
   }) async {
     final repo = ref.read(calendarRepositoryProvider);
     await repo.removeEventFromCalendar(calendarId: calendarId, event: event);
-    // Stream will automatically update
   }
 
   Future<void> shareCalendar(
