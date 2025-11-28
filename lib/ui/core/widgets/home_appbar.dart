@@ -65,8 +65,8 @@ Widget calFilterButton(BuildContext context) {
 }
 
 Widget friendSearchButton(BuildContext context, WidgetRef ref) {
-  return FilledButton(
-    child: Row(children: [Icon(Icons.search), Text('Search for users')]),
+  return IconButton(
+    icon: Icon(Icons.search),
     onPressed: () {
       showUserSearchDialog(context, ref);
     },

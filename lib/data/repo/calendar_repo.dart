@@ -27,6 +27,7 @@ class CalendarRepository {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs.map((doc) {
+            print('FIREBASE READ: calendar from ownedStream');
             return Calendar.fromJson(doc.data());
           }).toList(),
         );
@@ -38,6 +39,7 @@ class CalendarRepository {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs.map((doc) {
+            print('FIREBASE READ: calendar from ownedStream');
             return Calendar.fromJson(doc.data());
           }).toList(),
         );
@@ -116,6 +118,7 @@ class CalendarRepository {
   Future<void> addCalendar(Calendar calendar) async {
     final docRef = firestore.collection('calendars').doc(calendar.id);
     await docRef.set(calendar.toJson());
+    print('FIREBASE READ: adding calendar');
   }
 
   /// Adds an event to the firestore calendar given.
@@ -147,7 +150,7 @@ class CalendarRepository {
     final updatedCalendar = calendar.copyWith(events: updatedEvents);
 
     // Write back to Firestore
-    print(' -updating the calendar in firestore...');
+    print('FIREBASE WRITE: adding event to calendar');
     await docRef.set(updatedCalendar.toJson());
     print(' -Finished updating!');
   }
@@ -157,7 +160,9 @@ class CalendarRepository {
     required String calendarId,
     required Event event,
   }) async {
-    print('removing calendar $calendarId...');
+    print(
+      'FIREBASE READ: removing event ${event.name} from calendar $calendarId...',
+    );
 
     final docRef = FirebaseFirestore.instance
         .collection('calendars')
@@ -194,6 +199,7 @@ class CalendarRepository {
     final uid = auth.currentUser?.uid;
     if (uid == null) return;
 
+    print('FIRESTORE WRITE: Create calendar');
     await firestore
         .collection('calendars')
         .doc(calendar.id)
@@ -215,12 +221,14 @@ class CalendarRepository {
           ? FieldValue.arrayUnion([targetUid])
           : FieldValue.arrayRemove([targetUid]),
     });
+    print('FIRESTORE WRITE: update calendar sharing');
   }
 
   /// Retreive a calendar by ID
   Future<Calendar?> getCalendarById(String calendarId) async {
     final doc = firestore.collection('calendars').doc(calendarId);
     final snapshot = await doc.get();
+    print('FIRESTORE READ: getting calendar by ID');
     if (!snapshot.exists) {
       print('calendar not found :(');
       return null;
@@ -242,6 +250,7 @@ class CalendarRepository {
   Future<void> deleteCalendar(String calendarId) async {
     final ref = firestore.collection('calendars').doc(calendarId);
     final snapshot = await ref.get();
+    print('FIRESTORE READ: get $calendarId for deletion');
     if (!snapshot.exists) throw Exception('Calendar not found.');
     final data = snapshot.data();
     if (data?['ownerId'] != auth.currentUser!.uid) {
@@ -249,5 +258,6 @@ class CalendarRepository {
     }
 
     await ref.delete();
+    print('FIRESTORE WRITE: deleted $calendarId');
   }
 }
