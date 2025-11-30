@@ -1,20 +1,18 @@
 # timeshare
-
 <!--toc:start-->
-- [timeshare](#timeshare)
-  - [Usage](#usage)
-    - [Authentication and Security](#authentication-and-security)
-    - [Making a Calendar](#making-a-calendar)
-    - [Making and Modifying Events](#making-and-modifying-events)
-    - [Viewing Events](#viewing-events)
-    - [Sharing Events](#sharing-events)
-  - [General Flow Structure](#general-flow-structure)
-  - [Elements Explained](#elements-explained)
-    - [The Database](#the-database)
-    - [The Repositories](#the-repositories)
-      - [Why is there no state or local copy stored in the repositories?](#why-is-there-no-state-or-local-copy-stored-in-the-repositories)
-    - [The Notifiers and Providers](#the-notifiers-and-providers)
-    - [UI Elements](#ui-elements)
+- [Usage](#usage)
+  - [Authentication and Security](#authentication-and-security)
+  - [Making a Calendar](#making-a-calendar)
+  - [Making and Modifying Events](#making-and-modifying-events)
+  - [Viewing Events](#viewing-events)
+  - [Sharing Events](#sharing-events)
+- [General Flow Structure](#general-flow-structure)
+- [Elements Explained](#elements-explained)
+  - [The Database](#the-database)
+  - [The Repositories](#the-repositories)
+    - [Why is there no state or local copy stored in the repositories?](#why-is-there-no-state-or-local-copy-stored-in-the-repositories)
+  - [The Notifiers and Providers](#the-notifiers-and-providers)
+  - [UI Elements](#ui-elements)
 <!--toc:end-->
 
 A simple calendar sharing thing. Designed to be easier to edit than others.
@@ -95,13 +93,13 @@ calendar with whomever you have shared it with.
 
 ## General Flow Structure
 
-**Database**
-↑ ↓
-**Repositories**
-↑ ↓
-**Notifiers & Providers**
-↑ ↓
-**UI elements**
+**Database**  
+↑ ↓  
+**Repositories**  
+↑ ↓  
+**Notifiers & Providers**  
+↑ ↓  
+**UI elements**  
 
 ## Elements Explained
 
