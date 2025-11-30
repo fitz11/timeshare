@@ -1,3 +1,19 @@
+// Timeshare: a cross-platform app to make and share calendars.
+// Copyright (C) 2025  David Fitzsimmons
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
@@ -68,11 +84,12 @@ extension MutCalendar on Calendar {
   Calendar addEvent(Event event) {
     final copiedEvent = event.copyWith();
     final date = normalizeDate(event.time);
-    final updatedEvents = Map<DateTime, List<Event>>.from(events)..update(
-      date,
-      (list) => [...list, copiedEvent],
-      ifAbsent: () => [copiedEvent],
-    );
+    final updatedEvents = Map<DateTime, List<Event>>.from(events)
+      ..update(
+        date,
+        (list) => [...list, copiedEvent],
+        ifAbsent: () => [copiedEvent],
+      );
     return copyWith(events: updatedEvents);
   }
 
@@ -91,11 +108,12 @@ extension MutCalendar on Calendar {
     final copiedEvent = event.copyWith(time: targetDate);
     final normalizedDate = normalizeDate(targetDate);
 
-    final updatedEvents = Map<DateTime, List<Event>>.from(events)..update(
-      normalizedDate,
-      (list) => [...list, copiedEvent],
-      ifAbsent: () => [copiedEvent],
-    );
+    final updatedEvents = Map<DateTime, List<Event>>.from(events)
+      ..update(
+        normalizedDate,
+        (list) => [...list, copiedEvent],
+        ifAbsent: () => [copiedEvent],
+      );
 
     return copyWith(events: updatedEvents);
   }

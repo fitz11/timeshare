@@ -1,3 +1,19 @@
+// Timeshare: a cross-platform app to make and share calendars.
+// Copyright (C) 2025  David Fitzsimmons
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
@@ -59,12 +75,11 @@ class UserRepository {
       print('insufficient query: $email');
       return [];
     }
-    final query =
-        await _users
-            .where('email', isGreaterThanOrEqualTo: email)
-            .where('email', isLessThanOrEqualTo: '$email\uf8ff')
-            .limit(10)
-            .get();
+    final query = await _users
+        .where('email', isGreaterThanOrEqualTo: email)
+        .where('email', isLessThanOrEqualTo: '$email\uf8ff')
+        .limit(10)
+        .get();
     if (query.docs.isEmpty) return [];
     return query.docs
         .map((doc) => AppUser.fromJson(doc.data()).copyWith(uid: doc.id))
@@ -118,8 +133,6 @@ class UserRepository {
     if (currentUid == null) return;
 
     final userRef = _users.doc(currentUid);
-    await userRef.update({
-      'displayName': newDisplayName,
-    });
+    await userRef.update({'displayName': newDisplayName});
   }
 }

@@ -1,3 +1,19 @@
+// Timeshare: a cross-platform app to make and share calendars.
+// Copyright (C) 2025  David Fitzsimmons
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:flutter/material.dart';
 
 const lightColorScheme = ColorScheme(
@@ -73,7 +89,7 @@ TextTheme _buildTextTheme(ColorScheme colorScheme) {
       letterSpacing: 0,
       color: colorScheme.onSurface,
     ),
-    
+
     // Headline styles
     headlineLarge: TextStyle(
       fontSize: 32,
@@ -93,7 +109,7 @@ TextTheme _buildTextTheme(ColorScheme colorScheme) {
       letterSpacing: 0,
       color: colorScheme.onSurface,
     ),
-    
+
     // Title styles
     titleLarge: TextStyle(
       fontSize: 22,
@@ -113,7 +129,7 @@ TextTheme _buildTextTheme(ColorScheme colorScheme) {
       letterSpacing: 0.1,
       color: colorScheme.onSurface,
     ),
-    
+
     // Body styles
     bodyLarge: TextStyle(
       fontSize: 16,
@@ -133,7 +149,7 @@ TextTheme _buildTextTheme(ColorScheme colorScheme) {
       letterSpacing: 0.4,
       color: colorScheme.onSurfaceVariant,
     ),
-    
+
     // Label styles
     labelLarge: TextStyle(
       fontSize: 14,
@@ -159,80 +175,67 @@ TextTheme _buildTextTheme(ColorScheme colorScheme) {
 /// Builds a complete Material 3 theme with enhanced styling
 ThemeData buildTheme(ColorScheme colorScheme, Brightness brightness) {
   final isDark = brightness == Brightness.dark;
-  
+
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
     brightness: brightness,
-    
+
     // Typography
     textTheme: _buildTextTheme(colorScheme),
-    
+
     // Card Theme
     cardTheme: CardThemeData(
       elevation: isDark ? 0 : 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     ),
-    
+
     // AppBar Theme
     appBarTheme: AppBarTheme(
       elevation: 0,
       centerTitle: false,
       scrolledUnderElevation: 1,
       shape: const Border(
-        bottom: BorderSide(
-          color: Colors.transparent,
-          width: 0,
-        ),
+        bottom: BorderSide(color: Colors.transparent, width: 0),
       ),
     ),
-    
+
     // Button Themes
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     ),
-    
+
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     ),
-    
+
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     ),
-    
+
     // FloatingActionButton Theme
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       elevation: 3,
       highlightElevation: 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
-    
+
     // Input Decoration Theme
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: isDark 
+      fillColor: isDark
           ? colorScheme.surfaceContainerHighest
           : colorScheme.surface,
       border: OutlineInputBorder(
@@ -241,7 +244,9 @@ ThemeData buildTheme(ColorScheme colorScheme, Brightness brightness) {
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: colorScheme.outline.withValues(alpha: 0.5)),
+        borderSide: BorderSide(
+          color: colorScheme.outline.withValues(alpha: 0.5),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -253,53 +258,43 @@ ThemeData buildTheme(ColorScheme colorScheme, Brightness brightness) {
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     ),
-    
+
     // Dialog Theme
     dialogTheme: DialogThemeData(
       elevation: 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       backgroundColor: colorScheme.surface,
     ),
-    
+
     // Drawer Theme
     drawerTheme: DrawerThemeData(
       elevation: 0,
       backgroundColor: colorScheme.surface,
-      shape: const Border(
-        right: BorderSide.none,
-      ),
+      shape: const Border(right: BorderSide.none),
     ),
-    
+
     // ListTile Theme
     listTileTheme: ListTileThemeData(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     ),
-    
+
     // Chip Themes
     chipTheme: ChipThemeData(
       elevation: 0,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
-    
+
     // Card Theme for elevated surfaces
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 1,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     ),
-    
+
     // Bottom Navigation Bar Theme
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       elevation: 8,
