@@ -7,12 +7,13 @@ import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
 import 'package:timeshare/data/enums.dart';
+import 'package:timeshare/data/repo/firebase_repo.dart';
 
 part 'cal_providers.g.dart';
 
 /// Repository provider
 @riverpod
-CalendarRepository calendarRepository(Ref ref) => CalendarRepository();
+CalendarRepository calendarRepository(Ref ref) => FirebaseRepository();
 
 /// Main calendar stream - automatically updates when Firestore changes
 /// Keep alive to prevent re-initialization when navigating away
