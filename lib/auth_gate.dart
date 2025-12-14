@@ -22,10 +22,7 @@ class AuthGate extends ConsumerWidget {
           );
         }
 
-        // User logged in - initialize data providers here
         if (snapshot.hasData) {
-          // Pre-initialize data providers to keep them alive
-          // This prevents re-initialization when navigating away
           return const HomeScaffold();
         }
 
