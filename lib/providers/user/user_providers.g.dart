@@ -54,7 +54,7 @@ final class UserRepositoryProvider
   }
 }
 
-String _$userRepositoryHash() => r'76be50d2fcdefd6dfc4e04e65cc35fd2c3ae612f';
+String _$userRepositoryHash() => r'685b7bf3c4ba3b7c1118c75374c3cbb81fbfc785';
 
 @ProviderFor(UserFriendsNotifier)
 const userFriendsProvider = UserFriendsNotifierProvider._();

@@ -8,6 +8,52 @@ part of 'cal_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// AppLogger provider - enables DI and easier testing
+
+@ProviderFor(appLogger)
+const appLoggerProvider = AppLoggerProvider._();
+
+/// AppLogger provider - enables DI and easier testing
+
+final class AppLoggerProvider
+    extends $FunctionalProvider<AppLogger, AppLogger, AppLogger>
+    with $Provider<AppLogger> {
+  /// AppLogger provider - enables DI and easier testing
+  const AppLoggerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'appLoggerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$appLoggerHash();
+
+  @$internal
+  @override
+  $ProviderElement<AppLogger> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AppLogger create(Ref ref) {
+    return appLogger(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AppLogger value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AppLogger>(value),
+    );
+  }
+}
+
+String _$appLoggerHash() => r'df8d663b25029b9f0a06806ba7ff51cc86d2ed83';
+
 /// Repository provider with logging wrapper
 
 @ProviderFor(calendarRepository)
@@ -59,7 +105,7 @@ final class CalendarRepositoryProvider
 }
 
 String _$calendarRepositoryHash() =>
-    r'5e100e7f47efeefe9973dc96fc58bac346609a2d';
+    r'241c2977d7b0f5eb5ecc6e11223b85f6e0eab0c8';
 
 /// Main calendar stream - automatically updates when Firestore changes
 /// Keep alive to prevent re-initialization when navigating away
@@ -193,7 +239,7 @@ final class CalendarMutationsProvider
   }
 }
 
-String _$calendarMutationsHash() => r'ed25364e5f63944faa2153853cbb944eae74fd00';
+String _$calendarMutationsHash() => r'acd0604bc23a3fa7a9def16caedc6de96c7b5bcb';
 
 /// Calendar mutations - simplified without optimistic updates.
 /// The stream will automatically update the UI when Firestore changes.
@@ -333,6 +379,124 @@ abstract class _$SelectedDay extends $Notifier<DateTime?> {
             as $ClassProviderElement<
               AnyNotifier<DateTime?, DateTime?>,
               DateTime?,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
+/// Focused day in the calendar widget (which month is displayed)
+
+@ProviderFor(FocusedDay)
+const focusedDayProvider = FocusedDayProvider._();
+
+/// Focused day in the calendar widget (which month is displayed)
+final class FocusedDayProvider extends $NotifierProvider<FocusedDay, DateTime> {
+  /// Focused day in the calendar widget (which month is displayed)
+  const FocusedDayProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'focusedDayProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$focusedDayHash();
+
+  @$internal
+  @override
+  FocusedDay create() => FocusedDay();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DateTime value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DateTime>(value),
+    );
+  }
+}
+
+String _$focusedDayHash() => r'e1ebbe60b4d3618dfdb9ee27339eb7a15d198f0f';
+
+/// Focused day in the calendar widget (which month is displayed)
+
+abstract class _$FocusedDay extends $Notifier<DateTime> {
+  DateTime build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<DateTime, DateTime>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<DateTime, DateTime>,
+              DateTime,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
+/// Calendar display format (month, two weeks, week)
+
+@ProviderFor(CalendarFormatState)
+const calendarFormatStateProvider = CalendarFormatStateProvider._();
+
+/// Calendar display format (month, two weeks, week)
+final class CalendarFormatStateProvider
+    extends $NotifierProvider<CalendarFormatState, CalendarFormat> {
+  /// Calendar display format (month, two weeks, week)
+  const CalendarFormatStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'calendarFormatStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$calendarFormatStateHash();
+
+  @$internal
+  @override
+  CalendarFormatState create() => CalendarFormatState();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CalendarFormat value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CalendarFormat>(value),
+    );
+  }
+}
+
+String _$calendarFormatStateHash() =>
+    r'5ed300ae3eb9e1ab764e0968b1c485ffecc3d2c2';
+
+/// Calendar display format (month, two weeks, week)
+
+abstract class _$CalendarFormatState extends $Notifier<CalendarFormat> {
+  CalendarFormat build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<CalendarFormat, CalendarFormat>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<CalendarFormat, CalendarFormat>,
+              CalendarFormat,
               Object?,
               Object?
             >;

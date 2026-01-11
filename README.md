@@ -21,16 +21,31 @@ A simple calendar sharing thing. Designed to be easier to edit than others.
 
 ### Authentication and Security
 
-- When a user makes an account, they have an entry generated in a Firebase
-Firestore database. Your password is not visible to myself, any maintainers of the
-software. I cannot say with absolute certainty that your password is well
-managed by Google, which owns Firebase. I can say that it is likely safe from
-extraction in the event of a breach, however much more likely your password
-is compromised by yourself, or some actor acting between you and this service.
+> **Important Security Notice:** Please read this section carefully before storing sensitive information in Timeshare.
 
-- All data you save to this application is saved as 'raw' data: that means that
-your data is not encrypted or in any way secured on the backend. Anyone who has
-access to the Firebase service can see what you host on the service.
+#### Password Security
+Your password is managed by Firebase Authentication (Google). It is:
+- Never stored in Timeshare's database
+- Handled entirely by Google's secure authentication infrastructure
+- Not visible to the app developer or maintainers
+
+#### Data Storage - Please Read Carefully
+
+**Your calendar data is NOT end-to-end encrypted.** This means:
+
+- Data is encrypted during transmission (HTTPS)
+- Data is encrypted at rest by Google's infrastructure
+- However, data **can be read by** database administrators and anyone with Firestore access
+
+**What data is stored:**
+- Your email address and display name
+- Calendar names and sharing settings
+- Event names, dates, times, and recurrence patterns
+- Your friends list
+
+**Recommendation:** Do not store highly sensitive information (medical details, financial data, confidential business information) in this app.
+
+For complete security details, see [SECURITY.md](SECURITY.md).
 
 ### Making a Calendar
 

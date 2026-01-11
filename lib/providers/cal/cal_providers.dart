@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:uuid/uuid.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/models/event/event_recurrence.dart';
@@ -11,10 +12,16 @@ import 'package:timeshare/services/logging/app_logger.dart';
 
 part 'cal_providers.g.dart';
 
+const _uuid = Uuid();
+
+/// AppLogger provider - enables DI and easier testing
+@riverpod
+AppLogger appLogger(Ref ref) => AppLogger();
+
 /// Repository provider with logging wrapper
 @riverpod
 CalendarRepository calendarRepository(Ref ref) =>
-    LoggedCalendarRepository(FirebaseRepository(), AppLogger());
+    LoggedCalendarRepository(FirebaseRepository(), ref.watch(appLoggerProvider));
 
 /// Main calendar stream - automatically updates when Firestore changes
 /// Keep alive to prevent re-initialization when navigating away
@@ -56,7 +63,7 @@ class CalendarMutations extends _$CalendarMutations {
     required String name,
   }) async {
     final calendar = Calendar(
-      id: '${ownerUid}_$name',
+      id: _uuid.v4(),
       owner: ownerUid,
       name: name,
     );
@@ -69,7 +76,7 @@ class CalendarMutations extends _$CalendarMutations {
   }) async {
     // Ensure event has an ID
     final eventToAdd = event.id.isEmpty
-        ? event.copyWith(id: DateTime.now().millisecondsSinceEpoch.toString())
+        ? event.copyWith(id: _uuid.v4())
         : event;
 
     await _repo.addEvent(calendarId, eventToAdd);
@@ -133,6 +140,24 @@ class SelectedDay extends _$SelectedDay {
 
   void select(DateTime day) => state = normalizeDate(day);
   void clear() => state = null;
+}
+
+/// Focused day in the calendar widget (which month is displayed)
+@riverpod
+class FocusedDay extends _$FocusedDay {
+  @override
+  DateTime build() => normalizeDate(DateTime.now());
+
+  void set(DateTime day) => state = normalizeDate(day);
+}
+
+/// Calendar display format (month, two weeks, week)
+@riverpod
+class CalendarFormatState extends _$CalendarFormatState {
+  @override
+  CalendarFormat build() => CalendarFormat.month;
+
+  void set(CalendarFormat format) => state = format;
 }
 
 /// Filter toggle - show only events after today

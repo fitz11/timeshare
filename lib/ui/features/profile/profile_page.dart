@@ -1,11 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
+import 'package:timeshare/providers/auth/auth_providers.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
 import 'package:timeshare/utils/error_utils.dart';
+import 'package:timeshare/utils/string_utils.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -31,12 +32,7 @@ class ProfilePage extends ConsumerWidget {
     WidgetRef ref,
     AppUser user,
   ) {
-    // Get initials for avatar
-    final initials = user.displayName
-        .split(' ')
-        .map((n) => n.isNotEmpty ? n[0].toUpperCase() : '')
-        .take(2)
-        .join();
+    final initials = getInitials(user.displayName);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -182,6 +178,41 @@ class ProfilePage extends ConsumerWidget {
             ),
           ),
 
+          const SizedBox(height: 16),
+
+          // Legal Card
+          Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Legal',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                const Divider(height: 1),
+
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: const Text('Privacy Policy'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showPrivacyPolicy(context),
+                ),
+
+                const Divider(height: 1),
+
+                ListTile(
+                  leading: const Icon(Icons.security_outlined),
+                  title: const Text('Security Information'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showSecurityInfo(context),
+                ),
+              ],
+            ),
+          ),
+
           const SizedBox(height: 24),
 
           // Logout Button
@@ -199,7 +230,7 @@ class ProfilePage extends ConsumerWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              onTap: () => _showLogoutDialog(context),
+              onTap: () => _showLogoutDialog(context, ref),
             ),
           ),
 
@@ -331,7 +362,7 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -346,7 +377,7 @@ class ProfilePage extends ConsumerWidget {
             onPressed: () async {
               Navigator.pop(context);
               try {
-                await FirebaseAuth.instance.signOut();
+                await ref.read(signOutProvider)();
                 // Navigation will be handled by AuthGate automatically
               } catch (e) {
                 if (context.mounted) {
@@ -362,6 +393,127 @@ class ProfilePage extends ConsumerWidget {
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
             child: const Text('Sign Out'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPrivacyPolicy(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Privacy Policy'),
+        content: const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Data We Collect',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '- Email address and display name\n'
+                '- Calendar names and sharing settings\n'
+                '- Event names, dates, and times\n'
+                '- Friends list',
+              ),
+              SizedBox(height: 16),
+              Text(
+                'How We Use Your Data',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '- To provide calendar sharing functionality\n'
+                '- To enable sharing with friends\n'
+                '- To improve app stability via crash reports',
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Data Storage',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Your data is stored in Firebase Firestore (Google). '
+                'Data is encrypted in transit and at rest, but is not '
+                'end-to-end encrypted.',
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Your Rights',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'You can delete your account and all associated data '
+                'at any time through the app.',
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSecurityInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Security Information'),
+        content: const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Important Notice',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Your calendar data is NOT end-to-end encrypted. '
+                'This means data can be accessed by database administrators.',
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Recommendation',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Do not store highly sensitive information such as:\n'
+                '- Medical appointment details\n'
+                '- Financial information\n'
+                '- Confidential business data',
+              ),
+              SizedBox(height: 16),
+              Text(
+                'What IS Protected',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '- Your password (managed by Firebase Auth)\n'
+                '- Data in transit (HTTPS encryption)\n'
+                '- Access control (only you and shared users can see your calendars)',
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
           ),
         ],
       ),

@@ -14,7 +14,13 @@ FirebaseAuth auth(Ref ref) => FirebaseAuth.instance;
 @riverpod
 Stream<User?> authState(Ref ref) => ref.watch(authProvider).authStateChanges();
 
-// final authStateProvider = StreamProvider<User?>((ref) {
-//   final auth = ref.watch(firebaseAuthProvider);
-//   return auth.authStateChanges();
-// });
+/// Current user ID - synchronous access to the current user's UID.
+/// Returns null if not logged in.
+@riverpod
+String? currentUserId(Ref ref) => ref.watch(authProvider).currentUser?.uid;
+
+/// Sign out the current user.
+@riverpod
+Future<void> Function() signOut(Ref ref) {
+  return () => ref.read(authProvider).signOut();
+}

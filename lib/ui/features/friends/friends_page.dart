@@ -4,6 +4,7 @@ import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
 import 'package:timeshare/ui/features/calendar/dialogs/share_calendar_dialog.dart';
 import 'package:timeshare/utils/error_utils.dart';
+import 'package:timeshare/utils/string_utils.dart';
 
 class FriendsPage extends ConsumerWidget {
   const FriendsPage({super.key});
@@ -107,12 +108,7 @@ class FriendsPage extends ConsumerWidget {
   }
 
   Widget _buildFriendCard(BuildContext context, WidgetRef ref, AppUser friend) {
-    // Get initials for avatar
-    final initials = friend.displayName
-        .split(' ')
-        .map((n) => n.isNotEmpty ? n[0].toUpperCase() : '')
-        .take(2)
-        .join();
+    final initials = getInitials(friend.displayName);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),

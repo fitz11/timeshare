@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeshare/providers/auth/auth_providers.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
 
 void showCreateCalendarDialog(BuildContext context, WidgetRef ref) {
@@ -24,14 +24,13 @@ void showCreateCalendarDialog(BuildContext context, WidgetRef ref) {
             final name = nameController.text.trim();
             if (name.isEmpty) return;
 
-            final currentUser = FirebaseAuth.instance.currentUser;
-            if (currentUser == null) {
+            final uid = ref.read(currentUserIdProvider);
+            if (uid == null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Please log in to create calendars.')),
               );
               return;
             }
-            final uid = currentUser.uid;
 
             await ref
                 .read(calendarMutationsProvider.notifier)

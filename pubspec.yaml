@@ -32,6 +32,7 @@ dependencies:
   rxdart: ^0.28.0
   firebase_crashlytics: ^5.0.5
   logger: ^2.5.0
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:

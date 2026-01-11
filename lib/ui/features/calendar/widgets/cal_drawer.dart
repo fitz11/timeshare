@@ -43,36 +43,6 @@ class CalDrawer extends ConsumerWidget {
             ),
           ),
 
-          // Create section ---CURRENTLY DEPRECATED---
-          // Padding(
-          //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          //   child: Text(
-          //     'Create',
-          //     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          //       color: Theme.of(context).colorScheme.onSurfaceVariant,
-          //     ),
-          //   ),
-          // ),
-          // const NewCalButton(),
-          // const SizedBox(height: 4),
-          // const NewEventButton(),
-          //
-          // const Divider(),
-
-          // Manage section ---CURRENTLY DEPRECATED---
-          // Padding(
-          //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          //   child: Text(
-          //     'Manage',
-          //     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          //           color: Theme.of(context).colorScheme.onSurfaceVariant,
-          //         ),
-          //   ),
-          // ),
-          // const DeleteButton(),
-          //
-          // const Divider(),
-
           // Settings section
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),

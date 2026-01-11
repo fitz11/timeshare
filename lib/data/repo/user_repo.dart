@@ -32,7 +32,9 @@ class UserRepository {
   Future<void> signInOrRegister() async {
     final user = _auth.currentUser;
 
-    if (user == null) throw (FirebaseAuthException);
+    if (user == null) {
+      throw StateError('User must be authenticated before calling signInOrRegister');
+    }
 
     final doc = _users.doc(user.uid);
 
