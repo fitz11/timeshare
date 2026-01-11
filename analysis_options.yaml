@@ -10,6 +10,9 @@
 analyzer:
   plugins:
     - custom_lint
+  errors:
+    # @JsonKey on freezed constructor params triggers this; it's expected behavior
+    invalid_annotation_target: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

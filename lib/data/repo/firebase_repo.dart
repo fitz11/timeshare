@@ -1,6 +1,3 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

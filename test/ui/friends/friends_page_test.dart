@@ -1,11 +1,5 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:timeshare/data/models/user/app_user.dart';
-import 'package:timeshare/providers/user/user_providers.dart';
 import 'package:timeshare/ui/features/friends/friends_page.dart';
 
 import '../../mocks/mock_providers.dart';

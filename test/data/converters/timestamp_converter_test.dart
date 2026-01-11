@@ -1,6 +1,3 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timeshare/data/converters/timestamp_converter.dart';

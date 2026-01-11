@@ -1,6 +1,3 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timeshare/data/converters/color_converter.dart';
@@ -12,7 +9,7 @@ void main() {
     test('fromJson converts int to Color', () {
       const blueValue = 0xFF0000FF;
       final color = converter.fromJson(blueValue);
-      expect(color.value, blueValue);
+      expect(color.toARGB32(), blueValue);
     });
 
     test('toJson converts Color to int', () {
@@ -25,15 +22,15 @@ void main() {
       const originalColor = Colors.green;
       final json = converter.toJson(originalColor);
       final restoredColor = converter.fromJson(json);
-      expect(restoredColor.value, originalColor.value);
+      expect(restoredColor.toARGB32(), originalColor.toARGB32());
     });
 
     test('handles transparent colors', () {
       const transparentRed = Color(0x80FF0000);
       final json = converter.toJson(transparentRed);
       final restored = converter.fromJson(json);
-      expect(restored.alpha, transparentRed.alpha);
-      expect(restored.red, transparentRed.red);
+      expect(restored.a, transparentRed.a);
+      expect(restored.r, transparentRed.r);
     });
 
     test('handles black color', () {

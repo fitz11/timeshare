@@ -1,6 +1,3 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 

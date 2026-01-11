@@ -1,6 +1,3 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timeshare/data/enums.dart';
 

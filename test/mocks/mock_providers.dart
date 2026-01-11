@@ -1,11 +1,7 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/repo/calendar_repo.dart';
 import 'package:timeshare/data/repo/firebase_repo.dart';
 import 'package:timeshare/data/repo/user_repo.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';

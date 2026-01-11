@@ -1,6 +1,3 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timeshare/data/models/event/event.dart';
@@ -186,7 +183,7 @@ void main() {
 
       expect(restored.id, original.id);
       expect(restored.name, original.name);
-      expect(restored.color.value, original.color.value);
+      expect(restored.color.toARGB32(), original.color.toARGB32());
       expect(restored.shape, original.shape);
       expect(restored.recurrence, original.recurrence);
     });

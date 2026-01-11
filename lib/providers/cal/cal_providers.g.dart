@@ -257,7 +257,7 @@ final class SelectedCalendarIdsProvider
 }
 
 String _$selectedCalendarIdsHash() =>
-    r'c4b321e6c9c062be51d57a4f67bc56987514c576';
+    r'310986f92a1d76791e7c2bd023383910506d12ad';
 
 /// Selected calendar IDs - which calendars are visible
 /// Synchronous projection from calendars stream - no async overhead.
@@ -571,7 +571,7 @@ final class ExpandedEventsMapProvider
   }
 }
 
-String _$expandedEventsMapHash() => r'31305d4945baf5b03a3a9577f4e1b638a855f9be';
+String _$expandedEventsMapHash() => r'82f6297bbdcfa5f8f070d05b92071a21a290be6a';
 
 /// Consolidated visible events - uses memoized expanded map.
 /// Filtering is O(n), not O(n × 365) on day/filter changes.

@@ -1,6 +1,3 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';

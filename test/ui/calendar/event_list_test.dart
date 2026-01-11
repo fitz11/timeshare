@@ -1,10 +1,6 @@
-// Copyright (c) 2025 David Fitzsimmons
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/ui/features/calendar/widgets/event_list.dart';
