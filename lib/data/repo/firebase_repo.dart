@@ -17,6 +17,32 @@ class FirebaseRepository extends CalendarRepository {
     : firestore = firestore ?? FirebaseFirestore.instance,
       auth = auth ?? FirebaseAuth.instance;
 
+  /// Verifies the current user has access to modify the given calendar.
+  /// User must be the owner or in the sharedWith list.
+  /// Throws an exception if not authorized.
+  Future<void> _verifyCalendarAccess(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    String calendarId,
+  ) async {
+    final currentUid = auth.currentUser?.uid;
+    if (currentUid == null) {
+      throw Exception('You must be logged in to perform this action.');
+    }
+
+    if (!snapshot.exists || snapshot.data() == null) {
+      throw Exception('Calendar not found.');
+    }
+
+    final data = snapshot.data()!;
+    final owner = data['owner'] as String?;
+    final sharedWith =
+        (data['sharedWith'] as List<dynamic>?)?.cast<String>() ?? [];
+
+    if (owner != currentUid && !sharedWith.contains(currentUid)) {
+      throw Exception('You do not have permission to modify this calendar.');
+    }
+  }
+
   /// Provides a stream of all available calendars for viewing.
   /// Automatically updates when calendars change in Firestore.
   /// Defaults to using current user.
@@ -129,6 +155,7 @@ class FirebaseRepository extends CalendarRepository {
   }
 
   /// Adds an event to the firestore calendar given.
+  /// User must be owner or in sharedWith list.
   @override
   Future<void> addEventToCalendar({
     required String calendarId,
@@ -137,9 +164,8 @@ class FirebaseRepository extends CalendarRepository {
     final docRef = firestore.collection('calendars').doc(calendarId);
     final snapshot = await docRef.get();
 
-    if (!snapshot.exists || snapshot.data() == null) {
-      throw Exception('Calendar not found');
-    }
+    // Verify user has access to this calendar
+    await _verifyCalendarAccess(snapshot, calendarId);
 
     // Get the existing calendar data
     final calendar = Calendar.fromJson(snapshot.data()!);
@@ -164,6 +190,7 @@ class FirebaseRepository extends CalendarRepository {
   }
 
   /// Removes a given event from a given calendar.
+  /// User must be owner or in sharedWith list.
   @override
   Future<void> removeEventFromCalendar({
     required String calendarId,
@@ -173,14 +200,11 @@ class FirebaseRepository extends CalendarRepository {
       'FIREBASE READ: removing event ${event.name} from calendar $calendarId...',
     );
 
-    final docRef = FirebaseFirestore.instance
-        .collection('calendars')
-        .doc(calendarId);
+    final docRef = firestore.collection('calendars').doc(calendarId);
     final snapshot = await docRef.get();
 
-    if (!snapshot.exists || snapshot.data() == null) {
-      throw Exception('Failed to find calendar $calendarId');
-    }
+    // Verify user has access to this calendar
+    await _verifyCalendarAccess(snapshot, calendarId);
 
     final calendarData = snapshot.data()!;
     final calendar = Calendar.fromJson(calendarData);
@@ -216,16 +240,29 @@ class FirebaseRepository extends CalendarRepository {
         .set(calendar.toJson());
   }
 
-  /// Shares a calendar with a user
+  /// Shares a calendar with a user. Only the owner can share.
   @override
   Future<void> shareCalendar(
     String calendarId,
     String targetUid,
     bool share,
   ) async {
-    final doc = FirebaseFirestore.instance
-        .collection('calendars')
-        .doc(calendarId);
+    final currentUid = auth.currentUser?.uid;
+    if (currentUid == null) {
+      throw Exception('You must be logged in to share a calendar.');
+    }
+
+    final doc = firestore.collection('calendars').doc(calendarId);
+    final snapshot = await doc.get();
+
+    if (!snapshot.exists) {
+      throw Exception('Calendar not found.');
+    }
+
+    final data = snapshot.data();
+    if (data?['owner'] != currentUid) {
+      throw Exception('Only the calendar owner can modify sharing settings.');
+    }
 
     await doc.update({
       'sharedWith': share
@@ -251,12 +288,17 @@ class FirebaseRepository extends CalendarRepository {
   /// Deletes a calendar. Only the owner can delete a calendar.
   @override
   Future<void> deleteCalendar(String calendarId) async {
+    final currentUid = auth.currentUser?.uid;
+    if (currentUid == null) {
+      throw Exception('You must be logged in to delete a calendar.');
+    }
+
     final ref = firestore.collection('calendars').doc(calendarId);
     final snapshot = await ref.get();
     print('FIRESTORE READ: get $calendarId for deletion');
     if (!snapshot.exists) throw Exception('Calendar not found.');
     final data = snapshot.data();
-    if (data?['ownerId'] != auth.currentUser!.uid) {
+    if (data?['owner'] != currentUid) {
       throw Exception('You are not the owner of the calendar.');
     }
 

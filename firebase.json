@@ -1,1 +1,35 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"timeshare-32d37","appId":"1:360570170039:android:97b750739af5ef8d813b32","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"timeshare-32d37","configurations":{"android":"1:360570170039:android:97b750739af5ef8d813b32","ios":"1:360570170039:ios:fabedd3252ef901e813b32","web":"1:360570170039:web:20011b648b38c18a813b32"}}}}},"emulators":{"auth":{"port":9099},"ui":{"enabled":true},"singleProjectMode":true}}
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "timeshare-32d37",
+          "appId": "1:360570170039:android:97b750739af5ef8d813b32",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "timeshare-32d37",
+          "configurations": {
+            "android": "1:360570170039:android:97b750739af5ef8d813b32",
+            "ios": "1:360570170039:ios:fabedd3252ef901e813b32",
+            "web": "1:360570170039:web:20011b648b38c18a813b32"
+          }
+        }
+      }
+    }
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
+}

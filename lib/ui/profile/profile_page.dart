@@ -4,10 +4,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/data/models/user/app_user.dart';
-import 'package:timeshare/providers/user/user_providers.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:timeshare/data/models/user/app_user.dart';
+import 'package:timeshare/providers/user/user_providers.dart';
+import 'package:timeshare/utils/error_utils.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -24,7 +25,7 @@ class ProfilePage extends ConsumerWidget {
         return _buildProfileContent(context, ref, user);
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => _buildErrorState(context, error.toString()),
+      error: (error, stackTrace) => _buildErrorState(context, formatError(error)),
     );
   }
 
@@ -255,6 +256,7 @@ class ProfilePage extends ConsumerWidget {
         title: const Text('Edit Display Name'),
         content: TextField(
           controller: controller,
+          maxLength: 50,
           decoration: const InputDecoration(
             labelText: 'Display Name',
             hintText: 'Enter your display name',
@@ -273,6 +275,28 @@ class ProfilePage extends ConsumerWidget {
               if (newName.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Display name cannot be empty')),
+                );
+                return;
+              }
+
+              if (newName.length > 50) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Display name must be 50 characters or less'),
+                  ),
+                );
+                return;
+              }
+
+              // Only allow letters, spaces, hyphens, and apostrophes
+              final validNamePattern = RegExp(r"^[a-zA-Z\s\-']+$");
+              if (!validNamePattern.hasMatch(newName)) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Display name can only contain letters, spaces, hyphens, and apostrophes',
+                    ),
+                  ),
                 );
                 return;
               }
@@ -297,7 +321,7 @@ class ProfilePage extends ConsumerWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Failed to update: ${e.toString()}'),
+                      content: Text('Failed to update: ${formatError(e)}'),
                     ),
                   );
                 }
@@ -331,7 +355,7 @@ class ProfilePage extends ConsumerWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Failed to sign out: ${e.toString()}'),
+                      content: Text('Failed to sign out: ${formatError(e)}'),
                     ),
                   );
                 }

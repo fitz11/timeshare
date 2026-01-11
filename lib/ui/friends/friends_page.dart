@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
 import 'package:timeshare/ui/dialogs/share_calendar_dialog.dart';
+import 'package:timeshare/utils/error_utils.dart';
 
 class FriendsPage extends ConsumerWidget {
   const FriendsPage({super.key});
@@ -90,7 +91,7 @@ class FriendsPage extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              error.toString(),
+              formatError(error),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,

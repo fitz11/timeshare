@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Calendar rules - protect calendar access and modifications
+    match /calendars/{calendarId} {
+      // Helper: Check if authenticated user is the calendar owner
+      function isOwner() {
+        return request.auth != null && resource.data.owner == request.auth.uid;
+      }
+
+      // Helper: Check if authenticated user is in the sharedWith list
+      function isSharedWith() {
+        return request.auth != null && request.auth.uid in resource.data.sharedWith;
+      }
+
+      // Helper: Verify sharedWith field wasn't modified (for non-owner updates)
+      function sharedWithUnchanged() {
+        return request.resource.data.sharedWith == resource.data.sharedWith;
+      }
+
+      // Read: Only owner or users in sharedWith list
+      allow read: if isOwner() || isSharedWith();
+
+      // Create: Only if owner field matches the authenticated user
+      allow create: if request.auth != null && request.resource.data.owner == request.auth.uid;
+
+      // Update: Owner can update anything; shared users can update but NOT the sharedWith field
+      allow update: if isOwner() || (isSharedWith() && sharedWithUnchanged());
+
+      // Delete: Only the owner can delete
+      allow delete: if isOwner();
+    }
+
+    // User rules - users can read any profile but only write their own
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

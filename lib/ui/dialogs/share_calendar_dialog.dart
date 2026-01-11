@@ -12,12 +12,24 @@ void showShareCalendarDialog(
   WidgetRef ref,
   AppUser friend,
 ) {
-  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  final calendars = ref
-      .read(calendarsProvider)
-      .requireValue
-      .where((cal) => cal.owner == currentUserId)
-      .toList();
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please log in to share calendars.')),
+    );
+    return;
+  }
+  final currentUserId = currentUser.uid;
+
+  final calendarsAsync = ref.read(calendarsProvider);
+  if (!calendarsAsync.hasValue) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Calendars are still loading.')),
+    );
+    return;
+  }
+  final calendars =
+      calendarsAsync.requireValue.where((cal) => cal.owner == currentUserId).toList();
 
   final Map<String, bool> sharedMap = {
     for (var cal in calendars) cal.id: cal.sharedWith.contains(friend.uid),

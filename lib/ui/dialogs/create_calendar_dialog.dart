@@ -27,7 +27,14 @@ void showCreateCalendarDialog(BuildContext context, WidgetRef ref) {
             final name = nameController.text.trim();
             if (name.isEmpty) return;
 
-            final uid = FirebaseAuth.instance.currentUser!.uid;
+            final currentUser = FirebaseAuth.instance.currentUser;
+            if (currentUser == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please log in to create calendars.')),
+              );
+              return;
+            }
+            final uid = currentUser.uid;
 
             await ref
                 .read(calendarMutationsProvider.notifier)

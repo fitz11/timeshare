@@ -39,9 +39,15 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Secrets
+# Secrets and API keys
 key.properties
 *.keystore
+*.jks
+
+# Environment files
+.env
+.env.*
+*.env
 
 # Android Studio will place build artifacts here
 /android/app/debug
@@ -56,3 +62,6 @@ ios/.ios-plugins-dependencies
 ios/Podfile.lock
 android/.gradle/
 android/local.properties
+
+# Claude related
+CLAUDE.md

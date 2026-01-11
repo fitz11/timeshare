@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
+import 'package:timeshare/utils/error_utils.dart';
 
 void showUserSearchDialog(BuildContext context, WidgetRef ref) {
   final controller = TextEditingController();
@@ -77,7 +78,7 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
                         ),
                         loading: () =>
                             const Center(child: CircularProgressIndicator()),
-                        error: (e, st) => Center(child: Text('Error: $e')),
+                        error: (e, st) => Center(child: Text(formatError(e))),
                       );
                     },
                   ),
