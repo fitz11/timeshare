@@ -1,74 +1,100 @@
 name: Flutter CI/CD
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  build_ios:
-    name: Build iOS IPA
-    runs-on: macos-latest # Must use a macOS runner for iOS builds
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the source code
       - uses: actions/checkout@v4
 
-      # 2. Set up the Flutter environment
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.35.7" # Or a specific version like '3.22.0'
+          flutter-version: "3.35.7"
           channel: "stable"
 
-      # 3. Get Dart dependencies
-      - name: Install Flutter dependencies
-        run: flutter pub get
-
-      # 4. Cache Flutter/Dart Dependencies
       - name: Cache Dart dependencies
         uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-pub-${{ hashFiles('${{ github.workspace }}/pubspec.lock') }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
           path: |
             $HOME/.pub-cache
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      # 5. Clean previous build artifacts (Good practice)
-      - name: Clean Build
-        run: flutter clean
+      - name: Install dependencies
+        run: flutter pub get
 
-      # 6. Cache CocoaPods Native Dependencies
-      - name: Cache CocoaPods
+      - name: Analyze code
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+  build_android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.7"
+          channel: "stable"
+
+      - name: Cache Dart dependencies
         uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-pods-${{ hashFiles('${{ github.workspace }}/ios/Podfile.lock') }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
           path: |
-            ios/Pods
-            ~/Library/Caches/CocoaPods
-            ~/.cocoapods/repos
+            $HOME/.pub-cache
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-pub-
 
-      # 7. Ensure Native Build Files are Generated
-      - name: Ensure Generated Native Files Exist
-        run: flutter build ios --no-codesign --simulator
+      - name: Install dependencies
+        run: flutter pub get
 
-      # 8. Install and update CocoaPods (THE CRITICAL STEP)
-      - name: Install and Update Pods
-        run: |
-          cd ios
-          pod install # Initial run *MUST* use --repo-update flag
-          cd ..
-        # Note: 'cd ios' is necessary for pod install to run in the correct directory
+      - name: Build APK (debug)
+        run: flutter build apk --debug
 
-      # 9. Build the iOS Archive (Use --no-codesign if handling signing later/with Fastlane)
-      - name: Build iOS
-        run: flutter build ipa --release --no-codesign
-        # You'll need to handle code signing with secrets/certificates for a real deployment
+      # For release builds, uncomment below and add secrets:
+      # - name: Decode keystore
+      #   run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+      #
+      # - name: Create key.properties
+      #   run: |
+      #     echo "storeFile=upload-keystore.jks" > android/key.properties
+      #     echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+      #     echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+      #     echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+      #
+      # - name: Build release APK
+      #   run: flutter build apk --release
+      #
+      # - name: Build App Bundle
+      #   run: flutter build appbundle --release
 
-      # 10. (Optional) Upload the artifact for manual download or distribution
-      - name: Upload IPA artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-build-ipa
-          path: build/ios/ipa/*.ipa
+          name: android-build-apk
+          path: build/app/outputs/flutter-apk/*.apk
+
+  # Note: iOS builds are handled by Xcode Cloud

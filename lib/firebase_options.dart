@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCJgUlNUy__onEuKO3sHwaPIooCL_GIxVI',
-    appId: '1:360570170039:android:97b750739af5ef8d813b32',
+    appId: '1:360570170039:android:d34fdddd9f0ed802813b32',
     messagingSenderId: '360570170039',
     projectId: 'timeshare-32d37',
     storageBucket: 'timeshare-32d37.firebasestorage.app',
@@ -60,24 +60,24 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyC-6mGhbmk10Lca97mjVQLyZmWBaR2d_OQ',
-    appId: '1:360570170039:ios:fabedd3252ef901e813b32',
+    appId: '1:360570170039:ios:6f3bf8a910065472813b32',
     messagingSenderId: '360570170039',
     projectId: 'timeshare-32d37',
     storageBucket: 'timeshare-32d37.firebasestorage.app',
     iosClientId:
         '360570170039-fjlr1os90jd7rue6s96bhccgphv1ea2h.apps.googleusercontent.com',
-    iosBundleId: 'com.example.timeshare',
+    iosBundleId: 'com.fitzsimmons.timeshare',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyC-6mGhbmk10Lca97mjVQLyZmWBaR2d_OQ',
-    appId: '1:360570170039:ios:fabedd3252ef901e813b32',
+    appId: '1:360570170039:ios:6f3bf8a910065472813b32',
     messagingSenderId: '360570170039',
     projectId: 'timeshare-32d37',
     storageBucket: 'timeshare-32d37.firebasestorage.app',
     iosClientId:
         '360570170039-fjlr1os90jd7rue6s96bhccgphv1ea2h.apps.googleusercontent.com',
-    iosBundleId: 'com.example.timeshare',
+    iosBundleId: 'com.fitzsimmons.timeshare',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
@@ -90,4 +90,3 @@ class DefaultFirebaseOptions {
     measurementId: 'G-T7YY14C7B0',
   );
 }
-
