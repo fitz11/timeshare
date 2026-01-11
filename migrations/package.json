@@ -1,0 +1,13 @@
+{
+  "name": "timeshare-migrations",
+  "version": "1.0.0",
+  "description": "Firestore migration scripts for TimeShare",
+  "type": "module",
+  "scripts": {
+    "migrate": "node migrate.js --key=service-account.json",
+    "migrate:dry-run": "node migrate.js --key=service-account.json --dry-run"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}

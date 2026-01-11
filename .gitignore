@@ -1,5 +1,8 @@
 # Miscellaneous
 *.class
+node_modules/
+service-account.json
+*-service-account*.json
 *.log
 *.pyc
 *.swp
