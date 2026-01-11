@@ -13,8 +13,13 @@ part of 'user_providers.dart';
 const userRepositoryProvider = UserRepositoryProvider._();
 
 final class UserRepositoryProvider
-    extends $FunctionalProvider<UserRepository, UserRepository, UserRepository>
-    with $Provider<UserRepository> {
+    extends
+        $FunctionalProvider<
+          LoggedUserRepository,
+          LoggedUserRepository,
+          LoggedUserRepository
+        >
+    with $Provider<LoggedUserRepository> {
   const UserRepositoryProvider._()
     : super(
         from: null,
@@ -31,24 +36,25 @@ final class UserRepositoryProvider
 
   @$internal
   @override
-  $ProviderElement<UserRepository> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<LoggedUserRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
-  UserRepository create(Ref ref) {
+  LoggedUserRepository create(Ref ref) {
     return userRepository(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(UserRepository value) {
+  Override overrideWithValue(LoggedUserRepository value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<UserRepository>(value),
+      providerOverride: $SyncValueProvider<LoggedUserRepository>(value),
     );
   }
 }
 
-String _$userRepositoryHash() => r'4c619c79cd9396d77d37b47f881dc894ec558431';
+String _$userRepositoryHash() => r'76be50d2fcdefd6dfc4e04e65cc35fd2c3ae612f';
 
 @ProviderFor(UserFriendsNotifier)
 const userFriendsProvider = UserFriendsNotifierProvider._();

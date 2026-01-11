@@ -1,15 +1,20 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timeshare/data/repo/user_repo.dart';
+import 'package:timeshare/data/repo/logged_user_repo.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/providers/auth/auth_providers.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
+import 'package:timeshare/services/logging/app_logger.dart';
 
 part 'user_providers.g.dart';
 
 @riverpod
-UserRepository userRepository(Ref ref) {
+LoggedUserRepository userRepository(Ref ref) {
   final calendarRepo = ref.watch(calendarRepositoryProvider);
-  return UserRepository(calendarRepo: calendarRepo);
+  return LoggedUserRepository(
+    UserRepository(calendarRepo: calendarRepo),
+    AppLogger(),
+  );
 }
 
 @riverpod

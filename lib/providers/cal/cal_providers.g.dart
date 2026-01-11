@@ -8,12 +8,12 @@ part of 'cal_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Repository provider
+/// Repository provider with logging wrapper
 
 @ProviderFor(calendarRepository)
 const calendarRepositoryProvider = CalendarRepositoryProvider._();
 
-/// Repository provider
+/// Repository provider with logging wrapper
 
 final class CalendarRepositoryProvider
     extends
@@ -23,7 +23,7 @@ final class CalendarRepositoryProvider
           CalendarRepository
         >
     with $Provider<CalendarRepository> {
-  /// Repository provider
+  /// Repository provider with logging wrapper
   const CalendarRepositoryProvider._()
     : super(
         from: null,
@@ -59,7 +59,7 @@ final class CalendarRepositoryProvider
 }
 
 String _$calendarRepositoryHash() =>
-    r'2519acfcf64741b15b812076f30ba3e2840d785f';
+    r'5e100e7f47efeefe9973dc96fc58bac346609a2d';
 
 /// Main calendar stream - automatically updates when Firestore changes
 /// Keep alive to prevent re-initialization when navigating away
