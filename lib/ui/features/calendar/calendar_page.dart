@@ -4,8 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
-import 'package:timeshare/ui/calendar/wgts/calendar_widget.dart';
-import 'package:timeshare/ui/calendar/wgts/event_list.dart';
+import 'package:timeshare/ui/features/calendar/widgets/calendar_widget.dart';
+import 'package:timeshare/ui/features/calendar/widgets/event_list.dart';
 
 class CalendarPage extends ConsumerWidget {
   const CalendarPage({super.key});

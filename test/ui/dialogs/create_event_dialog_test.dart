@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:timeshare/ui/dialogs/create_event_dialog.dart';
+import 'package:timeshare/ui/features/calendar/dialogs/create_event_dialog.dart';
 
 import '../../mocks/mock_providers.dart';
 

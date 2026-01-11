@@ -59,7 +59,7 @@ final class CalendarRepositoryProvider
 }
 
 String _$calendarRepositoryHash() =>
-    r'822cb81867829df105b4a163f38de794b87f8122';
+    r'2519acfcf64741b15b812076f30ba3e2840d785f';
 
 /// Main calendar stream - automatically updates when Firestore changes
 /// Keep alive to prevent re-initialization when navigating away
@@ -106,20 +106,66 @@ final class CalendarsProvider
   }
 }
 
-String _$calendarsHash() => r'5e495f5e702dd3d6b6aafdd0822d8bde8f63b365';
+String _$calendarsHash() => r'4e532657317293ffabbd52d135a67b1443d8b0fb';
 
-/// Calendar mutations - simplified without optimistic updates
-/// The stream will automatically update the UI when Firestore changes
+/// Events stream for selected calendars
+
+@ProviderFor(eventsForSelectedCalendars)
+const eventsForSelectedCalendarsProvider =
+    EventsForSelectedCalendarsProvider._();
+
+/// Events stream for selected calendars
+
+final class EventsForSelectedCalendarsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Event>>,
+          List<Event>,
+          Stream<List<Event>>
+        >
+    with $FutureModifier<List<Event>>, $StreamProvider<List<Event>> {
+  /// Events stream for selected calendars
+  const EventsForSelectedCalendarsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'eventsForSelectedCalendarsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventsForSelectedCalendarsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Event>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Event>> create(Ref ref) {
+    return eventsForSelectedCalendars(ref);
+  }
+}
+
+String _$eventsForSelectedCalendarsHash() =>
+    r'6b8a7da79d1f54f8550761aba2091e0845c6c0f5';
+
+/// Calendar mutations - simplified without optimistic updates.
+/// The stream will automatically update the UI when Firestore changes.
 
 @ProviderFor(CalendarMutations)
 const calendarMutationsProvider = CalendarMutationsProvider._();
 
-/// Calendar mutations - simplified without optimistic updates
-/// The stream will automatically update the UI when Firestore changes
+/// Calendar mutations - simplified without optimistic updates.
+/// The stream will automatically update the UI when Firestore changes.
 final class CalendarMutationsProvider
-    extends $AsyncNotifierProvider<CalendarMutations, void> {
-  /// Calendar mutations - simplified without optimistic updates
-  /// The stream will automatically update the UI when Firestore changes
+    extends $NotifierProvider<CalendarMutations, void> {
+  /// Calendar mutations - simplified without optimistic updates.
+  /// The stream will automatically update the UI when Firestore changes.
   const CalendarMutationsProvider._()
     : super(
         from: null,
@@ -137,25 +183,33 @@ final class CalendarMutationsProvider
   @$internal
   @override
   CalendarMutations create() => CalendarMutations();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
+  }
 }
 
-String _$calendarMutationsHash() => r'd60b2264432551c075451c96a5e472b8d3e630ab';
+String _$calendarMutationsHash() => r'ed25364e5f63944faa2153853cbb944eae74fd00';
 
-/// Calendar mutations - simplified without optimistic updates
-/// The stream will automatically update the UI when Firestore changes
+/// Calendar mutations - simplified without optimistic updates.
+/// The stream will automatically update the UI when Firestore changes.
 
-abstract class _$CalendarMutations extends $AsyncNotifier<void> {
-  FutureOr<void> build();
+abstract class _$CalendarMutations extends $Notifier<void> {
+  void build();
   @$mustCallSuper
   @override
   void runBuild() {
     build();
-    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final ref = this.ref as $Ref<void, void>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<void>, void>,
-              AsyncValue<void>,
+              AnyNotifier<void, void>,
+              void,
               Object?,
               Object?
             >;
@@ -164,14 +218,17 @@ abstract class _$CalendarMutations extends $AsyncNotifier<void> {
 }
 
 /// Selected calendar IDs - which calendars are visible
+/// Synchronous projection from calendars stream - no async overhead.
 
 @ProviderFor(SelectedCalendarIds)
 const selectedCalendarIdsProvider = SelectedCalendarIdsProvider._();
 
 /// Selected calendar IDs - which calendars are visible
+/// Synchronous projection from calendars stream - no async overhead.
 final class SelectedCalendarIdsProvider
-    extends $AsyncNotifierProvider<SelectedCalendarIds, Set<String>> {
+    extends $NotifierProvider<SelectedCalendarIds, Set<String>> {
   /// Selected calendar IDs - which calendars are visible
+  /// Synchronous projection from calendars stream - no async overhead.
   const SelectedCalendarIdsProvider._()
     : super(
         from: null,
@@ -189,25 +246,34 @@ final class SelectedCalendarIdsProvider
   @$internal
   @override
   SelectedCalendarIds create() => SelectedCalendarIds();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Set<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Set<String>>(value),
+    );
+  }
 }
 
 String _$selectedCalendarIdsHash() =>
-    r'b6583859865a866f01653af48c187e66e4b42c69';
+    r'c4b321e6c9c062be51d57a4f67bc56987514c576';
 
 /// Selected calendar IDs - which calendars are visible
+/// Synchronous projection from calendars stream - no async overhead.
 
-abstract class _$SelectedCalendarIds extends $AsyncNotifier<Set<String>> {
-  FutureOr<Set<String>> build();
+abstract class _$SelectedCalendarIds extends $Notifier<Set<String>> {
+  Set<String> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<AsyncValue<Set<String>>, Set<String>>;
+    final ref = this.ref as $Ref<Set<String>, Set<String>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<Set<String>>, Set<String>>,
-              AsyncValue<Set<String>>,
+              AnyNotifier<Set<String>, Set<String>>,
+              Set<String>,
               Object?,
               Object?
             >;
@@ -452,20 +518,75 @@ abstract class _$CopyEventState extends $Notifier<Event?> {
   }
 }
 
-/// Consolidated visible events - combines all selected calendars
-/// This replaces both visibleEventsMapProvider and visibleEventsListProvider
+/// Expanded events map - memoized recurrence expansion.
+/// Only recomputes when events actually change, not on filter/day changes.
+
+@ProviderFor(expandedEventsMap)
+const expandedEventsMapProvider = ExpandedEventsMapProvider._();
+
+/// Expanded events map - memoized recurrence expansion.
+/// Only recomputes when events actually change, not on filter/day changes.
+
+final class ExpandedEventsMapProvider
+    extends
+        $FunctionalProvider<
+          Map<DateTime, List<Event>>,
+          Map<DateTime, List<Event>>,
+          Map<DateTime, List<Event>>
+        >
+    with $Provider<Map<DateTime, List<Event>>> {
+  /// Expanded events map - memoized recurrence expansion.
+  /// Only recomputes when events actually change, not on filter/day changes.
+  const ExpandedEventsMapProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'expandedEventsMapProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$expandedEventsMapHash();
+
+  @$internal
+  @override
+  $ProviderElement<Map<DateTime, List<Event>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Map<DateTime, List<Event>> create(Ref ref) {
+    return expandedEventsMap(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<DateTime, List<Event>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<DateTime, List<Event>>>(value),
+    );
+  }
+}
+
+String _$expandedEventsMapHash() => r'31305d4945baf5b03a3a9577f4e1b638a855f9be';
+
+/// Consolidated visible events - uses memoized expanded map.
+/// Filtering is O(n), not O(n × 365) on day/filter changes.
 
 @ProviderFor(visibleEvents)
 const visibleEventsProvider = VisibleEventsProvider._();
 
-/// Consolidated visible events - combines all selected calendars
-/// This replaces both visibleEventsMapProvider and visibleEventsListProvider
+/// Consolidated visible events - uses memoized expanded map.
+/// Filtering is O(n), not O(n × 365) on day/filter changes.
 
 final class VisibleEventsProvider
     extends $FunctionalProvider<VisibleEvents, VisibleEvents, VisibleEvents>
     with $Provider<VisibleEvents> {
-  /// Consolidated visible events - combines all selected calendars
-  /// This replaces both visibleEventsMapProvider and visibleEventsListProvider
+  /// Consolidated visible events - uses memoized expanded map.
+  /// Filtering is O(n), not O(n × 365) on day/filter changes.
   const VisibleEventsProvider._()
     : super(
         from: null,
@@ -499,4 +620,4 @@ final class VisibleEventsProvider
   }
 }
 
-String _$visibleEventsHash() => r'd096fa3dcb43a16ef42fc46569750945e04af347';
+String _$visibleEventsHash() => r'91013c1b4e7cfc57174098b3c0efc0fc25af233c';

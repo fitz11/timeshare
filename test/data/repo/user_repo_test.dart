@@ -1,10 +1,10 @@
 // Copyright (c) 2025 David Fitzsimmons
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:timeshare/data/repo/firebase_repo.dart';
 import 'package:timeshare/data/repo/user_repo.dart';
 
 import '../../fixtures/mock_firebase.dart';
@@ -13,12 +13,18 @@ import '../../fixtures/test_data.dart';
 void main() {
   late FakeFirebaseFirestore firestore;
   late MockFirebaseAuth auth;
+  late FirebaseRepository calendarRepo;
   late UserRepository repo;
 
   setUp(() async {
     firestore = await MockFirebaseSetup.createSeededFirestore();
     auth = MockFirebaseSetup.createMockAuth(signedIn: true);
-    repo = UserRepository(firestore: firestore, auth: auth);
+    calendarRepo = FirebaseRepository(firestore: firestore, auth: auth);
+    repo = UserRepository(
+      firestore: firestore,
+      auth: auth,
+      calendarRepo: calendarRepo,
+    );
   });
 
   group('UserRepository - currentUserId', () {
@@ -31,6 +37,7 @@ void main() {
       final signedOutRepo = UserRepository(
         firestore: firestore,
         auth: signedOutAuth,
+        calendarRepo: calendarRepo,
       );
 
       expect(signedOutRepo.currentUserId, isNull);
@@ -50,6 +57,7 @@ void main() {
       final signedOutRepo = UserRepository(
         firestore: firestore,
         auth: signedOutAuth,
+        calendarRepo: calendarRepo,
       );
 
       final user = await signedOutRepo.currentUser;
@@ -84,6 +92,7 @@ void main() {
       final signedOutRepo = UserRepository(
         firestore: firestore,
         auth: signedOutAuth,
+        calendarRepo: calendarRepo,
       );
 
       final user = await signedOutRepo.getUserById();
@@ -137,6 +146,7 @@ void main() {
       final signedOutRepo = UserRepository(
         firestore: firestore,
         auth: signedOutAuth,
+        calendarRepo: calendarRepo,
       );
 
       final friends = await signedOutRepo.getFriendsOfUser();
@@ -163,6 +173,7 @@ void main() {
       final signedOutRepo = UserRepository(
         firestore: firestore,
         auth: signedOutAuth,
+        calendarRepo: calendarRepo,
       );
 
       // Should not throw, just return early
@@ -195,6 +206,7 @@ void main() {
       final signedOutRepo = UserRepository(
         firestore: firestore,
         auth: signedOutAuth,
+        calendarRepo: calendarRepo,
       );
 
       // Should not throw, just return early
@@ -219,6 +231,7 @@ void main() {
       final signedOutRepo = UserRepository(
         firestore: firestore,
         auth: signedOutAuth,
+        calendarRepo: calendarRepo,
       );
 
       // Should not throw, just return early
@@ -238,9 +251,14 @@ void main() {
         ),
         signedIn: true,
       );
+      final freshCalendarRepo = FirebaseRepository(
+        firestore: freshFirestore,
+        auth: newUserAuth,
+      );
       final newRepo = UserRepository(
         firestore: freshFirestore,
         auth: newUserAuth,
+        calendarRepo: freshCalendarRepo,
       );
 
       await newRepo.signInOrRegister();
@@ -277,12 +295,17 @@ void main() {
         ),
         signedIn: true,
       );
-      final repo = UserRepository(
+      final freshCalendarRepo = FirebaseRepository(
         firestore: freshFirestore,
         auth: noDisplayNameAuth,
       );
+      final testRepo = UserRepository(
+        firestore: freshFirestore,
+        auth: noDisplayNameAuth,
+        calendarRepo: freshCalendarRepo,
+      );
 
-      await repo.signInOrRegister();
+      await testRepo.signInOrRegister();
 
       final doc = await freshFirestore
           .collection('users')

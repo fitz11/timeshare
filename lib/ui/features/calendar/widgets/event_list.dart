@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
-import 'package:timeshare/ui/calendar/wgts/event_list_item.dart';
+import 'package:timeshare/ui/features/calendar/widgets/event_list_item.dart';
 
 class EventList extends ConsumerWidget {
   const EventList({super.key});
@@ -24,12 +24,15 @@ class EventList extends ConsumerWidget {
                   direction: DismissDirection.endToStart,
                   background: Container(color: Colors.red),
                   onDismissed: (_) {
-                    ref
-                        .read(calendarMutationsProvider.notifier)
-                        .removeEvent(
-                          calendarId: eventsList[index].calendarId,
-                          event: eventsList[index],
-                        );
+                    final event = eventsList[index];
+                    if (event.calendarId != null) {
+                      ref
+                          .read(calendarMutationsProvider.notifier)
+                          .deleteEvent(
+                            calendarId: event.calendarId!,
+                            eventId: event.id,
+                          );
+                    }
                   },
                   child: Container(
                     margin: const EdgeInsets.symmetric(

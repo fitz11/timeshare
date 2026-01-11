@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
-import 'package:timeshare/ui/friends/friends_page.dart';
+import 'package:timeshare/ui/features/friends/friends_page.dart';
 
 import '../../mocks/mock_providers.dart';
 

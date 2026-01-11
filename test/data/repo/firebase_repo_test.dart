@@ -82,15 +82,15 @@ void main() {
     });
   });
 
-  group('FirebaseRepository - addCalendar', () {
-    test('adds calendar to Firestore', () async {
+  group('FirebaseRepository - createCalendar', () {
+    test('creates calendar in Firestore', () async {
       final newCalendar = Calendar(
         id: 'test-user-123_New Calendar',
         owner: 'test-user-123',
         name: 'New Calendar',
       );
 
-      await repo.addCalendar(newCalendar);
+      await repo.createCalendar(newCalendar);
 
       final doc = await firestore
           .collection('calendars')
@@ -100,31 +100,52 @@ void main() {
       expect(doc.exists, true);
       expect(doc.data()?['name'], 'New Calendar');
     });
+
+    test('does nothing when not logged in', () async {
+      final signedOutAuth = MockFirebaseSetup.createMockAuth(signedIn: false);
+      final signedOutRepo = FirebaseRepository(
+        firestore: firestore,
+        auth: signedOutAuth,
+      );
+
+      final newCalendar = Calendar(
+        id: 'should-not-create',
+        owner: 'none',
+        name: 'Should Not Create',
+      );
+
+      await signedOutRepo.createCalendar(newCalendar);
+
+      final doc = await firestore
+          .collection('calendars')
+          .doc(newCalendar.id)
+          .get();
+
+      expect(doc.exists, false);
+    });
   });
 
-  group('FirebaseRepository - addEventToCalendar', () {
+  group('FirebaseRepository - addEvent', () {
     test('adds event to owned calendar', () async {
       final event = Event(
+        id: 'new-test-event',
         name: 'New Test Event',
         time: DateTime.utc(2024, 8, 1, 10, 0),
         calendarId: TestData.testCalendar.id,
         color: Colors.purple,
       );
 
-      await repo.addEventToCalendar(
-        calendarId: TestData.testCalendar.id,
-        event: event,
-      );
+      await repo.addEvent(TestData.testCalendar.id, event);
 
       final doc = await firestore
           .collection('calendars')
           .doc(TestData.testCalendar.id)
+          .collection('events')
+          .doc(event.id)
           .get();
 
-      final calendar = Calendar.fromJson(doc.data()!);
-      final events = calendar.getEvents();
-
-      expect(events.any((e) => e.name == 'New Test Event'), true);
+      expect(doc.exists, true);
+      expect(doc.data()?['name'], 'New Test Event');
     });
 
     test('throws when user not logged in', () async {
@@ -135,16 +156,14 @@ void main() {
       );
 
       final event = Event(
+        id: 'unauthorized-event',
         name: 'Unauthorized Event',
         time: DateTime.utc(2024, 8, 1),
         calendarId: TestData.testCalendar.id,
       );
 
       expect(
-        () => signedOutRepo.addEventToCalendar(
-          calendarId: TestData.testCalendar.id,
-          event: event,
-        ),
+        () => signedOutRepo.addEvent(TestData.testCalendar.id, event),
         throwsA(isA<Exception>()),
       );
     });
@@ -160,36 +179,56 @@ void main() {
       );
 
       final event = Event(
+        id: 'unauthorized-event',
         name: 'Unauthorized Event',
         time: DateTime.utc(2024, 8, 1),
         calendarId: TestData.testCalendar.id,
       );
 
       expect(
-        () => otherRepo.addEventToCalendar(
-          calendarId: TestData.testCalendar.id,
-          event: event,
-        ),
+        () => otherRepo.addEvent(TestData.testCalendar.id, event),
         throwsA(isA<Exception>()),
       );
     });
   });
 
-  group('FirebaseRepository - removeEventFromCalendar', () {
+  group('FirebaseRepository - deleteEvent', () {
     test('removes event from calendar', () async {
-      final calendarBefore = await repo.getCalendarById(TestData.testCalendar.id);
-      final eventsBefore = calendarBefore!.getEvents();
+      // Get initial events
+      final eventsBefore = await repo.getEventsForCalendar(TestData.testCalendar.id);
       final eventToRemove = eventsBefore.first;
 
-      await repo.removeEventFromCalendar(
-        calendarId: TestData.testCalendar.id,
-        event: eventToRemove,
-      );
+      await repo.deleteEvent(TestData.testCalendar.id, eventToRemove.id);
 
-      final calendarAfter = await repo.getCalendarById(TestData.testCalendar.id);
-      final eventsAfter = calendarAfter!.getEvents();
+      final eventsAfter = await repo.getEventsForCalendar(TestData.testCalendar.id);
 
       expect(eventsAfter.length, eventsBefore.length - 1);
+    });
+  });
+
+  group('FirebaseRepository - getEventsForCalendar', () {
+    test('returns events for calendar', () async {
+      final events = await repo.getEventsForCalendar(TestData.testCalendar.id);
+
+      expect(events.isNotEmpty, true);
+      expect(events.any((e) => e.name == TestData.testEvent.name), true);
+    });
+
+    test('returns empty for calendar with no events', () async {
+      final events = await repo.getEventsForCalendar(TestData.emptyCalendar.id);
+
+      expect(events, isEmpty);
+    });
+  });
+
+  group('FirebaseRepository - watchEventsForCalendar', () {
+    test('streams events for calendar', () async {
+      final stream = repo.watchEventsForCalendar(TestData.testCalendar.id);
+
+      await expectLater(
+        stream,
+        emits(isA<List<Event>>()),
+      );
     });
   });
 
@@ -280,7 +319,7 @@ void main() {
         owner: 'test-user-123',
         name: 'To Delete',
       );
-      await repo.addCalendar(calToDelete);
+      await repo.createCalendar(calToDelete);
 
       await repo.deleteCalendar(calToDelete.id);
 
@@ -341,48 +380,6 @@ void main() {
       final calendar = await repo.getCalendarById('nonexistent-id');
 
       expect(calendar, isNull);
-    });
-  });
-
-  group('FirebaseRepository - createCalendar', () {
-    test('creates calendar in Firestore', () async {
-      final newCalendar = Calendar(
-        id: 'test-user-123_Created',
-        owner: 'test-user-123',
-        name: 'Created Calendar',
-      );
-
-      await repo.createCalendar(newCalendar);
-
-      final doc = await firestore
-          .collection('calendars')
-          .doc(newCalendar.id)
-          .get();
-
-      expect(doc.exists, true);
-    });
-
-    test('does nothing when not logged in', () async {
-      final signedOutAuth = MockFirebaseSetup.createMockAuth(signedIn: false);
-      final signedOutRepo = FirebaseRepository(
-        firestore: firestore,
-        auth: signedOutAuth,
-      );
-
-      final newCalendar = Calendar(
-        id: 'should-not-create',
-        owner: 'none',
-        name: 'Should Not Create',
-      );
-
-      await signedOutRepo.createCalendar(newCalendar);
-
-      final doc = await firestore
-          .collection('calendars')
-          .doc(newCalendar.id)
-          .get();
-
-      expect(doc.exists, false);
     });
   });
 }

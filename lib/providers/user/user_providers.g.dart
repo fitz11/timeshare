@@ -48,7 +48,7 @@ final class UserRepositoryProvider
   }
 }
 
-String _$userRepositoryHash() => r'e75530ca34ed2fc7744e8fd5e2a8e5d7f738dc62';
+String _$userRepositoryHash() => r'4c619c79cd9396d77d37b47f881dc894ec558431';
 
 @ProviderFor(UserFriendsNotifier)
 const userFriendsProvider = UserFriendsNotifierProvider._();
@@ -75,7 +75,7 @@ final class UserFriendsNotifierProvider
 }
 
 String _$userFriendsNotifierHash() =>
-    r'2a642be762b4787b179b72631f9d467ee5eca8fc';
+    r'68d8fd53cf23f1d8da1cc66940e3c8b276455848';
 
 abstract class _$UserFriendsNotifier extends $AsyncNotifier<List<AppUser>> {
   FutureOr<List<AppUser>> build();
@@ -196,7 +196,7 @@ final class CurrentUserNotifierProvider
 }
 
 String _$currentUserNotifierHash() =>
-    r'37ee07b20c9fad0a1ab22f508a31811a89dd0a90';
+    r'db4d6eb6b7b2cd2bc6f0d7f820cd8a80ba598c6b';
 
 abstract class _$CurrentUserNotifier extends $AsyncNotifier<AppUser?> {
   FutureOr<AppUser?> build();

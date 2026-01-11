@@ -35,39 +35,35 @@ class TestData {
 
   // Test events
   static final testEvent = Event(
+    id: 'event-1',
     name: 'Test Event',
     time: DateTime.utc(2024, 6, 15, 10, 0),
-    calendarId: 'test-user-123_Test Calendar',
     color: Colors.blue,
     shape: BoxShape.circle,
   );
 
   static final testEvent2 = Event(
+    id: 'event-2',
     name: 'Second Event',
     time: DateTime.utc(2024, 6, 15, 14, 0),
-    calendarId: 'test-user-123_Test Calendar',
     color: Colors.red,
     shape: BoxShape.rectangle,
   );
 
   static final testEvent3 = Event(
+    id: 'event-3',
     name: 'Future Event',
     time: DateTime.utc(2024, 7, 20, 9, 0),
-    calendarId: 'test-user-123_Test Calendar',
     color: Colors.green,
     shape: BoxShape.circle,
   );
 
-  // Test calendars
+  // Test calendars (events are now in subcollections, not embedded)
   static final testCalendar = Calendar(
     id: 'test-user-123_Test Calendar',
     owner: 'test-user-123',
     name: 'Test Calendar',
     sharedWith: {},
-    events: {
-      DateTime.utc(2024, 6, 15): [testEvent, testEvent2],
-      DateTime.utc(2024, 7, 20): [testEvent3],
-    },
   );
 
   static final emptyCalendar = Calendar(
@@ -75,7 +71,6 @@ class TestData {
     owner: 'test-user-123',
     name: 'Empty Calendar',
     sharedWith: {},
-    events: {},
   );
 
   static final sharedCalendar = Calendar(
@@ -83,39 +78,40 @@ class TestData {
     owner: 'friend-user-456',
     name: 'Shared Calendar',
     sharedWith: {'test-user-123'},
-    events: {},
   );
 
-  // Event list for testing Calendar.fromEventList()
+  // Event list for testing
   static final eventListForCalendar = [
     Event(
+      id: 'event-a',
       name: 'Event A',
       time: DateTime.utc(2024, 5, 10, 8, 0),
-      calendarId: 'cal1',
       color: Colors.blue,
     ),
     Event(
+      id: 'event-b',
       name: 'Event B',
       time: DateTime.utc(2024, 5, 10, 12, 0),
-      calendarId: 'cal1',
       color: Colors.red,
     ),
     Event(
+      id: 'event-c',
       name: 'Event C',
       time: DateTime.utc(2024, 5, 11, 9, 0),
-      calendarId: 'cal1',
       color: Colors.green,
     ),
   ];
 
   // JSON representations for serialization tests
   static Map<String, dynamic> get testEventJson => {
+        'id': 'event-1',
         'name': 'Test Event',
         'time': '2024-06-15T10:00:00.000Z',
-        'calendarId': 'test-user-123_Test Calendar',
         'atendees': null,
         'color': Colors.blue.toARGB32(),
         'shape': 'circle',
+        'recurrence': 'none',
+        'recurrenceEndDate': null,
       };
 
   static Map<String, dynamic> get testUserJson => {

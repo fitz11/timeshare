@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
+import 'package:timeshare/data/models/event/event_recurrence.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/repo/firebase_repo.dart';
@@ -24,12 +25,29 @@ Stream<List<Calendar>> calendars(Ref ref) {
   return repo.watchAllAvailableCalendars();
 }
 
-/// Calendar mutations - simplified without optimistic updates
-/// The stream will automatically update the UI when Firestore changes
+/// Events stream for selected calendars
+@riverpod
+Stream<List<Event>> eventsForSelectedCalendars(Ref ref) {
+  ref.keepAlive();
+  final repo = ref.watch(calendarRepositoryProvider);
+  final selectedIds = ref.watch(selectedCalendarIdsProvider);
+
+  if (selectedIds.isEmpty) {
+    return Stream.value([]);
+  }
+
+  return repo.watchEventsForCalendars(selectedIds.toList());
+}
+
+/// Calendar mutations - simplified without optimistic updates.
+/// The stream will automatically update the UI when Firestore changes.
 @riverpod
 class CalendarMutations extends _$CalendarMutations {
+  /// Helper getter to avoid repetitive ref.read() calls
+  CalendarRepository get _repo => ref.read(calendarRepositoryProvider);
+
   @override
-  FutureOr<void> build() {
+  void build() {
     // No initial state needed
   }
 
@@ -37,91 +55,74 @@ class CalendarMutations extends _$CalendarMutations {
     required String ownerUid,
     required String name,
   }) async {
-    final repo = ref.read(calendarRepositoryProvider);
     final calendar = Calendar(
       id: '${ownerUid}_$name',
       owner: ownerUid,
       name: name,
-      events: <DateTime, List<Event>>{},
     );
-    await repo.addCalendar(calendar);
-    // Stream will automatically update, no need to manually update state
+    await _repo.createCalendar(calendar);
   }
 
-  Future<void> addEventToCalendar({
+  Future<void> addEvent({
     required String calendarId,
     required Event event,
   }) async {
-    final repo = ref.read(calendarRepositoryProvider);
+    // Ensure event has an ID
+    final eventToAdd = event.id.isEmpty
+        ? event.copyWith(id: DateTime.now().millisecondsSinceEpoch.toString())
+        : event;
 
-    // Section to check if calendar already has given event
-    final calendarToAdd = ref
-        .read(calendarsProvider)
-        .value
-        ?.firstWhere((cal) => cal.id == calendarId);
-    // Break if no calendar to add to (Maybe provider doesn't have the value)
-    if (calendarToAdd == null) {
-      print('null calendarToAdd');
-      return;
-    }
-    final calendarEvents = calendarToAdd.events[event.time] ?? [];
-    if (!calendarEvents.contains(event)) {
-      await repo.addEventToCalendar(calendarId: calendarId, event: event);
-      return;
-    }
-    print('duplicate event noted');
+    await _repo.addEvent(calendarId, eventToAdd);
   }
 
-  Future<void> removeEvent({
+  Future<void> updateEvent({
     required String calendarId,
     required Event event,
-  }) async {
-    final repo = ref.read(calendarRepositoryProvider);
-    await repo.removeEventFromCalendar(calendarId: calendarId, event: event);
-  }
+  }) =>
+      _repo.updateEvent(calendarId, event);
+
+  Future<void> deleteEvent({
+    required String calendarId,
+    required String eventId,
+  }) =>
+      _repo.deleteEvent(calendarId, eventId);
+
+  Future<void> deleteCalendar(String calendarId) =>
+      _repo.deleteCalendar(calendarId);
 
   Future<void> shareCalendar(
     String calendarId,
     String targetUid,
     bool share,
-  ) async {
-    final repo = ref.read(calendarRepositoryProvider);
-    await repo.shareCalendar(calendarId, targetUid, share);
-    // Stream will automatically update
-  }
+  ) =>
+      _repo.shareCalendar(calendarId, targetUid, share);
 }
 
 /// Selected calendar IDs - which calendars are visible
+/// Synchronous projection from calendars stream - no async overhead.
 @riverpod
 class SelectedCalendarIds extends _$SelectedCalendarIds {
   @override
-  FutureOr<Set<String>> build() {
-    return ref.watch(
-      calendarsProvider.selectAsync((cal) => cal.map((c) => c.id).toSet()),
-    );
+  Set<String> build() {
+    // Project calendar IDs synchronously from the stream value
+    final calendars = ref.watch(calendarsProvider).value ?? [];
+    return calendars.map((c) => c.id).toSet();
   }
 
   void toggle(String id) {
-    final current = state.requireValue;
-    if (current.contains(id)) {
-      state = AsyncValue.data(current.where((e) => e != id).toSet());
+    if (state.contains(id)) {
+      state = state.where((e) => e != id).toSet();
     } else {
-      state = AsyncValue.data({...current, id});
+      state = {...state, id};
     }
   }
 
   void selectAll() {
-    final calendarsAsync = ref.watch(calendarsProvider);
-    calendarsAsync.when(
-      data: (calendars) {
-        state = AsyncValue.data(calendars.map((cal) => cal.id).toSet());
-      },
-      loading: () {},
-      error: (_, _) {},
-    );
+    final calendars = ref.watch(calendarsProvider).value ?? [];
+    state = calendars.map((cal) => cal.id).toSet();
   }
 
-  void clear() => state = AsyncValue.data({});
+  void clear() => state = {};
 }
 
 /// Selected day in the calendar
@@ -166,60 +167,105 @@ class CopyEventState extends _$CopyEventState {
   void clear() => state = null;
 }
 
-/// Consolidated visible events - combines all selected calendars
-/// This replaces both visibleEventsMapProvider and visibleEventsListProvider
+/// Expanded events map - memoized recurrence expansion.
+/// Only recomputes when events actually change, not on filter/day changes.
+@riverpod
+Map<DateTime, List<Event>> expandedEventsMap(Ref ref) {
+  ref.keepAlive();
+  final eventsAsync = ref.watch(eventsForSelectedCalendarsProvider);
+  final events = eventsAsync.value ?? [];
+
+  final horizon = DateTime.now().add(const Duration(days: 365)); // 1 year horizon
+  final eventMap = <DateTime, List<Event>>{};
+
+  for (final event in events) {
+    if (event.recurrence == EventRecurrence.none) {
+      // Non-recurring: add to its date
+      final day = normalizeDate(event.time);
+      eventMap.update(
+        day,
+        (existing) => [...existing, event],
+        ifAbsent: () => [event],
+      );
+    } else {
+      // Recurring: expand occurrences
+      final occurrences = _expandRecurrence(event, horizon);
+      for (final occurrence in occurrences) {
+        final day = normalizeDate(occurrence.time);
+        eventMap.update(
+          day,
+          (existing) => [...existing, occurrence],
+          ifAbsent: () => [occurrence],
+        );
+      }
+    }
+  }
+
+  return eventMap;
+}
+
+/// Consolidated visible events - uses memoized expanded map.
+/// Filtering is O(n), not O(n × 365) on day/filter changes.
 @riverpod
 VisibleEvents visibleEvents(Ref ref) {
   ref.keepAlive();
-  final calendarsAsync = ref.watch(calendarsProvider);
-  final selectedIds = ref.watch(selectedCalendarIdsProvider);
+  final eventMap = ref.watch(expandedEventsMapProvider);
   final selectedDay = ref.watch(selectedDayProvider);
   final afterToday = ref.watch(afterTodayFilterProvider);
 
-  return calendarsAsync.when(
-    data: (allCalendars) {
-      // Filter to selected calendars
-      final visibleCalendars = allCalendars
-          .where((cal) => selectedIds.value?.contains(cal.id) ?? false)
-          .toList();
+  return _filterVisibleEvents(eventMap, selectedDay, afterToday);
+}
 
-      // Merge events from all visible calendars
-      final Map<DateTime, List<Event>> eventMap = {};
-      for (final cal in visibleCalendars) {
-        cal.sortEvents();
-        cal.events.forEach((date, eventList) {
-          eventMap.update(
-            date,
-            (existing) => [...existing, ...eventList],
-            ifAbsent: () => [...eventList],
-          );
-        });
-      }
+VisibleEvents _filterVisibleEvents(
+  Map<DateTime, List<Event>> eventMap,
+  DateTime? selectedDay,
+  bool afterToday,
+) {
+  final now = DateTime.now();
+  List<Event> eventList;
 
-      // Generate list based on selected day and filter
-      List<Event> eventList;
-      if (selectedDay != null) {
-        // Show events for selected day only
-        eventList = eventMap[selectedDay] ?? [];
-      } else {
-        // Show all events, sorted by time
-        eventList = eventMap.values.expand((list) => list).toList();
-        eventList.sort((a, b) => a.time.compareTo(b.time));
+  if (selectedDay != null) {
+    eventList = eventMap[selectedDay] ?? [];
+  } else {
+    eventList = eventMap.values.expand((list) => list).toList();
+    eventList.sort((a, b) => a.time.compareTo(b.time));
 
-        // Apply "after today" filter if enabled
-        if (afterToday) {
-          final now = DateTime.now();
-          eventList = eventList
-              .where((event) => event.time.isAfter(now))
-              .toList();
-        }
-      }
+    if (afterToday) {
+      eventList = eventList.where((e) => e.time.isAfter(now)).toList();
+    }
+  }
 
-      return VisibleEvents(map: eventMap, list: eventList);
-    },
-    loading: () => const VisibleEvents(map: {}, list: []),
-    error: (_, _) => const VisibleEvents(map: {}, list: []),
-  );
+  return VisibleEvents(map: eventMap, list: eventList);
+}
+
+/// Expand a recurring event into individual occurrences.
+List<Event> _expandRecurrence(Event event, DateTime horizon) {
+  final occurrences = <Event>[];
+  final endDate = event.recurrenceEndDate ?? horizon;
+  final limit = endDate.isBefore(horizon) ? endDate : horizon;
+
+  var current = event.time;
+
+  while (!current.isAfter(limit)) {
+    occurrences.add(event.copyWith(time: current));
+
+    switch (event.recurrence) {
+      case EventRecurrence.daily:
+        current = current.add(const Duration(days: 1));
+      case EventRecurrence.weekly:
+        current = current.add(const Duration(days: 7));
+      case EventRecurrence.monthly:
+        current = DateTime(current.year, current.month + 1, current.day,
+            current.hour, current.minute);
+      case EventRecurrence.yearly:
+        current = DateTime(current.year + 1, current.month, current.day,
+            current.hour, current.minute);
+      case EventRecurrence.none:
+        break; // Should not happen
+    }
+  }
+
+  return occurrences;
 }
 
 /// Data class for visible events (replaces separate map and list providers)

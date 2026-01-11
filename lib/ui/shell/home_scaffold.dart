@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/providers/nav/nav_providers.dart';
-import 'package:timeshare/ui/calendar/wgts/cal_drawer.dart';
-import 'package:timeshare/ui/calendar/wgts/fab.dart';
-import 'package:timeshare/ui/core/widgets/home_appbar.dart';
-import 'package:timeshare/ui/core/widgets/home_navbar.dart';
-import 'package:timeshare/ui/calendar/calendar_page.dart';
-import 'package:timeshare/ui/friends/friends_page.dart';
-import 'package:timeshare/ui/profile/profile_page.dart';
+import 'package:timeshare/ui/features/calendar/widgets/cal_drawer.dart';
+import 'package:timeshare/ui/features/calendar/widgets/fab.dart';
+import 'package:timeshare/ui/shell/home_appbar.dart';
+import 'package:timeshare/ui/shell/home_navbar.dart';
+import 'package:timeshare/ui/features/calendar/calendar_page.dart';
+import 'package:timeshare/ui/features/friends/friends_page.dart';
+import 'package:timeshare/ui/features/profile/profile_page.dart';
 
 class HomeScaffold extends ConsumerWidget {
   const HomeScaffold({super.key});

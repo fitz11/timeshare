@@ -206,6 +206,7 @@ void main() {
   group('visibleEventsProvider', () {
     test('VisibleEvents stores map and list', () {
       final event = Event(
+        id: 'test-event-1',
         name: 'Test',
         time: DateTime.utc(2024, 6, 15),
         calendarId: 'cal1',
@@ -232,6 +233,7 @@ void main() {
   group('VisibleEvents', () {
     test('stores map and list correctly', () {
       final event = Event(
+        id: 'test-event-2',
         name: 'Test',
         time: DateTime.utc(2024, 6, 15),
         calendarId: 'cal1',

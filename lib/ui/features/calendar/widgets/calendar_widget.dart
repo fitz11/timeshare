@@ -43,9 +43,11 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
 
   void _copyEvent(DateTime targetDate, Event sourceEvent) {
     final copied = sourceEvent.copyWith(time: targetDate);
-    ref
-        .read(calendarMutationsProvider.notifier)
-        .addEventToCalendar(calendarId: copied.calendarId, event: copied);
+    if (copied.calendarId != null) {
+      ref
+          .read(calendarMutationsProvider.notifier)
+          .addEvent(calendarId: copied.calendarId!, event: copied);
+    }
     ref.read(copyEventStateProvider.notifier).set(copied);
   }
 

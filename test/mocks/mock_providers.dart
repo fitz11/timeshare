@@ -12,7 +12,6 @@ import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
 
 import '../fixtures/mock_firebase.dart';
-import '../fixtures/test_data.dart';
 
 /// Creates a ProviderContainer with mocked Firebase services.
 /// Useful for unit testing providers.
@@ -25,13 +24,17 @@ Future<ProviderContainer> createTestContainer({
       ? await MockFirebaseSetup.createSeededFirestore()
       : MockFirebaseSetup.createFakeFirestore();
 
+  final calendarRepo = FirebaseRepository(firestore: firestore, auth: auth);
+
   return ProviderContainer(
     overrides: [
-      calendarRepositoryProvider.overrideWithValue(
-        FirebaseRepository(firestore: firestore, auth: auth),
-      ),
+      calendarRepositoryProvider.overrideWithValue(calendarRepo),
       userRepositoryProvider.overrideWithValue(
-        UserRepository(firestore: firestore, auth: auth),
+        UserRepository(
+          firestore: firestore,
+          auth: auth,
+          calendarRepo: calendarRepo,
+        ),
       ),
     ],
   );
@@ -42,13 +45,17 @@ ProviderContainer createTestContainerWithMocks({
   required FakeFirebaseFirestore firestore,
   required MockFirebaseAuth auth,
 }) {
+  final calendarRepo = FirebaseRepository(firestore: firestore, auth: auth);
+
   return ProviderContainer(
     overrides: [
-      calendarRepositoryProvider.overrideWithValue(
-        FirebaseRepository(firestore: firestore, auth: auth),
-      ),
+      calendarRepositoryProvider.overrideWithValue(calendarRepo),
       userRepositoryProvider.overrideWithValue(
-        UserRepository(firestore: firestore, auth: auth),
+        UserRepository(
+          firestore: firestore,
+          auth: auth,
+          calendarRepo: calendarRepo,
+        ),
       ),
     ],
   );
@@ -65,13 +72,17 @@ Future<ProviderScope> createTestProviderScope({
       ? await MockFirebaseSetup.createSeededFirestore()
       : MockFirebaseSetup.createFakeFirestore();
 
+  final calendarRepo = FirebaseRepository(firestore: firestore, auth: auth);
+
   return ProviderScope(
     overrides: [
-      calendarRepositoryProvider.overrideWithValue(
-        FirebaseRepository(firestore: firestore, auth: auth),
-      ),
+      calendarRepositoryProvider.overrideWithValue(calendarRepo),
       userRepositoryProvider.overrideWithValue(
-        UserRepository(firestore: firestore, auth: auth),
+        UserRepository(
+          firestore: firestore,
+          auth: auth,
+          calendarRepo: calendarRepo,
+        ),
       ),
     ],
     child: child,
@@ -84,13 +95,17 @@ ProviderScope createTestProviderScopeWithMocks({
   required FakeFirebaseFirestore firestore,
   required MockFirebaseAuth auth,
 }) {
+  final calendarRepo = FirebaseRepository(firestore: firestore, auth: auth);
+
   return ProviderScope(
     overrides: [
-      calendarRepositoryProvider.overrideWithValue(
-        FirebaseRepository(firestore: firestore, auth: auth),
-      ),
+      calendarRepositoryProvider.overrideWithValue(calendarRepo),
       userRepositoryProvider.overrideWithValue(
-        UserRepository(firestore: firestore, auth: auth),
+        UserRepository(
+          firestore: firestore,
+          auth: auth,
+          calendarRepo: calendarRepo,
+        ),
       ),
     ],
     child: child,

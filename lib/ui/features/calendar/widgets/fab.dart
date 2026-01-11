@@ -7,8 +7,8 @@ import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/providers/nav/nav_providers.dart';
-import 'package:timeshare/ui/dialogs/create_calendar_dialog.dart';
-import 'package:timeshare/ui/dialogs/open_eventbuilder_dialog.dart';
+import 'package:timeshare/ui/features/calendar/dialogs/create_calendar_dialog.dart';
+import 'package:timeshare/ui/features/calendar/dialogs/open_eventbuilder_dialog.dart';
 
 class Fab extends ConsumerStatefulWidget {
   const Fab({super.key});

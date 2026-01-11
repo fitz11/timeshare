@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
-import 'package:timeshare/ui/calendar/wgts/event_list.dart';
+import 'package:timeshare/ui/features/calendar/widgets/event_list.dart';
 
 void main() {
   group('EventList', () {
@@ -37,12 +37,14 @@ void main() {
     testWidgets('displays list of events', (tester) async {
       final events = [
         Event(
+          id: 'event-1',
           name: 'Event 1',
           time: DateTime.utc(2024, 6, 15),
           calendarId: 'cal1',
           color: Colors.blue,
         ),
         Event(
+          id: 'event-2',
           name: 'Event 2',
           time: DateTime.utc(2024, 6, 16),
           calendarId: 'cal1',
@@ -74,6 +76,7 @@ void main() {
 
     testWidgets('events are dismissible in normal mode', (tester) async {
       final event = Event(
+        id: 'event-dismissible',
         name: 'Dismissible Event',
         time: DateTime.utc(2024, 6, 15),
         calendarId: 'cal1',
@@ -104,6 +107,7 @@ void main() {
 
     testWidgets('each event has decorated container', (tester) async {
       final event = Event(
+        id: 'event-decorated',
         name: 'Decorated Event',
         time: DateTime.utc(2024, 6, 15),
         calendarId: 'cal1',
@@ -135,6 +139,7 @@ void main() {
     testWidgets('ListView is created for events', (tester) async {
       final events = [
         Event(
+          id: 'event-test',
           name: 'Test Event',
           time: DateTime.utc(2024, 6, 15),
           calendarId: 'cal1',

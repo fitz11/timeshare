@@ -63,31 +63,16 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
 
     BoxShape shape = _makeSquare ? BoxShape.rectangle : BoxShape.circle;
     Event newEvent = Event(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: selectedName,
-      calendarId: widget.calendarId,
       time: _selectedDate!,
       color: _selectedColor,
       shape: shape,
     );
 
-    // Check for duplicate events
-    final calendars = ref.read(calendarsProvider).requireValue;
-    for (final cal in calendars) {
-      for (final event in cal.events.values.expand((list) => list)) {
-        if (event == newEvent) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('This event already exists')),
-            );
-          }
-          return;
-        }
-      }
-    }
-
     await ref
         .read(calendarMutationsProvider.notifier)
-        .addEventToCalendar(calendarId: widget.calendarId, event: newEvent);
+        .addEvent(calendarId: widget.calendarId, event: newEvent);
 
     if (mounted) {
       Navigator.pop(context);

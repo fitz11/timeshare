@@ -39,12 +39,15 @@ class DeleteEventDialog extends ConsumerWidget {
                   ),
                 ),
                 onTap: () {
-                  ref
-                      .read(calendarMutationsProvider.notifier)
-                      .removeEvent(
-                        calendarId: events[index].calendarId,
-                        event: events[index],
-                      );
+                  final event = events[index];
+                  if (event.calendarId != null) {
+                    ref
+                        .read(calendarMutationsProvider.notifier)
+                        .deleteEvent(
+                          calendarId: event.calendarId!,
+                          eventId: event.id,
+                        );
+                  }
                   Navigator.pop(context);
                 },
               ),

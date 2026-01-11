@@ -8,6 +8,7 @@ import 'package:timeshare/data/converters/color_converter.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:timeshare/data/converters/shape_converter.dart';
+import 'package:timeshare/data/models/event/event_recurrence.dart';
 
 part 'event.freezed.dart';
 part 'event.g.dart';
@@ -17,12 +18,16 @@ part 'event.g.dart';
 @freezed
 abstract class Event with _$Event {
   factory Event({
+    required String id,
     required String name,
     required DateTime time,
-    required String calendarId,
     List<String>? atendees,
     @ColorConverter() @Default(Colors.black) Color color,
     @ShapeConverter() @Default(BoxShape.circle) BoxShape shape,
+    @Default(EventRecurrence.none) EventRecurrence recurrence,
+    DateTime? recurrenceEndDate,
+    // calendarId is populated at runtime from the subcollection path, not stored
+    @JsonKey(includeToJson: false) String? calendarId,
   }) = _Event;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
@@ -30,6 +35,6 @@ abstract class Event with _$Event {
 
 extension EventX on Event {
   String dbgOutput() {
-    return '$name: $calendarId : ${DateFormat.yMMMd().format(time)} : ${color.toARGB32()} : ${shape.toString()}\n';
+    return '$name: ${DateFormat.yMMMd().format(time)} : ${color.toARGB32()} : ${shape.toString()} : $recurrence\n';
   }
 }

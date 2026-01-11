@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
-import 'package:timeshare/ui/dialogs/create_event_dialog.dart';
+import 'package:timeshare/ui/features/calendar/dialogs/create_event_dialog.dart';
 
 void openEventBuilder(BuildContext context, List<Calendar> calendars) async {
   // First, show dialog to select calendar

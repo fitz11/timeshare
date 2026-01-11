@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/auth_gate.dart';
-import 'package:timeshare/ui/core/home_scaffold.dart';
-import 'package:timeshare/ui/login/login_screen.dart';
-import 'package:timeshare/ui/themes.dart';
+import 'package:timeshare/ui/shell/home_scaffold.dart';
+import 'package:timeshare/ui/features/auth/auth_screen.dart';
+import 'package:timeshare/ui/core/theme/themes.dart';
 import 'firebase_options.dart';
 
 void main() async {

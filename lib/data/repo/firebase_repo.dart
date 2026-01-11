@@ -4,7 +4,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
@@ -17,18 +17,22 @@ class FirebaseRepository extends CalendarRepository {
     : firestore = firestore ?? FirebaseFirestore.instance,
       auth = auth ?? FirebaseAuth.instance;
 
-  /// Verifies the current user has access to modify the given calendar.
+  CollectionReference<Map<String, dynamic>> get _calendars =>
+      firestore.collection('calendars');
+
+  /// Helper to get the events subcollection for a calendar.
+  CollectionReference<Map<String, dynamic>> _eventsRef(String calendarId) =>
+      _calendars.doc(calendarId).collection('events');
+
+  /// Verifies the current user has access to the given calendar.
   /// User must be the owner or in the sharedWith list.
-  /// Throws an exception if not authorized.
-  Future<void> _verifyCalendarAccess(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-    String calendarId,
-  ) async {
+  Future<void> _verifyCalendarAccess(String calendarId) async {
     final currentUid = auth.currentUser?.uid;
     if (currentUid == null) {
       throw Exception('You must be logged in to perform this action.');
     }
 
+    final snapshot = await _calendars.doc(calendarId).get();
     if (!snapshot.exists || snapshot.data() == null) {
       throw Exception('Calendar not found.');
     }
@@ -43,204 +47,99 @@ class FirebaseRepository extends CalendarRepository {
     }
   }
 
-  /// Provides a stream of all available calendars for viewing.
-  /// Automatically updates when calendars change in Firestore.
-  /// Defaults to using current user.
+  // ============ Calendar Operations ============
+
   @override
   Stream<List<Calendar>> watchAllAvailableCalendars({String? uid}) {
     uid = uid ?? auth.currentUser?.uid;
     if (uid == null) return Stream.value([]);
 
-    // Watch owned calendars
-    final ownedStream = firestore
-        .collection('calendars')
+    final ownedStream = _calendars
         .where('owner', isEqualTo: uid)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map((doc) {
-            print('FIREBASE READ: calendar from ownedStream');
-            return Calendar.fromJson(doc.data());
-          }).toList(),
-        );
+        .map((snapshot) => snapshot.docs.map((doc) {
+              return Calendar.fromJson(doc.data());
+            }).toList());
 
-    // Watch shared calendars
-    final sharedStream = firestore
-        .collection('calendars')
+    final sharedStream = _calendars
         .where('sharedWith', arrayContains: uid)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map((doc) {
-            print('FIREBASE READ: calendar from ownedStream');
-            return Calendar.fromJson(doc.data());
-          }).toList(),
-        );
+        .map((snapshot) => snapshot.docs.map((doc) {
+              return Calendar.fromJson(doc.data());
+            }).toList());
 
-    // Combine both streams using StreamController
-    final controller = StreamController<List<Calendar>>();
-    final seenIds = <String>{};
-    List<Calendar> ownedCalendars = [];
-    List<Calendar> sharedCalendars = [];
-
-    void emitCombined() {
+    // Combine streams using rxdart
+    return Rx.combineLatest2(ownedStream, sharedStream,
+        (List<Calendar> owned, List<Calendar> shared) {
+      final seenIds = <String>{};
       final combined = <Calendar>[];
-      seenIds.clear();
 
-      // Add owned calendars first
-      for (final calendar in ownedCalendars) {
+      for (final calendar in owned) {
         if (!seenIds.contains(calendar.id)) {
           seenIds.add(calendar.id);
           combined.add(calendar);
         }
       }
 
-      // Add shared calendars (avoiding duplicates)
-      for (final calendar in sharedCalendars) {
+      for (final calendar in shared) {
         if (!seenIds.contains(calendar.id)) {
           seenIds.add(calendar.id);
           combined.add(calendar);
         }
       }
 
-      controller.add(combined);
-    }
-
-    final ownedSub = ownedStream.listen((calendars) {
-      ownedCalendars = calendars;
-      emitCombined();
+      return combined;
     });
-
-    final sharedSub = sharedStream.listen((calendars) {
-      sharedCalendars = calendars;
-      emitCombined();
-    });
-
-    controller.onCancel = () {
-      ownedSub.cancel();
-      sharedSub.cancel();
-    };
-
-    return controller.stream;
   }
 
-  /// Provides a future of all available calendars for viewing.
-  /// Defaults to using current user.
-  /// Kept for backwards compatibility or one-time fetches.
   @override
   Future<List<Calendar>> getAllAvailableCalendars({String? uid}) async {
     uid = uid ?? auth.currentUser?.uid;
     if (uid == null) return [];
 
-    final ownedSnapshot = await firestore
-        .collection('calendars')
-        .where('owner', isEqualTo: uid)
-        .get();
+    final ownedSnapshot =
+        await _calendars.where('owner', isEqualTo: uid).get();
 
-    final sharedSnapshot = await firestore
-        .collection('calendars')
-        .where('sharedWith', arrayContains: uid)
-        .get();
+    final sharedSnapshot =
+        await _calendars.where('sharedWith', arrayContains: uid).get();
 
-    final combined = [...ownedSnapshot.docs, ...sharedSnapshot.docs];
-    return combined.map((doc) {
-      return Calendar.fromJson(doc.data());
-    }).toList();
-  }
+    final seenIds = <String>{};
+    final combined = <Calendar>[];
 
-  /// Adds a given calendar object to the Firestore.
-  @override
-  Future<void> addCalendar(Calendar calendar) async {
-    final docRef = firestore.collection('calendars').doc(calendar.id);
-    await docRef.set(calendar.toJson());
-    print('FIREBASE READ: adding calendar');
-  }
-
-  /// Adds an event to the firestore calendar given.
-  /// User must be owner or in sharedWith list.
-  @override
-  Future<void> addEventToCalendar({
-    required String calendarId,
-    required Event event,
-  }) async {
-    final docRef = firestore.collection('calendars').doc(calendarId);
-    final snapshot = await docRef.get();
-
-    // Verify user has access to this calendar
-    await _verifyCalendarAccess(snapshot, calendarId);
-
-    // Get the existing calendar data
-    final calendar = Calendar.fromJson(snapshot.data()!);
-
-    final normalizedDay = normalizeDate(event.time);
-
-    // Add the event to the day's list
-    final updatedEvents = Map<DateTime, List<Event>>.from(calendar.events);
-    updatedEvents.update(
-      normalizedDay,
-      (list) => [...list, event],
-      ifAbsent: () => [event],
-    );
-
-    // Create updated calendar
-    final updatedCalendar = calendar.copyWith(events: updatedEvents);
-
-    // Write back to Firestore
-    print('FIREBASE WRITE: adding event to calendar');
-    await docRef.set(updatedCalendar.toJson());
-    print(' -Finished updating!');
-  }
-
-  /// Removes a given event from a given calendar.
-  /// User must be owner or in sharedWith list.
-  @override
-  Future<void> removeEventFromCalendar({
-    required String calendarId,
-    required Event event,
-  }) async {
-    print(
-      'FIREBASE READ: removing event ${event.name} from calendar $calendarId...',
-    );
-
-    final docRef = firestore.collection('calendars').doc(calendarId);
-    final snapshot = await docRef.get();
-
-    // Verify user has access to this calendar
-    await _verifyCalendarAccess(snapshot, calendarId);
-
-    final calendarData = snapshot.data()!;
-    final calendar = Calendar.fromJson(calendarData);
-
-    final normalizedDay = normalizeDate(event.time);
-    final currentEvents = calendar.events[normalizedDay] ?? [];
-
-    final updatedEventList = currentEvents.where((e) => e != event).toList();
-    final updatedEvents = Map<DateTime, List<Event>>.from(calendar.events);
-
-    if (updatedEventList.isEmpty) {
-      updatedEvents.remove(normalizedDay);
-    } else {
-      updatedEvents[normalizedDay] = updatedEventList;
+    for (final doc in ownedSnapshot.docs) {
+      final calendar = Calendar.fromJson(doc.data());
+      if (!seenIds.contains(calendar.id)) {
+        seenIds.add(calendar.id);
+        combined.add(calendar);
+      }
     }
 
-    final updatedCalendar = calendar.copyWith(events: updatedEvents);
+    for (final doc in sharedSnapshot.docs) {
+      final calendar = Calendar.fromJson(doc.data());
+      if (!seenIds.contains(calendar.id)) {
+        seenIds.add(calendar.id);
+        combined.add(calendar);
+      }
+    }
 
-    await docRef.set(updatedCalendar.toJson());
-    print('Calendar $calendarId had ${event.name} removed successfully.');
+    return combined;
   }
 
-  /// Makes a new calendar in the firestore
   @override
   Future<void> createCalendar(Calendar calendar) async {
     final uid = auth.currentUser?.uid;
     if (uid == null) return;
 
-    print('FIRESTORE WRITE: Create calendar');
-    await firestore
-        .collection('calendars')
-        .doc(calendar.id)
-        .set(calendar.toJson());
+    await _calendars.doc(calendar.id).set(calendar.toJson());
   }
 
-  /// Shares a calendar with a user. Only the owner can share.
+  @override
+  Future<Calendar?> getCalendarById(String calendarId) async {
+    final snapshot = await _calendars.doc(calendarId).get();
+    if (!snapshot.exists) return null;
+    return Calendar.fromJson(snapshot.data()!);
+  }
+
   @override
   Future<void> shareCalendar(
     String calendarId,
@@ -252,7 +151,7 @@ class FirebaseRepository extends CalendarRepository {
       throw Exception('You must be logged in to share a calendar.');
     }
 
-    final doc = firestore.collection('calendars').doc(calendarId);
+    final doc = _calendars.doc(calendarId);
     final snapshot = await doc.get();
 
     if (!snapshot.exists) {
@@ -269,23 +168,8 @@ class FirebaseRepository extends CalendarRepository {
           ? FieldValue.arrayUnion([targetUid])
           : FieldValue.arrayRemove([targetUid]),
     });
-    print('FIRESTORE WRITE: update calendar sharing');
   }
 
-  /// Retreive a calendar by ID
-  @override
-  Future<Calendar?> getCalendarById(String calendarId) async {
-    final doc = firestore.collection('calendars').doc(calendarId);
-    final snapshot = await doc.get();
-    print('FIRESTORE READ: getting calendar by ID');
-    if (!snapshot.exists) {
-      print('calendar not found :(');
-      return null;
-    }
-    return Calendar.fromJson(snapshot.data()!);
-  }
-
-  /// Deletes a calendar. Only the owner can delete a calendar.
   @override
   Future<void> deleteCalendar(String calendarId) async {
     final currentUid = auth.currentUser?.uid;
@@ -293,16 +177,94 @@ class FirebaseRepository extends CalendarRepository {
       throw Exception('You must be logged in to delete a calendar.');
     }
 
-    final ref = firestore.collection('calendars').doc(calendarId);
+    final ref = _calendars.doc(calendarId);
     final snapshot = await ref.get();
-    print('FIRESTORE READ: get $calendarId for deletion');
+
     if (!snapshot.exists) throw Exception('Calendar not found.');
+
     final data = snapshot.data();
     if (data?['owner'] != currentUid) {
       throw Exception('You are not the owner of the calendar.');
     }
 
+    // Cascade delete: remove all events first
+    await deleteAllEventsForCalendar(calendarId);
+
+    // Then delete the calendar document
     await ref.delete();
-    print('FIRESTORE WRITE: deleted $calendarId');
+  }
+
+  // ============ Event Operations (Subcollection) ============
+
+  @override
+  Stream<List<Event>> watchEventsForCalendar(String calendarId) {
+    return _eventsRef(calendarId).snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        // Ensure id is set from document ID if not in data
+        if (!data.containsKey('id')) {
+          data['id'] = doc.id;
+        }
+        // Set calendarId from the parent path
+        data['calendarId'] = calendarId;
+        return Event.fromJson(data);
+      }).toList();
+    });
+  }
+
+  @override
+  Stream<List<Event>> watchEventsForCalendars(List<String> calendarIds) {
+    if (calendarIds.isEmpty) return Stream.value([]);
+
+    final streams = calendarIds.map((id) => watchEventsForCalendar(id));
+    return Rx.combineLatestList(streams).map((lists) {
+      return lists.expand((list) => list).toList();
+    });
+  }
+
+  @override
+  Future<List<Event>> getEventsForCalendar(String calendarId) async {
+    final snapshot = await _eventsRef(calendarId).get();
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      if (!data.containsKey('id')) {
+        data['id'] = doc.id;
+      }
+      // Set calendarId from the parent path
+      data['calendarId'] = calendarId;
+      return Event.fromJson(data);
+    }).toList();
+  }
+
+  @override
+  Future<void> addEvent(String calendarId, Event event) async {
+    await _verifyCalendarAccess(calendarId);
+    await _eventsRef(calendarId).doc(event.id).set(event.toJson());
+  }
+
+  @override
+  Future<void> updateEvent(String calendarId, Event event) async {
+    await _verifyCalendarAccess(calendarId);
+    await _eventsRef(calendarId).doc(event.id).set(event.toJson());
+  }
+
+  @override
+  Future<void> deleteEvent(String calendarId, String eventId) async {
+    await _verifyCalendarAccess(calendarId);
+    await _eventsRef(calendarId).doc(eventId).delete();
+  }
+
+  @override
+  Future<void> deleteAllEventsForCalendar(String calendarId) async {
+    final eventsSnapshot = await _eventsRef(calendarId).get();
+
+    if (eventsSnapshot.docs.isEmpty) return;
+
+    // Batch delete all events (Firestore batches are limited to 500 ops)
+    final batch = firestore.batch();
+    for (final doc in eventsSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
   }
 }

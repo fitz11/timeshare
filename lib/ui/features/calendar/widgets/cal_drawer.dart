@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/ui/calendar/wgts/aftertoday_toggle.dart';
+import 'package:timeshare/ui/features/calendar/widgets/aftertoday_toggle.dart';
 
 class CalDrawer extends ConsumerWidget {
   const CalDrawer({super.key});

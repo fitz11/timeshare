@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/providers/nav/nav_providers.dart';
-import 'package:timeshare/ui/calendar/wgts/calendar_filter_sheet.dart';
-import 'package:timeshare/ui/core/buttons/open_drawer_button.dart';
-import 'package:timeshare/ui/dialogs/user_search_dialog.dart';
+import 'package:timeshare/ui/features/calendar/widgets/calendar_filter_sheet.dart';
+import 'package:timeshare/ui/features/friends/dialogs/user_search_dialog.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key});
@@ -32,9 +31,12 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget? _buildLeadingForIndex(BuildContext context, HomePages page) {
     switch (page) {
       case HomePages.calendar:
-        return OpenDrawerButton();
+        return IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+        );
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 

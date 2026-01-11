@@ -30,6 +30,30 @@ service cloud.firestore {
 
       // Delete: Only the owner can delete
       allow delete: if isOwner();
+
+      // Events subcollection rules
+      match /events/{eventId} {
+        // Helper: Get parent calendar data
+        function getCalendar() {
+          return get(/databases/$(database)/documents/calendars/$(calendarId)).data;
+        }
+
+        // Helper: Check if user is the calendar owner
+        function isCalendarOwner() {
+          return request.auth != null && request.auth.uid == getCalendar().owner;
+        }
+
+        // Helper: Check if user is in the calendar's sharedWith list
+        function isCalendarShared() {
+          return request.auth != null && request.auth.uid in getCalendar().sharedWith;
+        }
+
+        // Read: Owner or shared users can read events
+        allow read: if isCalendarOwner() || isCalendarShared();
+
+        // Create/Update/Delete: Owner or shared users can modify events
+        allow create, update, delete: if isCalendarOwner() || isCalendarShared();
+      }
     }
 
     // User rules - users can read any profile but only write their own

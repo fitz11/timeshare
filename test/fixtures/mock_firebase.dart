@@ -3,10 +3,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:flutter/material.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
+import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
 
 import 'test_data.dart';
@@ -73,6 +72,13 @@ class MockFirebaseSetup {
         .doc(TestData.testCalendar.id)
         .set(TestData.testCalendar.toJson());
 
+    // Seed events as subcollection documents
+    await _seedEvents(
+      firestore,
+      TestData.testCalendar.id,
+      [TestData.testEvent, TestData.testEvent2, TestData.testEvent3],
+    );
+
     await firestore
         .collection('calendars')
         .doc(TestData.emptyCalendar.id)
@@ -86,10 +92,27 @@ class MockFirebaseSetup {
     return firestore;
   }
 
+  /// Seeds events into a calendar's events subcollection.
+  static Future<void> _seedEvents(
+    FakeFirebaseFirestore firestore,
+    String calendarId,
+    List<Event> events,
+  ) async {
+    for (final event in events) {
+      await firestore
+          .collection('calendars')
+          .doc(calendarId)
+          .collection('events')
+          .doc(event.id)
+          .set(event.toJson());
+    }
+  }
+
   /// Creates a minimal seeded firestore for specific test scenarios.
   static Future<FakeFirebaseFirestore> createMinimalFirestore({
     List<Calendar>? calendars,
     List<AppUser>? users,
+    Map<String, List<Event>>? calendarEvents,
   }) async {
     final firestore = FakeFirebaseFirestore();
 
@@ -113,6 +136,11 @@ class MockFirebaseSetup {
             .collection('calendars')
             .doc(calendar.id)
             .set(calendar.toJson());
+
+        // Seed events if provided
+        if (calendarEvents != null && calendarEvents.containsKey(calendar.id)) {
+          await _seedEvents(firestore, calendar.id, calendarEvents[calendar.id]!);
+        }
       }
     }
 
