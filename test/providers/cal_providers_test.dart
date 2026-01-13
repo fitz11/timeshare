@@ -225,23 +225,4 @@ void main() {
       expect(visible.list, isEmpty);
     });
   });
-
-  group('VisibleEvents', () {
-    test('stores map and list correctly', () {
-      final event = Event(
-        id: 'test-event-2',
-        name: 'Test',
-        time: DateTime.utc(2024, 6, 15),
-        calendarId: 'cal1',
-      );
-
-      final visible = VisibleEvents(
-        map: {DateTime.utc(2024, 6, 15): [event]},
-        list: [event],
-      );
-
-      expect(visible.map.length, 1);
-      expect(visible.list.length, 1);
-    });
-  });
 }

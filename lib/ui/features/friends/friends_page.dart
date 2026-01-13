@@ -1,8 +1,12 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
 import 'package:timeshare/ui/features/calendar/dialogs/share_calendar_dialog.dart';
+import 'package:timeshare/ui/features/calendar/widgets/ownership_transfer_section.dart';
+import 'package:timeshare/ui/features/friends/widgets/friend_requests_section.dart';
 import 'package:timeshare/utils/error_utils.dart';
 import 'package:timeshare/utils/string_utils.dart';
 
@@ -15,20 +19,40 @@ class FriendsPage extends ConsumerWidget {
 
     return friends.when(
       data: (friendsList) {
-        if (friendsList.isEmpty) {
-          return _buildEmptyState(context);
-        }
         return RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(userFriendsProvider);
           },
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: friendsList.length,
-            itemBuilder: (context, index) {
-              final friend = friendsList[index];
-              return _buildFriendCard(context, ref, friend);
-            },
+          child: CustomScrollView(
+            slivers: [
+              // Ownership transfer requests at the top
+              const SliverToBoxAdapter(
+                child: OwnershipTransferSection(),
+              ),
+              // Friend requests section
+              const SliverToBoxAdapter(
+                child: FriendRequestsSection(),
+              ),
+              // Friends list or empty state
+              if (friendsList.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _buildEmptyState(context),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final friend = friendsList[index];
+                        return _buildFriendCard(context, ref, friend);
+                      },
+                      childCount: friendsList.length,
+                    ),
+                  ),
+                ),
+            ],
           ),
         );
       },
@@ -183,8 +207,21 @@ class FriendsPage extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Remove Friend'),
-        content: Text(
-          'Are you sure you want to remove ${friend.displayName} from your friends list?',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Are you sure you want to remove ${friend.displayName} from your friends list?',
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'This will also revoke any shared calendar access between you.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -195,7 +232,7 @@ class FriendsPage extends ConsumerWidget {
             onPressed: () {
               ref
                   .read(userFriendsProvider.notifier)
-                  .removeFriend(targetUid: friend.uid);
+                  .removeFriendWithCascade(targetUid: friend.uid);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

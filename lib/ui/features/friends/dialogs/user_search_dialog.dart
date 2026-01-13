@@ -1,9 +1,12 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeshare/data/services/api_client.dart';
+import 'package:timeshare/providers/friend_request/friend_request_providers.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
 import 'package:timeshare/utils/error_utils.dart';
 
@@ -18,7 +21,7 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: const Text('Search Users: Tap to add friend'),
+            title: const Text('Search Users'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -26,6 +29,7 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
                   controller: controller,
                   decoration: const InputDecoration(
                     labelText: 'Search by email',
+                    hintText: 'Tap a user to send friend request',
                   ),
                   onChanged: (value) {
                     if (debounceTimer?.isActive ?? false) {
@@ -57,18 +61,38 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
                             return ListTile(
                               title: Text(user.displayName),
                               subtitle: Text(user.email),
+                              trailing: const Icon(Icons.person_add_outlined),
                               onTap: () async {
-                                await ref
-                                    .read(userRepositoryProvider)
-                                    .addFriend(user.uid);
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      '${user.displayName} * ${user.email} added as a friend!',
+                                try {
+                                  await ref
+                                      .read(friendRequestProvider.notifier)
+                                      .sendRequest(targetUid: user.uid);
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Friend request sent to ${user.displayName}',
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                } on ApiException catch (e) {
+                                  // Handle specific error cases
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(e.message),
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.error,
+                                    ),
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to send request: $e'),
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.error,
+                                    ),
+                                  );
+                                }
                               },
                             );
                           },

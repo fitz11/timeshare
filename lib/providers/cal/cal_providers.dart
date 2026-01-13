@@ -1,6 +1,9 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:uuid/uuid.dart';
+import 'package:timeshare/data/exceptions/conflict_exception.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/models/event/event_recurrence.dart';
@@ -59,8 +62,8 @@ Stream<List<Event>> eventsForSelectedCalendars(Ref ref) {
   return repo.watchEventsForCalendars(selectedIds.toList());
 }
 
-/// Calendar mutations - simplified without optimistic updates.
-/// The stream will automatically update the UI when Firestore changes.
+/// Calendar mutations with optimistic update support.
+/// Includes conflict detection and retry mechanisms for concurrent edit handling.
 @riverpod
 class CalendarMutations extends _$CalendarMutations {
   /// Helper getter to avoid repetitive ref.read() calls
@@ -83,7 +86,7 @@ class CalendarMutations extends _$CalendarMutations {
     await _repo.createCalendar(calendar);
   }
 
-  Future<void> addEvent({
+  Future<Event> addEvent({
     required String calendarId,
     required Event event,
   }) async {
@@ -92,14 +95,77 @@ class CalendarMutations extends _$CalendarMutations {
         ? event.copyWith(id: _uuid.v4())
         : event;
 
-    await _repo.addEvent(calendarId, eventToAdd);
+    return await _repo.addEvent(calendarId, eventToAdd);
   }
 
-  Future<void> updateEvent({
+  /// Update event with simple async call (no optimistic update).
+  /// Use [updateEventOptimistic] for optimistic UI updates.
+  Future<Event> updateEvent({
     required String calendarId,
     required Event event,
   }) =>
       _repo.updateEvent(calendarId, event);
+
+  /// Update event with optimistic update and conflict handling.
+  ///
+  /// The [onConflict] callback is called when a version conflict is detected,
+  /// providing the [ConflictException] with server data for manual resolution.
+  ///
+  /// Returns the updated event from the server on success.
+  /// Throws [ConflictException] if a conflict is detected and not handled.
+  Future<Event> updateEventOptimistic({
+    required String calendarId,
+    required Event event,
+    void Function(ConflictException)? onConflict,
+  }) async {
+    try {
+      final updatedEvent = await _repo.updateEvent(calendarId, event);
+      // Invalidate to trigger UI refresh with server data
+      ref.invalidate(eventsForSelectedCalendarsProvider);
+      return updatedEvent;
+    } on ConflictException catch (e) {
+      // Notify caller of conflict
+      onConflict?.call(e);
+      // Refresh to get latest server state
+      ref.invalidate(eventsForSelectedCalendarsProvider);
+      rethrow;
+    }
+  }
+
+  /// Retry an event update with server data as the base.
+  ///
+  /// Use this after receiving a [ConflictException] to retry the update
+  /// using the server's current version as the base.
+  ///
+  /// The [mergeStrategy] function receives the local event and server event
+  /// and should return the merged event to save.
+  Future<Event> retryEventUpdateWithMerge({
+    required String calendarId,
+    required Event localEvent,
+    required Event serverEvent,
+    required Event Function(Event local, Event server) mergeStrategy,
+  }) async {
+    final mergedEvent = mergeStrategy(localEvent, serverEvent);
+    return await _repo.updateEvent(calendarId, mergedEvent);
+  }
+
+  /// Update calendar with optimistic update and conflict handling.
+  ///
+  /// The [onConflict] callback is called when a version conflict is detected.
+  Future<Calendar> updateCalendar({
+    required Calendar calendar,
+    void Function(ConflictException)? onConflict,
+  }) async {
+    try {
+      final updatedCalendar = await _repo.updateCalendar(calendar);
+      ref.invalidate(calendarsProvider);
+      return updatedCalendar;
+    } on ConflictException catch (e) {
+      onConflict?.call(e);
+      ref.invalidate(calendarsProvider);
+      rethrow;
+    }
+  }
 
   Future<void> deleteEvent({
     required String calendarId,

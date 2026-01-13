@@ -30,6 +30,20 @@ abstract class AuthService {
   /// Load stored credentials on app startup.
   /// Returns true if a valid session was restored.
   Future<bool> loadStoredCredentials();
+
+  /// Change the current user's password.
+  /// Requires the current password for verification.
+  /// Throws [AuthException] on failure.
+  Future<void> changePassword(String currentPassword, String newPassword);
+
+  /// Change the current user's email address.
+  /// Requires the current password for verification.
+  /// Throws [AuthException] on failure.
+  Future<void> changeEmail(String newEmail, String password);
+
+  /// Request a password reset email for the given email address.
+  /// Always succeeds from the client's perspective (to prevent email enumeration).
+  Future<void> requestPasswordReset(String email);
 }
 
 /// Represents the current authentication state.

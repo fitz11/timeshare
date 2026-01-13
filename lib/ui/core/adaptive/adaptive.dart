@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 /// Platform-adaptive UI components that render Cupertino widgets on iOS/macOS
 /// and Material widgets on Android/Windows/Linux/Web.
 ///

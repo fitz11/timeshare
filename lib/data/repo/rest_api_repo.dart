@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:timeshare/data/exceptions/conflict_exception.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
@@ -85,6 +86,29 @@ class RestApiRepository implements CalendarRepository {
     await _client.delete('/api/v1/timeshare/calendars/$calendarId/');
   }
 
+  @override
+  Future<Calendar> updateCalendar(Calendar calendar) async {
+    try {
+      final response = await _client.put(
+        '/api/v1/timeshare/calendars/${calendar.id}/',
+        body: jsonEncode(calendar.toJson()),
+      );
+      return Calendar.fromJson(jsonDecode(response.body));
+    } on ApiException catch (e) {
+      if (e.statusCode == 409 && e.body != null) {
+        final serverData = jsonDecode(e.body!);
+        final serverCalendar = Calendar.fromJson(serverData['data'] ?? serverData);
+        throw ConflictException(
+          message: 'Calendar was modified by another user',
+          localVersion: calendar.version,
+          serverVersion: serverCalendar.version,
+          serverData: serverCalendar,
+        );
+      }
+      rethrow;
+    }
+  }
+
   // ============ Event Operations ============
 
   @override
@@ -142,19 +166,41 @@ class RestApiRepository implements CalendarRepository {
   }
 
   @override
-  Future<void> addEvent(String calendarId, Event event) async {
-    await _client.post(
+  Future<Event> addEvent(String calendarId, Event event) async {
+    final response = await _client.post(
       '/api/v1/timeshare/calendars/$calendarId/events/',
       body: jsonEncode(event.toJson()),
     );
+    final json = jsonDecode(response.body);
+    json['calendarId'] = calendarId;
+    return Event.fromJson(json);
   }
 
   @override
-  Future<void> updateEvent(String calendarId, Event event) async {
-    await _client.put(
-      '/api/v1/timeshare/calendars/$calendarId/events/${event.id}/',
-      body: jsonEncode(event.toJson()),
-    );
+  Future<Event> updateEvent(String calendarId, Event event) async {
+    try {
+      final response = await _client.put(
+        '/api/v1/timeshare/calendars/$calendarId/events/${event.id}/',
+        body: jsonEncode(event.toJson()),
+      );
+      final json = jsonDecode(response.body);
+      json['calendarId'] = calendarId;
+      return Event.fromJson(json);
+    } on ApiException catch (e) {
+      if (e.statusCode == 409 && e.body != null) {
+        final serverData = jsonDecode(e.body!);
+        final eventJson = serverData['data'] ?? serverData;
+        eventJson['calendarId'] = calendarId;
+        final serverEvent = Event.fromJson(eventJson);
+        throw ConflictException(
+          message: 'Event was modified by another user',
+          localVersion: event.version,
+          serverVersion: serverEvent.version,
+          serverData: serverEvent,
+        );
+      }
+      rethrow;
+    }
   }
 
   @override

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeshare/data/converters/color_converter.dart';
@@ -25,6 +27,7 @@ abstract class Event with _$Event {
     DateTime? recurrenceEndDate,
     // calendarId is populated at runtime from the subcollection path, not stored
     @JsonKey(includeFromJson: false, includeToJson: false) String? calendarId,
+    @Default(1) int version,
   }) = _Event;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);

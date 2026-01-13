@@ -36,3 +36,23 @@ String? currentUserId(Ref ref) => ref.watch(authServiceProvider).currentUserId;
 Future<void> Function() signOut(Ref ref) {
   return () => ref.read(authServiceProvider).logout();
 }
+
+/// Change the current user's password.
+@riverpod
+Future<void> Function(String currentPassword, String newPassword) changePassword(Ref ref) {
+  return (currentPassword, newPassword) =>
+      ref.read(authServiceProvider).changePassword(currentPassword, newPassword);
+}
+
+/// Change the current user's email address.
+@riverpod
+Future<void> Function(String newEmail, String password) changeEmail(Ref ref) {
+  return (newEmail, password) =>
+      ref.read(authServiceProvider).changeEmail(newEmail, password);
+}
+
+/// Request a password reset email.
+@riverpod
+Future<void> Function(String email) requestPasswordReset(Ref ref) {
+  return (email) => ref.read(authServiceProvider).requestPasswordReset(email);
+}

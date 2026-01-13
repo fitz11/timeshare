@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
@@ -61,6 +63,14 @@ class LoggedCalendarRepository implements CalendarRepository {
     );
   }
 
+  @override
+  Future<Calendar> updateCalendar(Calendar calendar) {
+    return _logger.logApiCall(
+      'updateCalendar',
+      () => _delegate.updateCalendar(calendar),
+    );
+  }
+
   // Event operations
 
   @override
@@ -86,7 +96,7 @@ class LoggedCalendarRepository implements CalendarRepository {
   }
 
   @override
-  Future<void> addEvent(String calendarId, Event event) {
+  Future<Event> addEvent(String calendarId, Event event) {
     return _logger.logApiCall(
       'addEvent',
       () => _delegate.addEvent(calendarId, event),
@@ -94,7 +104,7 @@ class LoggedCalendarRepository implements CalendarRepository {
   }
 
   @override
-  Future<void> updateEvent(String calendarId, Event event) {
+  Future<Event> updateEvent(String calendarId, Event event) {
     return _logger.logApiCall(
       'updateEvent',
       () => _delegate.updateEvent(calendarId, event),

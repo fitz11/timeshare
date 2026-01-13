@@ -104,6 +104,20 @@ class RestApiUserRepository implements UserRepositoryInterface {
   }
 
   @override
+  Future<void> removeFriendWithCascade(String targetUid) async {
+    final currentUid = currentUserId;
+    if (currentUid == null) return;
+
+    // The cascade=true parameter tells the backend to:
+    // 1. Remove targetUid from current user's friends list
+    // 2. Remove current user from target's friends list
+    // 3. Revoke all calendar sharing between the two users
+    await _client.delete(
+      '/api/v1/timeshare/users/$currentUid/friends/$targetUid/?cascade=true',
+    );
+  }
+
+  @override
   Future<void> updateDisplayName(String newDisplayName) async {
     final currentUid = currentUserId;
     if (currentUid == null) return;

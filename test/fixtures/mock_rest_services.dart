@@ -76,6 +76,21 @@ class MockAuthService implements AuthService {
     return false;
   }
 
+  @override
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    // Mock implementation - just succeeds
+  }
+
+  @override
+  Future<void> changeEmail(String newEmail, String password) async {
+    // Mock implementation - just succeeds
+  }
+
+  @override
+  Future<void> requestPasswordReset(String email) async {
+    // Mock implementation - just succeeds
+  }
+
   void dispose() {
     _authStateController.close();
   }

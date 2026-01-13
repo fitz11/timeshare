@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeshare/data/converters/set_converter.dart';
 
@@ -11,6 +13,7 @@ abstract class Calendar with _$Calendar {
     required String owner,
     @SetConverter() @Default({}) Set<String> sharedWith,
     required String name,
+    @Default(1) int version,
   }) = _Calendar;
 
   factory Calendar.fromJson(Map<String, dynamic> json) =>

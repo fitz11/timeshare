@@ -35,6 +35,11 @@ abstract class UserRepositoryInterface {
   /// Remove a user from the current user's friends list.
   Future<void> removeFriend(String targetUid);
 
+  /// Remove a friend with cascade deletion.
+  /// Removes from both users' friends lists AND revokes all calendar sharing
+  /// between the two users.
+  Future<void> removeFriendWithCascade(String targetUid);
+
   /// Update the display name for the current user.
   Future<void> updateDisplayName(String newDisplayName);
 

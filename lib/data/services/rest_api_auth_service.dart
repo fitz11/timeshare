@@ -247,6 +247,59 @@ class RestApiAuthService implements AuthService {
     }
   }
 
+  @override
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    if (_apiKey == null) {
+      throw AuthException(
+        statusCode: 401,
+        message: 'Not authenticated',
+      );
+    }
+
+    await _postJson(
+      '/api/v1/timeshare/auth/change-password/',
+      {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+      },
+      authenticated: true,
+    );
+  }
+
+  @override
+  Future<void> changeEmail(String newEmail, String password) async {
+    if (_apiKey == null) {
+      throw AuthException(
+        statusCode: 401,
+        message: 'Not authenticated',
+      );
+    }
+
+    await _postJson(
+      '/api/v1/timeshare/auth/change-email/',
+      {
+        'new_email': newEmail,
+        'password': password,
+      },
+      authenticated: true,
+    );
+  }
+
+  @override
+  Future<void> requestPasswordReset(String email) async {
+    // This endpoint should always return success to prevent email enumeration
+    try {
+      await _postJson(
+        '/api/v1/timeshare/auth/password-reset/',
+        {'email': email},
+      );
+    } catch (e) {
+      // Silently ignore errors to prevent email enumeration
+      // The user will see a generic success message regardless
+      debugPrint('Password reset request failed (suppressed): $e');
+    }
+  }
+
   /// Dispose of resources.
   void dispose() {
     _authStateController.close();

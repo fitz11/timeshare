@@ -1,6 +1,10 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeshare/providers/auth/auth_providers.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
+import 'package:timeshare/ui/features/calendar/pages/calendar_admin_page.dart';
 import 'package:timeshare/utils/error_utils.dart';
 
 class CalendarFilterSheet extends ConsumerWidget {
@@ -10,6 +14,7 @@ class CalendarFilterSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allCalendars = ref.watch(calendarsProvider);
     final selectedIds = ref.watch(selectedCalendarIdsProvider);
+    final currentUserId = ref.watch(currentUserIdProvider);
 
     return allCalendars.when(
       data: (calendars) => Padding(
@@ -35,14 +40,48 @@ class CalendarFilterSheet extends ConsumerWidget {
             else
               ...calendars.map((calendar) {
                 final isSelected = selectedIds.contains(calendar.id);
-                return CheckboxListTile(
-                  title: Text(calendar.name),
-                  value: isSelected,
-                  onChanged: (checked) {
-                    ref
-                        .read(selectedCalendarIdsProvider.notifier)
-                        .toggle(calendar.id);
-                  },
+                final isOwner = calendar.owner == currentUserId;
+                return Row(
+                  children: [
+                    Expanded(
+                      child: CheckboxListTile(
+                        title: Text(calendar.name),
+                        subtitle: isOwner
+                            ? Text(
+                                'Owner',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                              )
+                            : null,
+                        value: isSelected,
+                        onChanged: (checked) {
+                          ref
+                              .read(selectedCalendarIdsProvider.notifier)
+                              .toggle(calendar.id);
+                        },
+                      ),
+                    ),
+                    if (isOwner)
+                      IconButton(
+                        icon: const Icon(Icons.admin_panel_settings_outlined),
+                        tooltip: 'Manage access',
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CalendarAdminPage(
+                                calendarId: calendar.id,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                  ],
                 );
               }),
             const SizedBox(height: 8),

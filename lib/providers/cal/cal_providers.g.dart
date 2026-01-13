@@ -200,18 +200,18 @@ final class EventsForSelectedCalendarsProvider
 String _$eventsForSelectedCalendarsHash() =>
     r'6b8a7da79d1f54f8550761aba2091e0845c6c0f5';
 
-/// Calendar mutations - simplified without optimistic updates.
-/// The stream will automatically update the UI when Firestore changes.
+/// Calendar mutations with optimistic update support.
+/// Includes conflict detection and retry mechanisms for concurrent edit handling.
 
 @ProviderFor(CalendarMutations)
 const calendarMutationsProvider = CalendarMutationsProvider._();
 
-/// Calendar mutations - simplified without optimistic updates.
-/// The stream will automatically update the UI when Firestore changes.
+/// Calendar mutations with optimistic update support.
+/// Includes conflict detection and retry mechanisms for concurrent edit handling.
 final class CalendarMutationsProvider
     extends $NotifierProvider<CalendarMutations, void> {
-  /// Calendar mutations - simplified without optimistic updates.
-  /// The stream will automatically update the UI when Firestore changes.
+  /// Calendar mutations with optimistic update support.
+  /// Includes conflict detection and retry mechanisms for concurrent edit handling.
   const CalendarMutationsProvider._()
     : super(
         from: null,
@@ -239,10 +239,10 @@ final class CalendarMutationsProvider
   }
 }
 
-String _$calendarMutationsHash() => r'acd0604bc23a3fa7a9def16caedc6de96c7b5bcb';
+String _$calendarMutationsHash() => r'e1c0ac8a7c563591972c82416b919584aee116ce';
 
-/// Calendar mutations - simplified without optimistic updates.
-/// The stream will automatically update the UI when Firestore changes.
+/// Calendar mutations with optimistic update support.
+/// Includes conflict detection and retry mechanisms for concurrent edit handling.
 
 abstract class _$CalendarMutations extends $Notifier<void> {
   void build();

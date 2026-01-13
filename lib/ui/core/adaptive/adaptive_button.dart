@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'platform_utils.dart';

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timeshare/data/repo/rest_api_user_repo.dart';
 import 'package:timeshare/data/repo/logged_user_repo.dart';
@@ -85,6 +87,33 @@ class UserFriendsNotifier extends _$UserFriendsNotifier {
 
     try {
       await repo.removeFriend(targetUid);
+    } catch (e, st) {
+      state = previousState; // Rollback on failure
+      state = AsyncValue.error(e, st); // Surface error to UI
+    }
+  }
+
+  /// Remove a friend with cascade deletion.
+  ///
+  /// This removes the friend from both users' lists AND revokes
+  /// all calendar sharing between the two users.
+  Future<void> removeFriendWithCascade({required String targetUid}) async {
+    final repo = ref.read(userRepositoryProvider);
+    final previousState = state;
+
+    // Safe state access
+    final currentFriends = state.value;
+    if (currentFriends == null) return;
+
+    // Optimistic update
+    state = AsyncValue.data(
+      currentFriends.where((friend) => friend.uid != targetUid).toList(),
+    );
+
+    try {
+      await repo.removeFriendWithCascade(targetUid);
+      // Also refresh calendars since sharing may have changed
+      ref.invalidate(calendarsProvider);
     } catch (e, st) {
       state = previousState; // Rollback on failure
       state = AsyncValue.error(e, st); // Surface error to UI

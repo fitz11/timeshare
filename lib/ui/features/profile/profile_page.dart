@@ -1,10 +1,16 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
-import 'package:timeshare/providers/auth/auth_providers.dart';
+import 'package:timeshare/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/nav/nav_providers.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
+import 'package:timeshare/ui/features/profile/widgets/profile_dialogs.dart';
+import 'package:timeshare/ui/features/profile/widgets/stat_card.dart';
 import 'package:timeshare/utils/error_utils.dart';
 import 'package:timeshare/utils/string_utils.dart';
 
@@ -33,72 +39,208 @@ class ProfilePage extends ConsumerWidget {
     AppUser user,
   ) {
     final initials = getInitials(user.displayName);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final calendarsAsync = ref.watch(calendarsProvider);
+
+    // Calculate member duration
+    final memberDuration = DateTime.now().difference(user.joinedAt);
+    final memberDays = memberDuration.inDays;
+    String memberSince;
+    if (memberDays < 1) {
+      memberSince = 'Today';
+    } else if (memberDays == 1) {
+      memberSince = '1 day';
+    } else if (memberDays < 30) {
+      memberSince = '$memberDays days';
+    } else if (memberDays < 365) {
+      final months = (memberDays / 30).floor();
+      memberSince = '$months month${months > 1 ? 's' : ''}';
+    } else {
+      final years = (memberDays / 365).floor();
+      memberSince = '$years year${years > 1 ? 's' : ''}';
+    }
 
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(currentUserProvider);
+        ref.invalidate(calendarsProvider);
       },
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 16),
 
-          // Profile Header Card
+          // Profile Header Card with status
           Card(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  // Avatar
-                  CircleAvatar(
-                    radius: 48,
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.primaryContainer,
-                    foregroundColor: Theme.of(
-                      context,
-                    ).colorScheme.onPrimaryContainer,
-                    child: user.photoUrl != null
-                        ? ClipOval(
-                            child: Image.network(
-                              user.photoUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => Text(
+                  // Avatar with online indicator
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 48,
+                        backgroundColor: colorScheme.primaryContainer,
+                        foregroundColor: colorScheme.onPrimaryContainer,
+                        child: user.photoUrl != null
+                            ? ClipOval(
+                                child: Image.network(
+                                  user.photoUrl!,
+                                  width: 96,
+                                  height: 96,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Text(
+                                    initials.isEmpty ? '?' : initials,
+                                    style: const TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Text(
                                 initials.isEmpty ? '?' : initials,
                                 style: const TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                          )
-                        : Text(
-                            initials.isEmpty ? '?' : initials,
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
+                      ),
+                      // Online status indicator
+                      Positioned(
+                        right: 4,
+                        bottom: 4,
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colorScheme.surface,
+                              width: 2,
                             ),
                           ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
 
                   // Display Name
                   Text(
                     user.displayName,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 4),
 
                   // Email
                   Text(
                     user.email,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Active status chip
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Active now',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Quick Stats Row
+          Row(
+            children: [
+              Expanded(
+                child: StatCard(
+                  icon: Icons.people_outline,
+                  label: 'Friends',
+                  value: '${user.friends.length}',
+                  onTap: () {
+                    ref
+                        .read(navIndexProvider.notifier)
+                        .update(HomePages.friends);
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: calendarsAsync.when(
+                  data: (calendars) {
+                    final ownedCount =
+                        calendars.where((c) => c.owner == user.uid).length;
+                    final sharedCount = calendars.length - ownedCount;
+                    return StatCard(
+                      icon: Icons.calendar_month_outlined,
+                      label: 'Calendars',
+                      value: '${calendars.length}',
+                      subtitle: '$ownedCount owned, $sharedCount shared',
+                      onTap: () {
+                        ref
+                            .read(navIndexProvider.notifier)
+                            .update(HomePages.calendar);
+                      },
+                    );
+                  },
+                  loading: () => StatCard(
+                    icon: Icons.calendar_month_outlined,
+                    label: 'Calendars',
+                    value: '...',
+                  ),
+                  error: (_, __) => StatCard(
+                    icon: Icons.calendar_month_outlined,
+                    label: 'Calendars',
+                    value: '-',
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: StatCard(
+                  icon: Icons.schedule_outlined,
+                  label: 'Member',
+                  value: memberSince,
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 16),
@@ -111,39 +253,75 @@ class ProfilePage extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Account Information',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    'Account',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const Divider(height: 1),
 
                 // Display Name Section
                 ListTile(
-                  leading: const Icon(Icons.person_outline),
+                  leading: Icon(
+                    Icons.person_outline,
+                    color: colorScheme.primary,
+                  ),
                   title: const Text('Display Name'),
                   subtitle: Text(user.displayName),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showEditDisplayNameDialog(context, ref, user),
+                  trailing: Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    color: colorScheme.primary,
+                  ),
+                  onTap: () => showEditDisplayNameDialog(context, ref, user),
                 ),
 
-                const Divider(height: 1),
+                const Divider(height: 1, indent: 56),
 
-                // Email Section (read-only)
+                // Email Section
                 ListTile(
-                  leading: const Icon(Icons.email_outlined),
+                  leading: Icon(
+                    Icons.email_outlined,
+                    color: colorScheme.primary,
+                  ),
                   title: const Text('Email'),
                   subtitle: Text(user.email),
-                  enabled: false,
+                  trailing: Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    color: colorScheme.primary,
+                  ),
+                  onTap: () => showChangeEmailDialog(context, ref, user),
                 ),
 
-                const Divider(height: 1),
+                const Divider(height: 1, indent: 56),
+
+                // Password Section
+                ListTile(
+                  leading: Icon(
+                    Icons.lock_outline,
+                    color: colorScheme.primary,
+                  ),
+                  title: const Text('Password'),
+                  subtitle: const Text('Change your password'),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.outline,
+                  ),
+                  onTap: () => showChangePasswordDialog(context, ref, user),
+                ),
+
+                const Divider(height: 1, indent: 56),
 
                 // Joined Date
                 ListTile(
-                  leading: const Icon(Icons.calendar_today_outlined),
-                  title: const Text('Member Since'),
-                  subtitle: Text(DateFormat.yMMMd().format(user.joinedAt)),
-                  enabled: false,
+                  leading: Icon(
+                    Icons.cake_outlined,
+                    color: colorScheme.outline,
+                  ),
+                  title: const Text('Joined'),
+                  subtitle: Text(DateFormat.yMMMMd().format(user.joinedAt)),
                 ),
               ],
             ),
@@ -151,7 +329,7 @@ class ProfilePage extends ConsumerWidget {
 
           const SizedBox(height: 16),
 
-          // Statistics Card
+          // Legal & Support Card
           Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,55 +337,40 @@ class ProfilePage extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Statistics',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    'Legal & Support',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const Divider(height: 1),
 
                 ListTile(
-                  leading: const Icon(Icons.people_outline),
-                  title: const Text('Friends'),
-                  trailing: Text(
-                    '${user.friends.length}',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  leading: Icon(
+                    Icons.privacy_tip_outlined,
+                    color: colorScheme.primary,
                   ),
-                  enabled: false,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Legal Card
-          Card(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Legal',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-                const Divider(height: 1),
-
-                ListTile(
-                  leading: const Icon(Icons.privacy_tip_outlined),
                   title: const Text('Privacy Policy'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showPrivacyPolicy(context),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.outline,
+                  ),
+                  onTap: () => showPrivacyPolicyDialog(context),
                 ),
 
-                const Divider(height: 1),
+                const Divider(height: 1, indent: 56),
 
                 ListTile(
-                  leading: const Icon(Icons.security_outlined),
+                  leading: Icon(
+                    Icons.security_outlined,
+                    color: colorScheme.primary,
+                  ),
                   title: const Text('Security Information'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showSecurityInfo(context),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.outline,
+                  ),
+                  onTap: () => showSecurityInfoDialog(context),
                 ),
               ],
             ),
@@ -217,24 +380,28 @@ class ProfilePage extends ConsumerWidget {
 
           // Logout Button
           Card(
-            color: Theme.of(context).colorScheme.errorContainer,
+            color: colorScheme.errorContainer,
             child: ListTile(
               leading: Icon(
                 Icons.logout,
-                color: Theme.of(context).colorScheme.onErrorContainer,
+                color: colorScheme.onErrorContainer,
               ),
               title: Text(
                 'Sign Out',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
+                  color: colorScheme.onErrorContainer,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              onTap: () => _showLogoutDialog(context, ref),
+              trailing: Icon(
+                Icons.chevron_right,
+                color: colorScheme.onErrorContainer.withValues(alpha: 0.7),
+              ),
+              onTap: () => showLogoutDialog(context, ref),
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -267,255 +434,6 @@ class ProfilePage extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showEditDisplayNameDialog(
-    BuildContext context,
-    WidgetRef ref,
-    AppUser user,
-  ) {
-    final controller = TextEditingController(text: user.displayName);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Display Name'),
-        content: TextField(
-          controller: controller,
-          maxLength: 50,
-          decoration: const InputDecoration(
-            labelText: 'Display Name',
-            hintText: 'Enter your display name',
-          ),
-          autofocus: true,
-          textCapitalization: TextCapitalization.words,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final newName = controller.text.trim();
-              if (newName.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Display name cannot be empty')),
-                );
-                return;
-              }
-
-              if (newName.length > 50) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Display name must be 50 characters or less'),
-                  ),
-                );
-                return;
-              }
-
-              // Only allow letters, spaces, hyphens, and apostrophes
-              final validNamePattern = RegExp(r"^[a-zA-Z\s\-']+$");
-              if (!validNamePattern.hasMatch(newName)) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Display name can only contain letters, spaces, hyphens, and apostrophes',
-                    ),
-                  ),
-                );
-                return;
-              }
-
-              if (newName == user.displayName) {
-                Navigator.pop(context);
-                return;
-              }
-
-              try {
-                await ref
-                    .read(currentUserProvider.notifier)
-                    .updateDisplayName(newName);
-
-                if (context.mounted) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Display name updated')),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to update: ${formatError(e)}'),
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              try {
-                await ref.read(signOutProvider)();
-                // Navigation will be handled by AuthGate automatically
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to sign out: ${formatError(e)}'),
-                    ),
-                  );
-                }
-              }
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('Sign Out'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showPrivacyPolicy(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Privacy Policy'),
-        content: const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Data We Collect',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                '- Email address and display name\n'
-                '- Calendar names and sharing settings\n'
-                '- Event names, dates, and times\n'
-                '- Friends list',
-              ),
-              SizedBox(height: 16),
-              Text(
-                'How We Use Your Data',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                '- To provide calendar sharing functionality\n'
-                '- To enable sharing with friends\n'
-                '- To improve app stability via crash reports',
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Data Storage',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Your data is stored in Firebase Firestore (Google). '
-                'Data is encrypted in transit and at rest, but is not '
-                'end-to-end encrypted.',
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Your Rights',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'You can delete your account and all associated data '
-                'at any time through the app.',
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showSecurityInfo(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Security Information'),
-        content: const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Important Notice',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Your calendar data is NOT end-to-end encrypted. '
-                'This means data can be accessed by database administrators.',
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Recommendation',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Do not store highly sensitive information such as:\n'
-                '- Medical appointment details\n'
-                '- Financial information\n'
-                '- Confidential business data',
-              ),
-              SizedBox(height: 16),
-              Text(
-                'What IS Protected',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                '- Your password (managed by Firebase Auth)\n'
-                '- Data in transit (HTTPS encryption)\n'
-                '- Access control (only you and shared users can see your calendars)',
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
   }

@@ -6,6 +6,8 @@
   - [Making and Modifying Events](#making-and-modifying-events)
   - [Viewing Events](#viewing-events)
   - [Sharing Events](#sharing-events)
+  - [Friend Requests](#friend-requests)
+  - [Ownership Transfer](#ownership-transfer)
 - [General Flow Structure](#general-flow-structure)
 - [Elements Explained](#elements-explained)
   - [The Database](#the-database)
@@ -106,6 +108,24 @@ shared, and all events you have shared will be visible to them. Voila!
 - This can be easily undone, by simply toggling the option to share the
 calendar with whomever you have shared it with.
 
+### Friend Requests
+
+- When you search for a user and send a friend request, they have 30 days to
+accept or decline. Pending requests are visible in the Friends section.
+
+- Once accepted, you can share calendars with them. If declined or expired,
+you can send a new request.
+
+### Ownership Transfer
+
+- Calendar owners can transfer ownership to any user the calendar is shared
+with. Navigate to the calendar's admin page and select "Transfer Ownership."
+
+- The recipient must accept the transfer request. Once accepted, they become
+the new owner with full control over the calendar.
+
+- Pending transfers can be cancelled by the current owner before acceptance.
+
 ## General Flow Structure
 
 **Database**  
@@ -120,10 +140,9 @@ calendar with whomever you have shared it with.
 
 ### The Database
 
-Currently, this houses my auth and storage solution.
-I hope to one day migrate to my own backend, which is why all of the
-access and control logic for the database is stored in easily modular
-repositories.
+The app uses a REST API backend for data storage and authentication.
+All access and control logic is stored in modular repositories, making
+it easy to swap backends if needed.
 
 ### The Repositories
 

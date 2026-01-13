@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$Event {
 
  String get id; String get name; DateTime get time; List<String>? get atendees;@ColorConverter() Color get color;@ShapeConverter() BoxShape get shape; EventRecurrence get recurrence; DateTime? get recurrenceEndDate;// calendarId is populated at runtime from the subcollection path, not stored
-@JsonKey(includeFromJson: false, includeToJson: false) String? get calendarId;
+@JsonKey(includeFromJson: false, includeToJson: false) String? get calendarId; int get version;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $EventCopyWith<Event> get copyWith => _$EventCopyWithImpl<Event>(this as Event, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other.atendees, atendees)&&(identical(other.color, color) || other.color == color)&&(identical(other.shape, shape) || other.shape == shape)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.calendarId, calendarId) || other.calendarId == calendarId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other.atendees, atendees)&&(identical(other.color, color) || other.color == color)&&(identical(other.shape, shape) || other.shape == shape)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.calendarId, calendarId) || other.calendarId == calendarId)&&(identical(other.version, version) || other.version == version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,time,const DeepCollectionEquality().hash(atendees),color,shape,recurrence,recurrenceEndDate,calendarId);
+int get hashCode => Object.hash(runtimeType,id,name,time,const DeepCollectionEquality().hash(atendees),color,shape,recurrence,recurrenceEndDate,calendarId,version);
 
 @override
 String toString() {
-  return 'Event(id: $id, name: $name, time: $time, atendees: $atendees, color: $color, shape: $shape, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, calendarId: $calendarId)';
+  return 'Event(id: $id, name: $name, time: $time, atendees: $atendees, color: $color, shape: $shape, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, calendarId: $calendarId, version: $version)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $EventCopyWith<$Res>  {
   factory $EventCopyWith(Event value, $Res Function(Event) _then) = _$EventCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, DateTime time, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeFromJson: false, includeToJson: false) String? calendarId
+ String id, String name, DateTime time, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeFromJson: false, includeToJson: false) String? calendarId, int version
 });
 
 
@@ -66,7 +66,7 @@ class _$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? time = null,Object? atendees = freezed,Object? color = null,Object? shape = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? calendarId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? time = null,Object? atendees = freezed,Object? color = null,Object? shape = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? calendarId = freezed,Object? version = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -77,7 +77,8 @@ as Color,shape: null == shape ? _self.shape : shape // ignore: cast_nullable_to_
 as BoxShape,recurrence: null == recurrence ? _self.recurrence : recurrence // ignore: cast_nullable_to_non_nullable
 as EventRecurrence,recurrenceEndDate: freezed == recurrenceEndDate ? _self.recurrenceEndDate : recurrenceEndDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,calendarId: freezed == calendarId ? _self.calendarId : calendarId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId,  int version)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
-return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId);case _:
+return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId,  int version)  $default,) {final _that = this;
 switch (_that) {
 case _Event():
-return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId);case _:
+return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId,  int version)?  $default,) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
-return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId);case _:
+return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
   return null;
 
 }
@@ -218,7 +219,7 @@ return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.
 @JsonSerializable()
 
 class _Event implements Event {
-   _Event({required this.id, required this.name, required this.time, final  List<String>? atendees, @ColorConverter() this.color = Colors.black, @ShapeConverter() this.shape = BoxShape.circle, this.recurrence = EventRecurrence.none, this.recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false) this.calendarId}): _atendees = atendees;
+   _Event({required this.id, required this.name, required this.time, final  List<String>? atendees, @ColorConverter() this.color = Colors.black, @ShapeConverter() this.shape = BoxShape.circle, this.recurrence = EventRecurrence.none, this.recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false) this.calendarId, this.version = 1}): _atendees = atendees;
   factory _Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
 @override final  String id;
@@ -239,6 +240,7 @@ class _Event implements Event {
 @override final  DateTime? recurrenceEndDate;
 // calendarId is populated at runtime from the subcollection path, not stored
 @override@JsonKey(includeFromJson: false, includeToJson: false) final  String? calendarId;
+@override@JsonKey() final  int version;
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
@@ -253,16 +255,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other._atendees, _atendees)&&(identical(other.color, color) || other.color == color)&&(identical(other.shape, shape) || other.shape == shape)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.calendarId, calendarId) || other.calendarId == calendarId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other._atendees, _atendees)&&(identical(other.color, color) || other.color == color)&&(identical(other.shape, shape) || other.shape == shape)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.calendarId, calendarId) || other.calendarId == calendarId)&&(identical(other.version, version) || other.version == version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,time,const DeepCollectionEquality().hash(_atendees),color,shape,recurrence,recurrenceEndDate,calendarId);
+int get hashCode => Object.hash(runtimeType,id,name,time,const DeepCollectionEquality().hash(_atendees),color,shape,recurrence,recurrenceEndDate,calendarId,version);
 
 @override
 String toString() {
-  return 'Event(id: $id, name: $name, time: $time, atendees: $atendees, color: $color, shape: $shape, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, calendarId: $calendarId)';
+  return 'Event(id: $id, name: $name, time: $time, atendees: $atendees, color: $color, shape: $shape, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, calendarId: $calendarId, version: $version)';
 }
 
 
@@ -273,7 +275,7 @@ abstract mixin class _$EventCopyWith<$Res> implements $EventCopyWith<$Res> {
   factory _$EventCopyWith(_Event value, $Res Function(_Event) _then) = __$EventCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, DateTime time, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeFromJson: false, includeToJson: false) String? calendarId
+ String id, String name, DateTime time, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeFromJson: false, includeToJson: false) String? calendarId, int version
 });
 
 
@@ -290,7 +292,7 @@ class __$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? time = null,Object? atendees = freezed,Object? color = null,Object? shape = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? calendarId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? time = null,Object? atendees = freezed,Object? color = null,Object? shape = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? calendarId = freezed,Object? version = null,}) {
   return _then(_Event(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -301,7 +303,8 @@ as Color,shape: null == shape ? _self.shape : shape // ignore: cast_nullable_to_
 as BoxShape,recurrence: null == recurrence ? _self.recurrence : recurrence // ignore: cast_nullable_to_non_nullable
 as EventRecurrence,recurrenceEndDate: freezed == recurrenceEndDate ? _self.recurrenceEndDate : recurrenceEndDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,calendarId: freezed == calendarId ? _self.calendarId : calendarId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

@@ -7,7 +7,7 @@ import 'package:timeshare/ui/features/calendar/widgets/event_list.dart';
 
 void main() {
   group('EventList', () {
-    testWidgets('displays empty list when no events', (tester) async {
+    testWidgets('displays empty state when no events', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -27,7 +27,9 @@ void main() {
 
       await tester.pump();
 
-      expect(find.byType(ListView), findsOneWidget);
+      // Should show empty state with message
+      expect(find.text('No events'), findsOneWidget);
+      expect(find.text('Tap + to create your first event'), findsOneWidget);
     });
 
     testWidgets('displays list of events', (tester) async {

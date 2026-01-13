@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 /// Tracks API call frequency to detect excessive calls.
 ///
 /// Uses a sliding window to count calls per operation and flag

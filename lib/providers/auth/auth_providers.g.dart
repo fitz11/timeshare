@@ -202,3 +202,177 @@ final class SignOutProvider
 }
 
 String _$signOutHash() => r'acde860d503d02fd8f3ab3692b07873e63fa0fef';
+
+/// Change the current user's password.
+
+@ProviderFor(changePassword)
+const changePasswordProvider = ChangePasswordProvider._();
+
+/// Change the current user's password.
+
+final class ChangePasswordProvider
+    extends
+        $FunctionalProvider<
+          Future<void> Function(String currentPassword, String newPassword),
+          Future<void> Function(String currentPassword, String newPassword),
+          Future<void> Function(String currentPassword, String newPassword)
+        >
+    with
+        $Provider<
+          Future<void> Function(String currentPassword, String newPassword)
+        > {
+  /// Change the current user's password.
+  const ChangePasswordProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'changePasswordProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$changePasswordHash();
+
+  @$internal
+  @override
+  $ProviderElement<
+    Future<void> Function(String currentPassword, String newPassword)
+  >
+  $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+
+  @override
+  Future<void> Function(String currentPassword, String newPassword) create(
+    Ref ref,
+  ) {
+    return changePassword(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(
+    Future<void> Function(String currentPassword, String newPassword) value,
+  ) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<
+            Future<void> Function(String currentPassword, String newPassword)
+          >(value),
+    );
+  }
+}
+
+String _$changePasswordHash() => r'8f6b83688e03c3bfcafe0b171ae88dd2ea8dea6a';
+
+/// Change the current user's email address.
+
+@ProviderFor(changeEmail)
+const changeEmailProvider = ChangeEmailProvider._();
+
+/// Change the current user's email address.
+
+final class ChangeEmailProvider
+    extends
+        $FunctionalProvider<
+          Future<void> Function(String newEmail, String password),
+          Future<void> Function(String newEmail, String password),
+          Future<void> Function(String newEmail, String password)
+        >
+    with $Provider<Future<void> Function(String newEmail, String password)> {
+  /// Change the current user's email address.
+  const ChangeEmailProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'changeEmailProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$changeEmailHash();
+
+  @$internal
+  @override
+  $ProviderElement<Future<void> Function(String newEmail, String password)>
+  $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+
+  @override
+  Future<void> Function(String newEmail, String password) create(Ref ref) {
+    return changeEmail(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(
+    Future<void> Function(String newEmail, String password) value,
+  ) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<
+            Future<void> Function(String newEmail, String password)
+          >(value),
+    );
+  }
+}
+
+String _$changeEmailHash() => r'5e66b13fcd277f2ce8a00c02a86ddd835153e036';
+
+/// Request a password reset email.
+
+@ProviderFor(requestPasswordReset)
+const requestPasswordResetProvider = RequestPasswordResetProvider._();
+
+/// Request a password reset email.
+
+final class RequestPasswordResetProvider
+    extends
+        $FunctionalProvider<
+          Future<void> Function(String email),
+          Future<void> Function(String email),
+          Future<void> Function(String email)
+        >
+    with $Provider<Future<void> Function(String email)> {
+  /// Request a password reset email.
+  const RequestPasswordResetProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'requestPasswordResetProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$requestPasswordResetHash();
+
+  @$internal
+  @override
+  $ProviderElement<Future<void> Function(String email)> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Future<void> Function(String email) create(Ref ref) {
+    return requestPasswordReset(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Future<void> Function(String email) value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Future<void> Function(String email)>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$requestPasswordResetHash() =>
+    r'd260d59c29b6366359f45f0afd697365870f8312';

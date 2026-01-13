@@ -80,6 +80,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     });
   }
 
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController(text: _emailController.text);
+
+    showDialog(
+      context: context,
+      builder: (context) => _ForgotPasswordDialog(
+        ref: ref,
+        emailController: emailController,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -244,7 +256,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 24),
+                  // Forgot password link (login only)
+                  if (_isLogin)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _isLoading ? null : _showForgotPasswordDialog,
+                        child: const Text('Forgot password?'),
+                      ),
+                    ),
+
+                  const SizedBox(height: 8),
 
                   // Submit button
                   FilledButton(
@@ -292,6 +314,141 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Dialog for requesting a password reset email.
+class _ForgotPasswordDialog extends StatefulWidget {
+  final WidgetRef ref;
+  final TextEditingController emailController;
+
+  const _ForgotPasswordDialog({
+    required this.ref,
+    required this.emailController,
+  });
+
+  @override
+  State<_ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
+}
+
+class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  bool _submitted = false;
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      await widget.ref.read(requestPasswordResetProvider)(
+        widget.emailController.text.trim(),
+      );
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _submitted = true;
+        });
+      }
+    } catch (e) {
+      // Always show success to prevent email enumeration
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _submitted = true;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.emailController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_submitted) {
+      return AlertDialog(
+        title: const Text('Check Your Email'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.mark_email_read_outlined,
+              size: 48,
+              color: Colors.green,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'If an account exists for ${widget.emailController.text.trim()}, '
+              'you will receive a password reset link shortly.',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Done'),
+          ),
+        ],
+      );
+    }
+
+    return AlertDialog(
+      title: const Text('Reset Password'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Enter your email address and we\'ll send you a link to reset your password.',
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: widget.emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              autocorrect: false,
+              autofocus: true,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter your email';
+                }
+                if (!value.contains('@') || !value.contains('.')) {
+                  return 'Please enter a valid email';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _isLoading ? null : _submit,
+          child: _isLoading
+              ? const SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Send Reset Link'),
+        ),
+      ],
     );
   }
 }

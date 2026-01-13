@@ -25,6 +25,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   recurrenceEndDate: json['recurrenceEndDate'] == null
       ? null
       : DateTime.parse(json['recurrenceEndDate'] as String),
+  version: (json['version'] as num?)?.toInt() ?? 1,
 );
 
 Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
@@ -36,6 +37,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'shape': const ShapeConverter().toJson(instance.shape),
   'recurrence': _$EventRecurrenceEnumMap[instance.recurrence]!,
   'recurrenceEndDate': instance.recurrenceEndDate?.toIso8601String(),
+  'version': instance.version,
 };
 
 const _$EventRecurrenceEnumMap = {

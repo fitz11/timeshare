@@ -85,7 +85,7 @@ final class UserFriendsNotifierProvider
 }
 
 String _$userFriendsNotifierHash() =>
-    r'9ff1dff7d3f4da2f007fdab67678e6b994aebd02';
+    r'39314f2433224ac9354a754d322b3f1ae4eef2e0';
 
 abstract class _$UserFriendsNotifier extends $AsyncNotifier<List<AppUser>> {
   FutureOr<List<AppUser>> build();

@@ -13,6 +13,7 @@ _Calendar _$CalendarFromJson(Map<String, dynamic> json) => _Calendar(
       ? const {}
       : const SetConverter().fromJson(json['sharedWith'] as List),
   name: json['name'] as String,
+  version: (json['version'] as num?)?.toInt() ?? 1,
 );
 
 Map<String, dynamic> _$CalendarToJson(_Calendar instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$CalendarToJson(_Calendar instance) => <String, dynamic>{
   'owner': instance.owner,
   'sharedWith': const SetConverter().toJson(instance.sharedWith),
   'name': instance.name,
+  'version': instance.version,
 };

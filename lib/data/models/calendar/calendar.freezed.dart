@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Calendar {
 
- String get id; String get owner;@SetConverter() Set<String> get sharedWith; String get name;
+ String get id; String get owner;@SetConverter() Set<String> get sharedWith; String get name; int get version;
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $CalendarCopyWith<Calendar> get copyWith => _$CalendarCopyWithImpl<Calendar>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Calendar&&(identical(other.id, id) || other.id == id)&&(identical(other.owner, owner) || other.owner == owner)&&const DeepCollectionEquality().equals(other.sharedWith, sharedWith)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Calendar&&(identical(other.id, id) || other.id == id)&&(identical(other.owner, owner) || other.owner == owner)&&const DeepCollectionEquality().equals(other.sharedWith, sharedWith)&&(identical(other.name, name) || other.name == name)&&(identical(other.version, version) || other.version == version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,owner,const DeepCollectionEquality().hash(sharedWith),name);
+int get hashCode => Object.hash(runtimeType,id,owner,const DeepCollectionEquality().hash(sharedWith),name,version);
 
 @override
 String toString() {
-  return 'Calendar(id: $id, owner: $owner, sharedWith: $sharedWith, name: $name)';
+  return 'Calendar(id: $id, owner: $owner, sharedWith: $sharedWith, name: $name, version: $version)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $CalendarCopyWith<$Res>  {
   factory $CalendarCopyWith(Calendar value, $Res Function(Calendar) _then) = _$CalendarCopyWithImpl;
 @useResult
 $Res call({
- String id, String owner,@SetConverter() Set<String> sharedWith, String name
+ String id, String owner,@SetConverter() Set<String> sharedWith, String name, int version
 });
 
 
@@ -65,13 +65,14 @@ class _$CalendarCopyWithImpl<$Res>
 
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? owner = null,Object? sharedWith = null,Object? name = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? owner = null,Object? sharedWith = null,Object? name = null,Object? version = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,owner: null == owner ? _self.owner : owner // ignore: cast_nullable_to_non_nullable
 as String,sharedWith: null == sharedWith ? _self.sharedWith : sharedWith // ignore: cast_nullable_to_non_nullable
 as Set<String>,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -156,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String owner, @SetConverter()  Set<String> sharedWith,  String name)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String owner, @SetConverter()  Set<String> sharedWith,  String name,  int version)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Calendar() when $default != null:
-return $default(_that.id,_that.owner,_that.sharedWith,_that.name);case _:
+return $default(_that.id,_that.owner,_that.sharedWith,_that.name,_that.version);case _:
   return orElse();
 
 }
@@ -177,10 +178,10 @@ return $default(_that.id,_that.owner,_that.sharedWith,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String owner, @SetConverter()  Set<String> sharedWith,  String name)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String owner, @SetConverter()  Set<String> sharedWith,  String name,  int version)  $default,) {final _that = this;
 switch (_that) {
 case _Calendar():
-return $default(_that.id,_that.owner,_that.sharedWith,_that.name);case _:
+return $default(_that.id,_that.owner,_that.sharedWith,_that.name,_that.version);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +198,10 @@ return $default(_that.id,_that.owner,_that.sharedWith,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String owner, @SetConverter()  Set<String> sharedWith,  String name)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String owner, @SetConverter()  Set<String> sharedWith,  String name,  int version)?  $default,) {final _that = this;
 switch (_that) {
 case _Calendar() when $default != null:
-return $default(_that.id,_that.owner,_that.sharedWith,_that.name);case _:
+return $default(_that.id,_that.owner,_that.sharedWith,_that.name,_that.version);case _:
   return null;
 
 }
@@ -212,7 +213,7 @@ return $default(_that.id,_that.owner,_that.sharedWith,_that.name);case _:
 @JsonSerializable()
 
 class _Calendar implements Calendar {
-   _Calendar({required this.id, required this.owner, @SetConverter() final  Set<String> sharedWith = const {}, required this.name}): _sharedWith = sharedWith;
+   _Calendar({required this.id, required this.owner, @SetConverter() final  Set<String> sharedWith = const {}, required this.name, this.version = 1}): _sharedWith = sharedWith;
   factory _Calendar.fromJson(Map<String, dynamic> json) => _$CalendarFromJson(json);
 
 @override final  String id;
@@ -225,6 +226,7 @@ class _Calendar implements Calendar {
 }
 
 @override final  String name;
+@override@JsonKey() final  int version;
 
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Calendar&&(identical(other.id, id) || other.id == id)&&(identical(other.owner, owner) || other.owner == owner)&&const DeepCollectionEquality().equals(other._sharedWith, _sharedWith)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Calendar&&(identical(other.id, id) || other.id == id)&&(identical(other.owner, owner) || other.owner == owner)&&const DeepCollectionEquality().equals(other._sharedWith, _sharedWith)&&(identical(other.name, name) || other.name == name)&&(identical(other.version, version) || other.version == version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,owner,const DeepCollectionEquality().hash(_sharedWith),name);
+int get hashCode => Object.hash(runtimeType,id,owner,const DeepCollectionEquality().hash(_sharedWith),name,version);
 
 @override
 String toString() {
-  return 'Calendar(id: $id, owner: $owner, sharedWith: $sharedWith, name: $name)';
+  return 'Calendar(id: $id, owner: $owner, sharedWith: $sharedWith, name: $name, version: $version)';
 }
 
 
@@ -259,7 +261,7 @@ abstract mixin class _$CalendarCopyWith<$Res> implements $CalendarCopyWith<$Res>
   factory _$CalendarCopyWith(_Calendar value, $Res Function(_Calendar) _then) = __$CalendarCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String owner,@SetConverter() Set<String> sharedWith, String name
+ String id, String owner,@SetConverter() Set<String> sharedWith, String name, int version
 });
 
 
@@ -276,13 +278,14 @@ class __$CalendarCopyWithImpl<$Res>
 
 /// Create a copy of Calendar
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? owner = null,Object? sharedWith = null,Object? name = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? owner = null,Object? sharedWith = null,Object? name = null,Object? version = null,}) {
   return _then(_Calendar(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,owner: null == owner ? _self.owner : owner // ignore: cast_nullable_to_non_nullable
 as String,sharedWith: null == sharedWith ? _self._sharedWith : sharedWith // ignore: cast_nullable_to_non_nullable
 as Set<String>,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

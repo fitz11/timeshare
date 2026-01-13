@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:table_calendar/table_calendar.dart';
 
 /// Returns a list of [DateTime] objects from [first] to [last], inclusive.

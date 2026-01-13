@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/data/repo/user_repo_interface.dart';
 import 'package:timeshare/services/logging/app_logger.dart';
@@ -67,6 +69,14 @@ class LoggedUserRepository implements UserRepositoryInterface {
     return _logger.logApiCall(
       'removeFriend',
       () => _delegate.removeFriend(targetUid),
+    );
+  }
+
+  @override
+  Future<void> removeFriendWithCascade(String targetUid) {
+    return _logger.logApiCall(
+      'removeFriendWithCascade',
+      () => _delegate.removeFriendWithCascade(targetUid),
     );
   }
 
