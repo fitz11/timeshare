@@ -12,7 +12,7 @@ part of 'auth_providers.dart';
 /// This is the main authentication service for the app.
 
 @ProviderFor(authService)
-const authServiceProvider = AuthServiceProvider._();
+final authServiceProvider = AuthServiceProvider._();
 
 /// Auth service provider - creates RestApiAuthService with secure storage.
 /// This is the main authentication service for the app.
@@ -22,7 +22,7 @@ final class AuthServiceProvider
     with $Provider<AuthService> {
   /// Auth service provider - creates RestApiAuthService with secure storage.
   /// This is the main authentication service for the app.
-  const AuthServiceProvider._()
+  AuthServiceProvider._()
     : super(
         from: null,
         argument: null,
@@ -61,7 +61,7 @@ String _$authServiceHash() => r'427fc5706db9dc1b3093bc065dbf7ed5d1d76c4d';
 /// Use this to react to login/logout events.
 
 @ProviderFor(authState)
-const authStateProvider = AuthStateProvider._();
+final authStateProvider = AuthStateProvider._();
 
 /// Stream of authentication state changes.
 /// Use this to react to login/logout events.
@@ -72,7 +72,7 @@ final class AuthStateProvider
     with $FutureModifier<AuthState>, $StreamProvider<AuthState> {
   /// Stream of authentication state changes.
   /// Use this to react to login/logout events.
-  const AuthStateProvider._()
+  AuthStateProvider._()
     : super(
         from: null,
         argument: null,
@@ -103,7 +103,7 @@ String _$authStateHash() => r'bd5da458de66f08e9ed18bc1b68ace9d936fd6f4';
 /// Returns null if not logged in.
 
 @ProviderFor(currentUserId)
-const currentUserIdProvider = CurrentUserIdProvider._();
+final currentUserIdProvider = CurrentUserIdProvider._();
 
 /// Current user ID - synchronous access to the current user's UID.
 /// Returns null if not logged in.
@@ -113,7 +113,7 @@ final class CurrentUserIdProvider
     with $Provider<String?> {
   /// Current user ID - synchronous access to the current user's UID.
   /// Returns null if not logged in.
-  const CurrentUserIdProvider._()
+  CurrentUserIdProvider._()
     : super(
         from: null,
         argument: null,
@@ -152,7 +152,7 @@ String _$currentUserIdHash() => r'56589a806d33eea9e557b8340b0bdfe0cbe84984';
 /// Revokes the API key server-side and clears stored credentials.
 
 @ProviderFor(signOut)
-const signOutProvider = SignOutProvider._();
+final signOutProvider = SignOutProvider._();
 
 /// Sign out the current user.
 /// Revokes the API key server-side and clears stored credentials.
@@ -167,7 +167,7 @@ final class SignOutProvider
     with $Provider<Future<void> Function()> {
   /// Sign out the current user.
   /// Revokes the API key server-side and clears stored credentials.
-  const SignOutProvider._()
+  SignOutProvider._()
     : super(
         from: null,
         argument: null,
@@ -206,7 +206,7 @@ String _$signOutHash() => r'acde860d503d02fd8f3ab3692b07873e63fa0fef';
 /// Change the current user's password.
 
 @ProviderFor(changePassword)
-const changePasswordProvider = ChangePasswordProvider._();
+final changePasswordProvider = ChangePasswordProvider._();
 
 /// Change the current user's password.
 
@@ -222,7 +222,7 @@ final class ChangePasswordProvider
           Future<void> Function(String currentPassword, String newPassword)
         > {
   /// Change the current user's password.
-  const ChangePasswordProvider._()
+  ChangePasswordProvider._()
     : super(
         from: null,
         argument: null,
@@ -269,7 +269,7 @@ String _$changePasswordHash() => r'8f6b83688e03c3bfcafe0b171ae88dd2ea8dea6a';
 /// Change the current user's email address.
 
 @ProviderFor(changeEmail)
-const changeEmailProvider = ChangeEmailProvider._();
+final changeEmailProvider = ChangeEmailProvider._();
 
 /// Change the current user's email address.
 
@@ -282,7 +282,7 @@ final class ChangeEmailProvider
         >
     with $Provider<Future<void> Function(String newEmail, String password)> {
   /// Change the current user's email address.
-  const ChangeEmailProvider._()
+  ChangeEmailProvider._()
     : super(
         from: null,
         argument: null,
@@ -325,7 +325,7 @@ String _$changeEmailHash() => r'5e66b13fcd277f2ce8a00c02a86ddd835153e036';
 /// Request a password reset email.
 
 @ProviderFor(requestPasswordReset)
-const requestPasswordResetProvider = RequestPasswordResetProvider._();
+final requestPasswordResetProvider = RequestPasswordResetProvider._();
 
 /// Request a password reset email.
 
@@ -338,7 +338,7 @@ final class RequestPasswordResetProvider
         >
     with $Provider<Future<void> Function(String email)> {
   /// Request a password reset email.
-  const RequestPasswordResetProvider._()
+  RequestPasswordResetProvider._()
     : super(
         from: null,
         argument: null,
@@ -376,3 +376,206 @@ final class RequestPasswordResetProvider
 
 String _$requestPasswordResetHash() =>
     r'd260d59c29b6366359f45f0afd697365870f8312';
+
+/// Email pending verification - the email that needs to be verified.
+
+@ProviderFor(pendingVerificationEmail)
+final pendingVerificationEmailProvider = PendingVerificationEmailProvider._();
+
+/// Email pending verification - the email that needs to be verified.
+
+final class PendingVerificationEmailProvider
+    extends $FunctionalProvider<String?, String?, String?>
+    with $Provider<String?> {
+  /// Email pending verification - the email that needs to be verified.
+  PendingVerificationEmailProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'pendingVerificationEmailProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$pendingVerificationEmailHash();
+
+  @$internal
+  @override
+  $ProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  String? create(Ref ref) {
+    return pendingVerificationEmail(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
+  }
+}
+
+String _$pendingVerificationEmailHash() =>
+    r'e9212798703be9f4197c0f42e42d464791eaf46e';
+
+/// Verify email with a token.
+
+@ProviderFor(verifyEmail)
+final verifyEmailProvider = VerifyEmailProvider._();
+
+/// Verify email with a token.
+
+final class VerifyEmailProvider
+    extends
+        $FunctionalProvider<
+          Future<String> Function(String token),
+          Future<String> Function(String token),
+          Future<String> Function(String token)
+        >
+    with $Provider<Future<String> Function(String token)> {
+  /// Verify email with a token.
+  VerifyEmailProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'verifyEmailProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$verifyEmailHash();
+
+  @$internal
+  @override
+  $ProviderElement<Future<String> Function(String token)> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Future<String> Function(String token) create(Ref ref) {
+    return verifyEmail(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Future<String> Function(String token) value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<Future<String> Function(String token)>(value),
+    );
+  }
+}
+
+String _$verifyEmailHash() => r'ac068edf5d63f83e44f492a5cdd5c2d62a43169c';
+
+/// Resend verification email.
+
+@ProviderFor(resendVerificationEmail)
+final resendVerificationEmailProvider = ResendVerificationEmailProvider._();
+
+/// Resend verification email.
+
+final class ResendVerificationEmailProvider
+    extends
+        $FunctionalProvider<
+          Future<void> Function(String email),
+          Future<void> Function(String email),
+          Future<void> Function(String email)
+        >
+    with $Provider<Future<void> Function(String email)> {
+  /// Resend verification email.
+  ResendVerificationEmailProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'resendVerificationEmailProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$resendVerificationEmailHash();
+
+  @$internal
+  @override
+  $ProviderElement<Future<void> Function(String email)> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Future<void> Function(String email) create(Ref ref) {
+    return resendVerificationEmail(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Future<void> Function(String email) value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Future<void> Function(String email)>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$resendVerificationEmailHash() =>
+    r'ed2fb65bd69c998c63e403a2af93c8cab1b0a1d6';
+
+/// Cancel pending verification and return to unauthenticated state.
+
+@ProviderFor(cancelPendingVerification)
+final cancelPendingVerificationProvider = CancelPendingVerificationProvider._();
+
+/// Cancel pending verification and return to unauthenticated state.
+
+final class CancelPendingVerificationProvider
+    extends
+        $FunctionalProvider<void Function(), void Function(), void Function()>
+    with $Provider<void Function()> {
+  /// Cancel pending verification and return to unauthenticated state.
+  CancelPendingVerificationProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cancelPendingVerificationProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cancelPendingVerificationHash();
+
+  @$internal
+  @override
+  $ProviderElement<void Function()> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  void Function() create(Ref ref) {
+    return cancelPendingVerification(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void Function() value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void Function()>(value),
+    );
+  }
+}
+
+String _$cancelPendingVerificationHash() =>
+    r'aee6d2571364b5fc8f82012aa70cb0b5f39552c1';

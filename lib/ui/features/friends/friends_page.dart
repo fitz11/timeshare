@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
+import 'package:timeshare/ui/core/responsive/responsive.dart';
 import 'package:timeshare/ui/features/calendar/dialogs/share_calendar_dialog.dart';
 import 'package:timeshare/ui/features/calendar/widgets/ownership_transfer_section.dart';
 import 'package:timeshare/ui/features/friends/widgets/friend_requests_section.dart';
@@ -19,11 +20,12 @@ class FriendsPage extends ConsumerWidget {
 
     return friends.when(
       data: (friendsList) {
-        return RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(userFriendsProvider);
-          },
-          child: CustomScrollView(
+        return ConstrainedContent(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(userFriendsProvider);
+            },
+            child: CustomScrollView(
             slivers: [
               // Ownership transfer requests at the top
               const SliverToBoxAdapter(
@@ -53,6 +55,7 @@ class FriendsPage extends ConsumerWidget {
                   ),
                 ),
             ],
+            ),
           ),
         );
       },
@@ -133,11 +136,18 @@ class FriendsPage extends ConsumerWidget {
 
   Widget _buildFriendCard(BuildContext context, WidgetRef ref, AppUser friend) {
     final initials = getInitials(friend.displayName);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          hoverColor: colorScheme.primary.withValues(alpha: 0.08),
+          onTap: () {}, // Actions are in trailing buttons
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -193,6 +203,8 @@ class FriendsPage extends ConsumerWidget {
               ],
             ),
           ],
+        ),
+          ),
         ),
       ),
     );

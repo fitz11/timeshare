@@ -2,7 +2,9 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:timeshare/data/models/friend_request/friend_request.dart';
 import 'package:timeshare/data/repo/friend_request_repo.dart';
 import 'package:timeshare/data/services/api_client.dart';
@@ -15,12 +17,23 @@ import 'package:timeshare/data/services/api_client.dart';
 class RestApiFriendRequestRepository implements FriendRequestRepository {
   final ApiClient _client;
   final Duration _pollInterval;
+  static final _random = Random();
+
+  /// Maximum jitter added to polling interval to prevent synchronized requests.
+  static const _maxJitterMs = 5000;
 
   RestApiFriendRequestRepository({
     required ApiClient client,
     Duration pollInterval = const Duration(seconds: 30),
   })  : _client = client,
         _pollInterval = pollInterval;
+
+  /// Adds random jitter (0-5 seconds) to prevent thundering herd.
+  Future<void> _jitter() async {
+    await Future<void>.delayed(
+      Duration(milliseconds: _random.nextInt(_maxJitterMs)),
+    );
+  }
 
   @override
   Future<List<FriendRequest>> getIncomingRequests() async {
@@ -65,12 +78,14 @@ class RestApiFriendRequestRepository implements FriendRequestRepository {
     // Initial fetch
     yield await getIncomingRequests();
 
-    // Poll for updates
+    // Poll for updates with jitter to prevent synchronized requests
     await for (final _ in Stream.periodic(_pollInterval)) {
+      await _jitter();
       try {
         yield await getIncomingRequests();
       } catch (e) {
-        // On error, continue polling (don't break stream)
+        // On error, log and continue polling (don't break stream)
+        debugPrint('Friend requests polling error (continuing): $e');
       }
     }
   }

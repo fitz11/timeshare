@@ -56,3 +56,27 @@ Future<void> Function(String newEmail, String password) changeEmail(Ref ref) {
 Future<void> Function(String email) requestPasswordReset(Ref ref) {
   return (email) => ref.read(authServiceProvider).requestPasswordReset(email);
 }
+
+/// Email pending verification - the email that needs to be verified.
+@riverpod
+String? pendingVerificationEmail(Ref ref) =>
+    ref.watch(authServiceProvider).pendingVerificationEmail;
+
+/// Verify email with a token.
+@riverpod
+Future<String> Function(String token) verifyEmail(Ref ref) {
+  return (token) => ref.read(authServiceProvider).verifyEmail(token);
+}
+
+/// Resend verification email.
+@riverpod
+Future<void> Function(String email) resendVerificationEmail(Ref ref) {
+  return (email) =>
+      ref.read(authServiceProvider).resendVerificationEmail(email);
+}
+
+/// Cancel pending verification and return to unauthenticated state.
+@riverpod
+void Function() cancelPendingVerification(Ref ref) {
+  return () => ref.read(authServiceProvider).cancelPendingVerification();
+}

@@ -9,6 +9,7 @@ import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/providers/nav/nav_providers.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
+import 'package:timeshare/ui/core/responsive/responsive.dart';
 import 'package:timeshare/ui/features/profile/widgets/profile_dialogs.dart';
 import 'package:timeshare/ui/features/profile/widgets/stat_card.dart';
 import 'package:timeshare/utils/error_utils.dart';
@@ -66,9 +67,10 @@ class ProfilePage extends ConsumerWidget {
         ref.invalidate(currentUserProvider);
         ref.invalidate(calendarsProvider);
       },
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      child: ConstrainedContent(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
           const SizedBox(height: 16),
 
           // Profile Header Card with status
@@ -91,7 +93,7 @@ class ProfilePage extends ConsumerWidget {
                                   width: 96,
                                   height: 96,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Text(
+                                  errorBuilder: (_, _, _) => Text(
                                     initials.isEmpty ? '?' : initials,
                                     style: const TextStyle(
                                       fontSize: 32,
@@ -225,7 +227,7 @@ class ProfilePage extends ConsumerWidget {
                     label: 'Calendars',
                     value: '...',
                   ),
-                  error: (_, __) => StatCard(
+                  error: (_, _) => StatCard(
                     icon: Icons.calendar_month_outlined,
                     label: 'Calendars',
                     value: '-',
@@ -403,6 +405,7 @@ class ProfilePage extends ConsumerWidget {
 
           const SizedBox(height: 32),
         ],
+        ),
       ),
     );
   }

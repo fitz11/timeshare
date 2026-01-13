@@ -10,11 +10,11 @@ part of 'nav_providers.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(NavIndexNotifier)
-const navIndexProvider = NavIndexNotifierProvider._();
+final navIndexProvider = NavIndexNotifierProvider._();
 
 final class NavIndexNotifierProvider
     extends $NotifierProvider<NavIndexNotifier, HomePages> {
-  const NavIndexNotifierProvider._()
+  NavIndexNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -48,7 +48,6 @@ abstract class _$NavIndexNotifier extends $Notifier<HomePages> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<HomePages, HomePages>;
     final element =
         ref.element
@@ -58,6 +57,6 @@ abstract class _$NavIndexNotifier extends $Notifier<HomePages> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }

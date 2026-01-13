@@ -10,112 +10,119 @@ import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/ui/features/calendar/widgets/event_list_item.dart';
 
 class EventList extends ConsumerWidget {
-  const EventList({super.key});
+  /// Whether to wrap the content in Expanded widget.
+  /// Set to true for Column layout (mobile), false for Row layout (tablet/desktop).
+  final bool useExpanded;
+
+  const EventList({super.key, this.useExpanded = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsList = ref.watch(visibleEventsProvider).list;
+    final visibleEvents = ref.watch(visibleEventsProvider);
     final copyMode = ref.watch(interactionModeStateProvider);
+    final calendarNames = ref.watch(calendarNamesMapProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    if (eventsList.isEmpty) {
-      return Expanded(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.event_available,
-                size: 64,
-                color: colorScheme.outlineVariant,
+    // Use pre-grouped map from provider (already filtered and sorted)
+    final groupedEvents = visibleEvents.map;
+
+    if (groupedEvents.isEmpty) {
+      final emptyState = Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.event_available,
+              size: 64,
+              color: colorScheme.outlineVariant,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No events',
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(height: 16),
-              Text(
-                'No events',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tap + to create your first event',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.outline,
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Tap + to create your first event',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.outline,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
+      return useExpanded ? Expanded(child: emptyState) : emptyState;
     }
 
-    // Group events by date
-    final groupedEvents = _groupEventsByDate(eventsList);
-    final dates = groupedEvents.keys.toList();
+    // Sort dates chronologically
+    final dates = groupedEvents.keys.toList()..sort();
 
-    return Expanded(
-      child: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 80), // Space for FAB
-        itemCount: dates.length,
-        itemBuilder: (context, dateIndex) {
-          final date = dates[dateIndex];
-          final events = groupedEvents[date]!;
-          final isToday = _isToday(date);
-          final isTomorrow = _isTomorrow(date);
+    final listView = ListView.builder(
+      padding: const EdgeInsets.only(bottom: 80), // Space for FAB
+      itemCount: dates.length,
+      itemBuilder: (context, dateIndex) {
+        final date = dates[dateIndex];
+        final events = groupedEvents[date]!;
+        final isToday = _isToday(date);
+        final isTomorrow = _isTomorrow(date);
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Date header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Date header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isToday
+                          ? colorScheme.primaryContainer
+                          : colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      _formatDateHeader(date, isToday, isTomorrow),
+                      style: theme.textTheme.labelLarge?.copyWith(
                         color: isToday
-                            ? colorScheme.primaryContainer
-                            : colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
-                        _formatDateHeader(date, isToday, isTomorrow),
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: isToday
-                              ? colorScheme.onPrimaryContainer
-                              : colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                        ),
+                            ? colorScheme.onPrimaryContainer
+                            : colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${events.length} event${events.length == 1 ? '' : 's'}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.outline,
-                      ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${events.length} event${events.length == 1 ? '' : 's'}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.outline,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              // Events for this date
-              ...events.map((event) => _buildEventItem(
-                    context,
-                    ref,
-                    event,
-                    copyMode,
-                    colorScheme,
-                  )),
-            ],
-          );
-        },
-      ),
+            ),
+            // Events for this date
+            ...events.map((event) => _buildEventItem(
+                  context,
+                  ref,
+                  event,
+                  copyMode,
+                  colorScheme,
+                  calendarNames,
+                )),
+          ],
+        );
+      },
     );
+
+    return useExpanded ? Expanded(child: listView) : listView;
   }
 
   Widget _buildEventItem(
@@ -124,6 +131,7 @@ class EventList extends ConsumerWidget {
     Event event,
     InteractionMode copyMode,
     ColorScheme colorScheme,
+    Map<String, String> calendarNames,
   ) {
     final item = Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -134,7 +142,19 @@ class EventList extends ConsumerWidget {
           color: colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
-      child: EventListItem(event: event, showDate: false),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          hoverColor: colorScheme.primary.withValues(alpha: 0.08),
+          onTap: () {}, // EventListItem handles taps internally
+          child: EventListItem(
+            event: event,
+            showDate: false,
+            calendarName: calendarNames[event.calendarId],
+          ),
+        ),
+      ),
     );
 
     if (copyMode == InteractionMode.normal) {
@@ -186,23 +206,6 @@ class EventList extends ConsumerWidget {
     }
 
     return item;
-  }
-
-  Map<DateTime, List<Event>> _groupEventsByDate(List<Event> events) {
-    final grouped = <DateTime, List<Event>>{};
-    for (final event in events) {
-      final dateOnly = DateTime(
-        event.time.year,
-        event.time.month,
-        event.time.day,
-      );
-      grouped.putIfAbsent(dateOnly, () => []).add(event);
-    }
-    // Sort events within each date by time
-    for (final events in grouped.values) {
-      events.sort((a, b) => a.time.compareTo(b.time));
-    }
-    return grouped;
   }
 
   bool _isToday(DateTime date) {

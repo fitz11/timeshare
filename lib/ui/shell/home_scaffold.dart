@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/providers/nav/nav_providers.dart';
+import 'package:timeshare/ui/core/responsive/responsive.dart';
 import 'package:timeshare/ui/features/calendar/widgets/cal_drawer.dart';
 import 'package:timeshare/ui/features/calendar/widgets/fab.dart';
 import 'package:timeshare/ui/shell/home_appbar.dart';
+import 'package:timeshare/ui/shell/home_nav_rail.dart';
 import 'package:timeshare/ui/shell/home_navbar.dart';
 import 'package:timeshare/ui/features/calendar/calendar_page.dart';
 import 'package:timeshare/ui/features/friends/friends_page.dart';
@@ -31,13 +33,34 @@ class HomeScaffold extends ConsumerWidget {
     // Providers are already initialized in AuthGate, just watch them here
     final HomePages index = ref.watch(navIndexProvider);
 
-    return Scaffold(
-      appBar: HomeAppBar(),
-      // Only show drawer on calendar page
-      drawer: index == HomePages.calendar ? const CalDrawer() : null,
-      body: _buildBody(index),
-      floatingActionButton: Fab(),
-      bottomNavigationBar: HomeBottomBar(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenSize = getScreenSize(constraints.maxWidth);
+
+        // Mobile layout: bottom navigation bar
+        if (screenSize == ScreenSize.mobile) {
+          return Scaffold(
+            appBar: const HomeAppBar(),
+            drawer: index == HomePages.calendar ? const CalDrawer() : null,
+            body: _buildBody(index),
+            floatingActionButton: const Fab(),
+            bottomNavigationBar: const HomeBottomBar(),
+          );
+        }
+
+        // Tablet/Desktop layout: navigation rail
+        return Scaffold(
+          appBar: const HomeAppBar(showMenuButton: false),
+          body: Row(
+            children: [
+              HomeNavRail(screenSize: screenSize),
+              const VerticalDivider(width: 1, thickness: 1),
+              Expanded(child: _buildBody(index)),
+            ],
+          ),
+          floatingActionButton: const Fab(),
+        );
+      },
     );
   }
 }

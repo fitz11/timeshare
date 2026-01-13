@@ -2,17 +2,6 @@
 
 Manual steps remaining before app store release.
 
-## Firebase Console Configuration
-
-After changing bundle IDs to `dev.squishygoose.timeshare`, you need to update Firebase:
-
-- [ ] Go to [Firebase Console](https://console.firebase.google.com/) → Project Settings → Your Apps
-- [ ] Register new iOS app with bundle ID `dev.squishygoose.timeshare`
-- [ ] Register new Android app with package name `dev.squishygoose.timeshare`
-- [ ] Download new `GoogleService-Info.plist` → replace in `ios/Runner/`
-- [ ] Download new `google-services.json` → replace in `android/app/`
-- [ ] Update `lib/firebase_options.dart` with new configuration values from Firebase
-
 ## Android Release Build Setup
 
 - [ ] Create upload keystore:
@@ -45,7 +34,7 @@ After changing bundle IDs to `dev.squishygoose.timeshare`, you need to update Fi
 ## Pre-Submission Verification
 
 - [ ] Run `flutter analyze` - should show no issues
-- [ ] Run `flutter test` - all 203 tests should pass
+- [ ] Run `flutter test` - all tests should pass (200+ tests, 9 skipped)
 - [ ] Build release APK: `flutter build apk --release`
 - [ ] Build release AAB: `flutter build appbundle --release`
 - [ ] Test on real Android device

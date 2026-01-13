@@ -11,7 +11,7 @@ part of 'user_providers.dart';
 /// User repository provider - uses REST API
 
 @ProviderFor(userRepository)
-const userRepositoryProvider = UserRepositoryProvider._();
+final userRepositoryProvider = UserRepositoryProvider._();
 
 /// User repository provider - uses REST API
 
@@ -24,7 +24,7 @@ final class UserRepositoryProvider
         >
     with $Provider<LoggedUserRepository> {
   /// User repository provider - uses REST API
-  const UserRepositoryProvider._()
+  UserRepositoryProvider._()
     : super(
         from: null,
         argument: null,
@@ -61,11 +61,11 @@ final class UserRepositoryProvider
 String _$userRepositoryHash() => r'2915b0543a9f7dd6919286580326060313ebaeb2';
 
 @ProviderFor(UserFriendsNotifier)
-const userFriendsProvider = UserFriendsNotifierProvider._();
+final userFriendsProvider = UserFriendsNotifierProvider._();
 
 final class UserFriendsNotifierProvider
     extends $AsyncNotifierProvider<UserFriendsNotifier, List<AppUser>> {
-  const UserFriendsNotifierProvider._()
+  UserFriendsNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -92,7 +92,6 @@ abstract class _$UserFriendsNotifier extends $AsyncNotifier<List<AppUser>> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<AsyncValue<List<AppUser>>, List<AppUser>>;
     final element =
         ref.element
@@ -102,12 +101,12 @@ abstract class _$UserFriendsNotifier extends $AsyncNotifier<List<AppUser>> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
 
 @ProviderFor(userSearch)
-const userSearchProvider = UserSearchFamily._();
+final userSearchProvider = UserSearchFamily._();
 
 final class UserSearchProvider
     extends
@@ -117,7 +116,7 @@ final class UserSearchProvider
           FutureOr<List<AppUser>>
         >
     with $FutureModifier<List<AppUser>>, $FutureProvider<List<AppUser>> {
-  const UserSearchProvider._({
+  UserSearchProvider._({
     required UserSearchFamily super.from,
     required String super.argument,
   }) : super(
@@ -165,7 +164,7 @@ String _$userSearchHash() => r'cc3e6d3bcb75a33440f5edc7a2437439b5f4be85';
 
 final class UserSearchFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<AppUser>>, String> {
-  const UserSearchFamily._()
+  UserSearchFamily._()
     : super(
         retry: null,
         name: r'userSearchProvider',
@@ -182,11 +181,11 @@ final class UserSearchFamily extends $Family
 }
 
 @ProviderFor(CurrentUserNotifier)
-const currentUserProvider = CurrentUserNotifierProvider._();
+final currentUserProvider = CurrentUserNotifierProvider._();
 
 final class CurrentUserNotifierProvider
     extends $AsyncNotifierProvider<CurrentUserNotifier, AppUser?> {
-  const CurrentUserNotifierProvider._()
+  CurrentUserNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -213,7 +212,6 @@ abstract class _$CurrentUserNotifier extends $AsyncNotifier<AppUser?> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<AsyncValue<AppUser?>, AppUser?>;
     final element =
         ref.element
@@ -223,6 +221,6 @@ abstract class _$CurrentUserNotifier extends $AsyncNotifier<AppUser?> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }

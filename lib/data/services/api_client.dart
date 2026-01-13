@@ -70,7 +70,10 @@ class HttpApiClient implements ApiClient {
     required ApiKeyProvider getApiKey,
     HttpClient? httpClient,
   })  : _getApiKey = getApiKey,
-        _httpClient = httpClient ?? HttpClient();
+        _httpClient = httpClient ??
+            (HttpClient()
+              ..connectionTimeout = const Duration(seconds: 30)
+              ..idleTimeout = const Duration(seconds: 60));
 
   Map<String, String> get _defaultHeaders => {
         'Content-Type': 'application/json',

@@ -8,7 +8,11 @@ import 'package:timeshare/ui/features/calendar/widgets/calendar_filter_sheet.dar
 import 'package:timeshare/ui/features/friends/dialogs/user_search_dialog.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  const HomeAppBar({super.key});
+  /// Whether to show the drawer menu button on calendar page.
+  /// Set to false when NavigationRail is visible on tablet/desktop.
+  final bool showMenuButton;
+
+  const HomeAppBar({super.key, this.showMenuButton = true});
 
   ///builds app bar actions based on state
   List<Widget> _buildActionsForIndex(
@@ -28,6 +32,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   Widget? _buildLeadingForIndex(BuildContext context, HomePages page) {
+    if (!showMenuButton) return null;
     switch (page) {
       case HomePages.calendar:
         return IconButton(

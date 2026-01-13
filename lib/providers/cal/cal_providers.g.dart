@@ -11,7 +11,7 @@ part of 'cal_providers.dart';
 /// AppLogger provider - enables DI and easier testing
 
 @ProviderFor(appLogger)
-const appLoggerProvider = AppLoggerProvider._();
+final appLoggerProvider = AppLoggerProvider._();
 
 /// AppLogger provider - enables DI and easier testing
 
@@ -19,7 +19,7 @@ final class AppLoggerProvider
     extends $FunctionalProvider<AppLogger, AppLogger, AppLogger>
     with $Provider<AppLogger> {
   /// AppLogger provider - enables DI and easier testing
-  const AppLoggerProvider._()
+  AppLoggerProvider._()
     : super(
         from: null,
         argument: null,
@@ -57,7 +57,7 @@ String _$appLoggerHash() => r'df8d663b25029b9f0a06806ba7ff51cc86d2ed83';
 /// Repository provider with logging wrapper - uses REST API
 
 @ProviderFor(calendarRepository)
-const calendarRepositoryProvider = CalendarRepositoryProvider._();
+final calendarRepositoryProvider = CalendarRepositoryProvider._();
 
 /// Repository provider with logging wrapper - uses REST API
 
@@ -70,7 +70,7 @@ final class CalendarRepositoryProvider
         >
     with $Provider<CalendarRepository> {
   /// Repository provider with logging wrapper - uses REST API
-  const CalendarRepositoryProvider._()
+  CalendarRepositoryProvider._()
     : super(
         from: null,
         argument: null,
@@ -111,7 +111,7 @@ String _$calendarRepositoryHash() =>
 /// Keep alive to prevent re-initialization when navigating away
 
 @ProviderFor(calendars)
-const calendarsProvider = CalendarsProvider._();
+final calendarsProvider = CalendarsProvider._();
 
 /// Main calendar stream - automatically updates when Firestore changes
 /// Keep alive to prevent re-initialization when navigating away
@@ -126,7 +126,7 @@ final class CalendarsProvider
     with $FutureModifier<List<Calendar>>, $StreamProvider<List<Calendar>> {
   /// Main calendar stream - automatically updates when Firestore changes
   /// Keep alive to prevent re-initialization when navigating away
-  const CalendarsProvider._()
+  CalendarsProvider._()
     : super(
         from: null,
         argument: null,
@@ -157,7 +157,7 @@ String _$calendarsHash() => r'4e532657317293ffabbd52d135a67b1443d8b0fb';
 /// Events stream for selected calendars
 
 @ProviderFor(eventsForSelectedCalendars)
-const eventsForSelectedCalendarsProvider =
+final eventsForSelectedCalendarsProvider =
     EventsForSelectedCalendarsProvider._();
 
 /// Events stream for selected calendars
@@ -171,7 +171,7 @@ final class EventsForSelectedCalendarsProvider
         >
     with $FutureModifier<List<Event>>, $StreamProvider<List<Event>> {
   /// Events stream for selected calendars
-  const EventsForSelectedCalendarsProvider._()
+  EventsForSelectedCalendarsProvider._()
     : super(
         from: null,
         argument: null,
@@ -204,7 +204,7 @@ String _$eventsForSelectedCalendarsHash() =>
 /// Includes conflict detection and retry mechanisms for concurrent edit handling.
 
 @ProviderFor(CalendarMutations)
-const calendarMutationsProvider = CalendarMutationsProvider._();
+final calendarMutationsProvider = CalendarMutationsProvider._();
 
 /// Calendar mutations with optimistic update support.
 /// Includes conflict detection and retry mechanisms for concurrent edit handling.
@@ -212,7 +212,7 @@ final class CalendarMutationsProvider
     extends $NotifierProvider<CalendarMutations, void> {
   /// Calendar mutations with optimistic update support.
   /// Includes conflict detection and retry mechanisms for concurrent edit handling.
-  const CalendarMutationsProvider._()
+  CalendarMutationsProvider._()
     : super(
         from: null,
         argument: null,
@@ -249,7 +249,6 @@ abstract class _$CalendarMutations extends $Notifier<void> {
   @$mustCallSuper
   @override
   void runBuild() {
-    build();
     final ref = this.ref as $Ref<void, void>;
     final element =
         ref.element
@@ -259,7 +258,7 @@ abstract class _$CalendarMutations extends $Notifier<void> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, null);
+    element.handleCreate(ref, build);
   }
 }
 
@@ -267,7 +266,7 @@ abstract class _$CalendarMutations extends $Notifier<void> {
 /// Synchronous projection from calendars stream - no async overhead.
 
 @ProviderFor(SelectedCalendarIds)
-const selectedCalendarIdsProvider = SelectedCalendarIdsProvider._();
+final selectedCalendarIdsProvider = SelectedCalendarIdsProvider._();
 
 /// Selected calendar IDs - which calendars are visible
 /// Synchronous projection from calendars stream - no async overhead.
@@ -275,7 +274,7 @@ final class SelectedCalendarIdsProvider
     extends $NotifierProvider<SelectedCalendarIds, Set<String>> {
   /// Selected calendar IDs - which calendars are visible
   /// Synchronous projection from calendars stream - no async overhead.
-  const SelectedCalendarIdsProvider._()
+  SelectedCalendarIdsProvider._()
     : super(
         from: null,
         argument: null,
@@ -313,7 +312,6 @@ abstract class _$SelectedCalendarIds extends $Notifier<Set<String>> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<Set<String>, Set<String>>;
     final element =
         ref.element
@@ -323,20 +321,20 @@ abstract class _$SelectedCalendarIds extends $Notifier<Set<String>> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
 
 /// Selected day in the calendar
 
 @ProviderFor(SelectedDay)
-const selectedDayProvider = SelectedDayProvider._();
+final selectedDayProvider = SelectedDayProvider._();
 
 /// Selected day in the calendar
 final class SelectedDayProvider
     extends $NotifierProvider<SelectedDay, DateTime?> {
   /// Selected day in the calendar
-  const SelectedDayProvider._()
+  SelectedDayProvider._()
     : super(
         from: null,
         argument: null,
@@ -372,7 +370,6 @@ abstract class _$SelectedDay extends $Notifier<DateTime?> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<DateTime?, DateTime?>;
     final element =
         ref.element
@@ -382,19 +379,19 @@ abstract class _$SelectedDay extends $Notifier<DateTime?> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
 
 /// Focused day in the calendar widget (which month is displayed)
 
 @ProviderFor(FocusedDay)
-const focusedDayProvider = FocusedDayProvider._();
+final focusedDayProvider = FocusedDayProvider._();
 
 /// Focused day in the calendar widget (which month is displayed)
 final class FocusedDayProvider extends $NotifierProvider<FocusedDay, DateTime> {
   /// Focused day in the calendar widget (which month is displayed)
-  const FocusedDayProvider._()
+  FocusedDayProvider._()
     : super(
         from: null,
         argument: null,
@@ -430,7 +427,6 @@ abstract class _$FocusedDay extends $Notifier<DateTime> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<DateTime, DateTime>;
     final element =
         ref.element
@@ -440,20 +436,20 @@ abstract class _$FocusedDay extends $Notifier<DateTime> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
 
 /// Calendar display format (month, two weeks, week)
 
 @ProviderFor(CalendarFormatState)
-const calendarFormatStateProvider = CalendarFormatStateProvider._();
+final calendarFormatStateProvider = CalendarFormatStateProvider._();
 
 /// Calendar display format (month, two weeks, week)
 final class CalendarFormatStateProvider
     extends $NotifierProvider<CalendarFormatState, CalendarFormat> {
   /// Calendar display format (month, two weeks, week)
-  const CalendarFormatStateProvider._()
+  CalendarFormatStateProvider._()
     : super(
         from: null,
         argument: null,
@@ -490,7 +486,6 @@ abstract class _$CalendarFormatState extends $Notifier<CalendarFormat> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<CalendarFormat, CalendarFormat>;
     final element =
         ref.element
@@ -500,20 +495,20 @@ abstract class _$CalendarFormatState extends $Notifier<CalendarFormat> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
 
 /// Filter toggle - show only events after today
 
 @ProviderFor(AfterTodayFilter)
-const afterTodayFilterProvider = AfterTodayFilterProvider._();
+final afterTodayFilterProvider = AfterTodayFilterProvider._();
 
 /// Filter toggle - show only events after today
 final class AfterTodayFilterProvider
     extends $NotifierProvider<AfterTodayFilter, bool> {
   /// Filter toggle - show only events after today
-  const AfterTodayFilterProvider._()
+  AfterTodayFilterProvider._()
     : super(
         from: null,
         argument: null,
@@ -549,7 +544,6 @@ abstract class _$AfterTodayFilter extends $Notifier<bool> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
@@ -559,20 +553,20 @@ abstract class _$AfterTodayFilter extends $Notifier<bool> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
 
 /// Interaction mode (normal, copy, delete)
 
 @ProviderFor(InteractionModeState)
-const interactionModeStateProvider = InteractionModeStateProvider._();
+final interactionModeStateProvider = InteractionModeStateProvider._();
 
 /// Interaction mode (normal, copy, delete)
 final class InteractionModeStateProvider
     extends $NotifierProvider<InteractionModeState, InteractionMode> {
   /// Interaction mode (normal, copy, delete)
-  const InteractionModeStateProvider._()
+  InteractionModeStateProvider._()
     : super(
         from: null,
         argument: null,
@@ -609,7 +603,6 @@ abstract class _$InteractionModeState extends $Notifier<InteractionMode> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<InteractionMode, InteractionMode>;
     final element =
         ref.element
@@ -619,20 +612,20 @@ abstract class _$InteractionModeState extends $Notifier<InteractionMode> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
 
 /// Event being copied (when in copy mode)
 
 @ProviderFor(CopyEventState)
-const copyEventStateProvider = CopyEventStateProvider._();
+final copyEventStateProvider = CopyEventStateProvider._();
 
 /// Event being copied (when in copy mode)
 final class CopyEventStateProvider
     extends $NotifierProvider<CopyEventState, Event?> {
   /// Event being copied (when in copy mode)
-  const CopyEventStateProvider._()
+  CopyEventStateProvider._()
     : super(
         from: null,
         argument: null,
@@ -668,7 +661,6 @@ abstract class _$CopyEventState extends $Notifier<Event?> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build();
     final ref = this.ref as $Ref<Event?, Event?>;
     final element =
         ref.element
@@ -678,7 +670,7 @@ abstract class _$CopyEventState extends $Notifier<Event?> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    element.handleCreate(ref, build);
   }
 }
 
@@ -686,7 +678,7 @@ abstract class _$CopyEventState extends $Notifier<Event?> {
 /// Only recomputes when events actually change, not on filter/day changes.
 
 @ProviderFor(expandedEventsMap)
-const expandedEventsMapProvider = ExpandedEventsMapProvider._();
+final expandedEventsMapProvider = ExpandedEventsMapProvider._();
 
 /// Expanded events map - memoized recurrence expansion.
 /// Only recomputes when events actually change, not on filter/day changes.
@@ -701,7 +693,7 @@ final class ExpandedEventsMapProvider
     with $Provider<Map<DateTime, List<Event>>> {
   /// Expanded events map - memoized recurrence expansion.
   /// Only recomputes when events actually change, not on filter/day changes.
-  const ExpandedEventsMapProvider._()
+  ExpandedEventsMapProvider._()
     : super(
         from: null,
         argument: null,
@@ -741,7 +733,7 @@ String _$expandedEventsMapHash() => r'82f6297bbdcfa5f8f070d05b92071a21a290be6a';
 /// Filtering is O(n), not O(n × 365) on day/filter changes.
 
 @ProviderFor(visibleEvents)
-const visibleEventsProvider = VisibleEventsProvider._();
+final visibleEventsProvider = VisibleEventsProvider._();
 
 /// Consolidated visible events - uses memoized expanded map.
 /// Filtering is O(n), not O(n × 365) on day/filter changes.
@@ -751,7 +743,7 @@ final class VisibleEventsProvider
     with $Provider<VisibleEvents> {
   /// Consolidated visible events - uses memoized expanded map.
   /// Filtering is O(n), not O(n × 365) on day/filter changes.
-  const VisibleEventsProvider._()
+  VisibleEventsProvider._()
     : super(
         from: null,
         argument: null,
@@ -785,3 +777,146 @@ final class VisibleEventsProvider
 }
 
 String _$visibleEventsHash() => r'91013c1b4e7cfc57174098b3c0efc0fc25af233c';
+
+/// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
+/// Uses family modifier so each calendar ID gets its own cached provider instance.
+
+@ProviderFor(calendarName)
+final calendarNameProvider = CalendarNameFamily._();
+
+/// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
+/// Uses family modifier so each calendar ID gets its own cached provider instance.
+
+final class CalendarNameProvider
+    extends $FunctionalProvider<String, String, String>
+    with $Provider<String> {
+  /// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
+  /// Uses family modifier so each calendar ID gets its own cached provider instance.
+  CalendarNameProvider._({
+    required CalendarNameFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'calendarNameProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$calendarNameHash();
+
+  @override
+  String toString() {
+    return r'calendarNameProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  String create(Ref ref) {
+    final argument = this.argument as String;
+    return calendarName(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CalendarNameProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$calendarNameHash() => r'411142b8af2ce64575ce21228365be4e52173117';
+
+/// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
+/// Uses family modifier so each calendar ID gets its own cached provider instance.
+
+final class CalendarNameFamily extends $Family
+    with $FunctionalFamilyOverride<String, String> {
+  CalendarNameFamily._()
+    : super(
+        retry: null,
+        name: r'calendarNameProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
+  /// Uses family modifier so each calendar ID gets its own cached provider instance.
+
+  CalendarNameProvider call(String calendarId) =>
+      CalendarNameProvider._(argument: calendarId, from: this);
+
+  @override
+  String toString() => r'calendarNameProvider';
+}
+
+/// Map of calendar IDs to names - for efficient bulk lookups in lists.
+
+@ProviderFor(calendarNamesMap)
+final calendarNamesMapProvider = CalendarNamesMapProvider._();
+
+/// Map of calendar IDs to names - for efficient bulk lookups in lists.
+
+final class CalendarNamesMapProvider
+    extends
+        $FunctionalProvider<
+          Map<String, String>,
+          Map<String, String>,
+          Map<String, String>
+        >
+    with $Provider<Map<String, String>> {
+  /// Map of calendar IDs to names - for efficient bulk lookups in lists.
+  CalendarNamesMapProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'calendarNamesMapProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$calendarNamesMapHash();
+
+  @$internal
+  @override
+  $ProviderElement<Map<String, String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Map<String, String> create(Ref ref) {
+    return calendarNamesMap(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, String>>(value),
+    );
+  }
+}
+
+String _$calendarNamesMapHash() => r'8837dec100b81a2f22d478b7a42c138ced7f5811';

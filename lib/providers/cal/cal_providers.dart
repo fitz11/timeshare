@@ -326,20 +326,31 @@ VisibleEvents _filterVisibleEvents(
   bool afterToday,
 ) {
   final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  Map<DateTime, List<Event>> filteredMap;
   List<Event> eventList;
 
   if (selectedDay != null) {
-    eventList = eventMap[selectedDay] ?? [];
+    // Single day selected - return only that day's events
+    final events = eventMap[selectedDay] ?? [];
+    filteredMap = events.isEmpty ? {} : {selectedDay: events};
+    eventList = events;
+  } else if (afterToday) {
+    // Filter to dates >= today
+    filteredMap = Map.fromEntries(
+      eventMap.entries.where((e) =>
+          e.key.isAfter(today) || e.key.isAtSameMomentAs(today)),
+    );
+    eventList = filteredMap.values.expand((list) => list).toList();
+    eventList.sort((a, b) => a.time.compareTo(b.time));
   } else {
+    // No filter - return all
+    filteredMap = eventMap;
     eventList = eventMap.values.expand((list) => list).toList();
     eventList.sort((a, b) => a.time.compareTo(b.time));
-
-    if (afterToday) {
-      eventList = eventList.where((e) => e.time.isAfter(now)).toList();
-    }
   }
 
-  return VisibleEvents(map: eventMap, list: eventList);
+  return VisibleEvents(map: filteredMap, list: eventList);
 }
 
 /// Expand a recurring event into individual occurrences.
@@ -378,4 +389,23 @@ class VisibleEvents {
   final List<Event> list;
 
   const VisibleEvents({required this.map, required this.list});
+}
+
+/// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
+/// Uses family modifier so each calendar ID gets its own cached provider instance.
+@riverpod
+String calendarName(Ref ref, String calendarId) {
+  final calendars = ref.watch(calendarsProvider).value ?? [];
+  try {
+    return calendars.firstWhere((c) => c.id == calendarId).name;
+  } catch (_) {
+    return 'Unknown Calendar';
+  }
+}
+
+/// Map of calendar IDs to names - for efficient bulk lookups in lists.
+@riverpod
+Map<String, String> calendarNamesMap(Ref ref) {
+  final calendars = ref.watch(calendarsProvider).value ?? [];
+  return {for (final c in calendars) c.id: c.name};
 }

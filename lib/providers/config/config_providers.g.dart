@@ -11,7 +11,7 @@ part of 'config_providers.dart';
 /// Provides the application configuration based on the runtime environment.
 
 @ProviderFor(appConfig)
-const appConfigProvider = AppConfigProvider._();
+final appConfigProvider = AppConfigProvider._();
 
 /// Provides the application configuration based on the runtime environment.
 
@@ -19,7 +19,7 @@ final class AppConfigProvider
     extends $FunctionalProvider<AppConfig, AppConfig, AppConfig>
     with $Provider<AppConfig> {
   /// Provides the application configuration based on the runtime environment.
-  const AppConfigProvider._()
+  AppConfigProvider._()
     : super(
         from: null,
         argument: null,

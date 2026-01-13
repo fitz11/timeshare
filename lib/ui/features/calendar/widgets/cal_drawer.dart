@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeshare/ui/features/calendar/widgets/aftertoday_toggle.dart';
+import 'package:timeshare/ui/features/calendar/widgets/cal_drawer_content.dart';
 
 class CalDrawer extends ConsumerWidget {
   const CalDrawer({super.key});
@@ -45,17 +45,8 @@ class CalDrawer extends ConsumerWidget {
             ),
           ),
 
-          // Settings section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              'Settings',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          const AfterTodayToggle(),
+          // Settings section (extracted for reuse)
+          const CalDrawerContent(),
         ],
       ),
     );

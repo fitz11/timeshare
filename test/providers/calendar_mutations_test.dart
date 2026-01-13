@@ -28,7 +28,7 @@ void main() {
         // Listen to keep stream provider alive
         final subscription = container.listen(
           calendarsProvider,
-          (_, __) {},
+          (_, _) {},
           fireImmediately: true,
         );
 
@@ -63,7 +63,7 @@ void main() {
 
         final subscription = container.listen(
           calendarsProvider,
-          (_, __) {},
+          (_, _) {},
           fireImmediately: true,
         );
 
@@ -265,7 +265,7 @@ void main() {
 
         final subscription = container.listen(
           calendarsProvider,
-          (_, __) {},
+          (_, _) {},
           fireImmediately: true,
         );
 

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:timeshare/data/exceptions/email_not_verified_exception.dart';
 import 'package:timeshare/data/services/auth_service.dart';
 
 /// REST API implementation of [AuthService] using API key authentication.
@@ -21,6 +22,7 @@ class RestApiAuthService implements AuthService {
 
   String? _apiKey;
   String? _userId;
+  String? _pendingVerificationEmail;
   final _authStateController = StreamController<AuthState>.broadcast();
 
   RestApiAuthService({
@@ -28,7 +30,10 @@ class RestApiAuthService implements AuthService {
     required SecureStorage storage,
     HttpClient? httpClient,
   })  : _storage = storage,
-        _httpClient = httpClient ?? HttpClient();
+        _httpClient = httpClient ??
+            (HttpClient()
+              ..connectionTimeout = const Duration(seconds: 30)
+              ..idleTimeout = const Duration(seconds: 60));
 
   @override
   String? get apiKey => _apiKey;
@@ -40,26 +45,63 @@ class RestApiAuthService implements AuthService {
   Stream<AuthState> get authStateStream => _authStateController.stream;
 
   @override
+  String? get pendingVerificationEmail => _pendingVerificationEmail;
+
+  @override
   Future<String> login(String email, String password) async {
     _authStateController.add(AuthState.loading);
 
     try {
-      final response = await _postJson('/api/v1/timeshare/auth/login/', {
+      final (statusCode, responseBody) =
+          await _postJsonWithStatus('/api/v1/timeshare/auth/login/', {
         'email': email,
         'password': password,
       });
 
-      final data = jsonDecode(response);
-      _apiKey = data['api_key'] as String;
-      final user = data['user'] as Map<String, dynamic>;
-      _userId = user['uid'] as String;
+      if (statusCode == 200) {
+        final data = jsonDecode(responseBody);
+        if (data is! Map<String, dynamic>) {
+          throw AuthException(
+              statusCode: 500, message: 'Invalid response format');
+        }
+        final apiKey = data['api_key'] as String?;
+        if (apiKey == null) {
+          throw AuthException(statusCode: 500, message: 'Missing api_key');
+        }
+        final user = data['user'] as Map<String, dynamic>?;
+        if (user == null) {
+          throw AuthException(statusCode: 500, message: 'Missing user data');
+        }
+        final uid = user['uid'] as String?;
+        if (uid == null) {
+          throw AuthException(statusCode: 500, message: 'Missing user uid');
+        }
+        _apiKey = apiKey;
+        _userId = uid;
 
-      // Persist credentials
-      await _storage.write(key: _apiKeyStorageKey, value: _apiKey!);
-      await _storage.write(key: _userIdStorageKey, value: _userId!);
+        // Persist credentials
+        await _storage.write(key: _apiKeyStorageKey, value: _apiKey!);
+        await _storage.write(key: _userIdStorageKey, value: _userId!);
 
-      _authStateController.add(AuthState.authenticated);
-      return _userId!;
+        _authStateController.add(AuthState.authenticated);
+        return _userId!;
+      }
+
+      if (statusCode == 403) {
+        final data = jsonDecode(responseBody);
+        if (data['email_not_verified'] == true) {
+          _authStateController.add(AuthState.unauthenticated);
+          throw EmailNotVerifiedException(email: email);
+        }
+      }
+
+      _authStateController.add(AuthState.error);
+      throw AuthException(
+        statusCode: statusCode,
+        message: _extractErrorMessage(responseBody, statusCode),
+      );
+    } on EmailNotVerifiedException {
+      rethrow;
     } catch (e) {
       _authStateController.add(AuthState.error);
       rethrow;
@@ -67,29 +109,35 @@ class RestApiAuthService implements AuthService {
   }
 
   @override
-  Future<String> signup(String email, String password, String displayName) async {
+  Future<String> signup(
+      String email, String password, String displayName) async {
     _authStateController.add(AuthState.loading);
 
     try {
-      final response = await _postJson('/api/v1/timeshare/auth/register/', {
+      final (statusCode, _) =
+          await _postJsonWithStatus('/api/v1/timeshare/auth/register/', {
         'email': email,
         'password': password,
         'display_name': displayName,
       });
 
-      final data = jsonDecode(response);
-      _apiKey = data['api_key'] as String;
-      final user = data['user'] as Map<String, dynamic>;
-      _userId = user['uid'] as String;
+      if (statusCode == 201) {
+        // Registration successful, email verification required
+        _pendingVerificationEmail = email;
+        await _storage.write(key: _pendingEmailStorageKey, value: email);
+        _authStateController.add(AuthState.pendingVerification);
+        return ''; // No user ID yet - must verify email first
+      }
 
-      // Persist credentials
-      await _storage.write(key: _apiKeyStorageKey, value: _apiKey!);
-      await _storage.write(key: _userIdStorageKey, value: _userId!);
-
-      _authStateController.add(AuthState.authenticated);
-      return _userId!;
-    } catch (e) {
       _authStateController.add(AuthState.error);
+      throw AuthException(
+        statusCode: statusCode,
+        message: 'Unexpected response from server',
+      );
+    } catch (e) {
+      if (e is! AuthException) {
+        _authStateController.add(AuthState.error);
+      }
       rethrow;
     }
   }
@@ -120,6 +168,14 @@ class RestApiAuthService implements AuthService {
     _authStateController.add(AuthState.loading);
 
     try {
+      // Check for pending verification first
+      final pendingEmail = await _storage.read(key: _pendingEmailStorageKey);
+      if (pendingEmail != null) {
+        _pendingVerificationEmail = pendingEmail;
+        _authStateController.add(AuthState.pendingVerification);
+        return false;
+      }
+
       final storedApiKey = await _storage.read(key: _apiKeyStorageKey);
       final storedUserId = await _storage.read(key: _userIdStorageKey);
 
@@ -188,6 +244,29 @@ class RestApiAuthService implements AuthService {
     }
 
     return responseBody;
+  }
+
+  /// POST JSON to the API and return both status code and body.
+  Future<(int, String)> _postJsonWithStatus(
+    String path,
+    Map<String, dynamic> body, {
+    bool authenticated = false,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final request = await _httpClient.postUrl(uri);
+
+    request.headers.set('Content-Type', 'application/json');
+    request.headers.set('Accept', 'application/json');
+    if (authenticated && _apiKey != null) {
+      request.headers.set('Authorization', 'Api-Key $_apiKey');
+    }
+
+    request.write(jsonEncode(body));
+
+    final response = await request.close();
+    final responseBody = await response.transform(utf8.decoder).join();
+
+    return (response.statusCode, responseBody);
   }
 
   /// GET JSON from the API.
@@ -300,6 +379,71 @@ class RestApiAuthService implements AuthService {
     }
   }
 
+  @override
+  Future<String> verifyEmail(String token) async {
+    _authStateController.add(AuthState.loading);
+
+    try {
+      final response = await _postJson(
+        '/api/v1/timeshare/auth/verify-email/',
+        {'token': token},
+      );
+
+      final data = jsonDecode(response);
+      if (data is! Map<String, dynamic>) {
+        throw AuthException(statusCode: 500, message: 'Invalid response format');
+      }
+      final apiKey = data['api_key'] as String?;
+      if (apiKey == null) {
+        throw AuthException(statusCode: 500, message: 'Missing api_key');
+      }
+      final user = data['user'] as Map<String, dynamic>?;
+      if (user == null) {
+        throw AuthException(statusCode: 500, message: 'Missing user data');
+      }
+      final uid = user['uid'] as String?;
+      if (uid == null) {
+        throw AuthException(statusCode: 500, message: 'Missing user uid');
+      }
+      _apiKey = apiKey;
+      _userId = uid;
+
+      // Clear pending state
+      _pendingVerificationEmail = null;
+      await _storage.delete(key: _pendingEmailStorageKey);
+
+      // Persist credentials
+      await _storage.write(key: _apiKeyStorageKey, value: _apiKey!);
+      await _storage.write(key: _userIdStorageKey, value: _userId!);
+
+      _authStateController.add(AuthState.authenticated);
+      return _userId!;
+    } catch (e) {
+      _authStateController.add(AuthState.error);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> resendVerificationEmail(String email) async {
+    try {
+      await _postJson(
+        '/api/v1/timeshare/auth/resend-verification/',
+        {'email': email},
+      );
+    } catch (e) {
+      // Silently ignore errors to prevent email enumeration
+      debugPrint('Resend verification request failed (suppressed): $e');
+    }
+  }
+
+  @override
+  void cancelPendingVerification() {
+    _pendingVerificationEmail = null;
+    _storage.delete(key: _pendingEmailStorageKey);
+    _authStateController.add(AuthState.unauthenticated);
+  }
+
   /// Dispose of resources.
   void dispose() {
     _authStateController.close();
@@ -308,6 +452,7 @@ class RestApiAuthService implements AuthService {
   // Storage keys
   static const _apiKeyStorageKey = 'timeshare_api_key';
   static const _userIdStorageKey = 'timeshare_user_id';
+  static const _pendingEmailStorageKey = 'timeshare_pending_verification_email';
 }
 
 /// Exception thrown during authentication.

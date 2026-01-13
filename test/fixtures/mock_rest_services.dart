@@ -10,6 +10,7 @@ class MockAuthService implements AuthService {
 
   String? _userId;
   String? _apiKey;
+  String? _pendingVerificationEmail;
   AuthState _currentState = AuthState.unauthenticated;
 
   /// Get current auth state for testing
@@ -89,6 +90,31 @@ class MockAuthService implements AuthService {
   @override
   Future<void> requestPasswordReset(String email) async {
     // Mock implementation - just succeeds
+  }
+
+  @override
+  String? get pendingVerificationEmail => _pendingVerificationEmail;
+
+  @override
+  Future<String> verifyEmail(String token) async {
+    _userId = 'mock-user-id';
+    _apiKey = 'mock-api-key';
+    _pendingVerificationEmail = null;
+    _currentState = AuthState.authenticated;
+    _authStateController.add(AuthState.authenticated);
+    return _userId!;
+  }
+
+  @override
+  Future<void> resendVerificationEmail(String email) async {
+    // Mock implementation - just succeeds
+  }
+
+  @override
+  void cancelPendingVerification() {
+    _pendingVerificationEmail = null;
+    _currentState = AuthState.unauthenticated;
+    _authStateController.add(AuthState.unauthenticated);
   }
 
   void dispose() {

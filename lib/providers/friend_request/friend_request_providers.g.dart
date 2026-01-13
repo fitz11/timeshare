@@ -11,7 +11,7 @@ part of 'friend_request_providers.dart';
 /// Friend request repository provider - uses REST API
 
 @ProviderFor(friendRequestRepository)
-const friendRequestRepositoryProvider = FriendRequestRepositoryProvider._();
+final friendRequestRepositoryProvider = FriendRequestRepositoryProvider._();
 
 /// Friend request repository provider - uses REST API
 
@@ -24,7 +24,7 @@ final class FriendRequestRepositoryProvider
         >
     with $Provider<FriendRequestRepository> {
   /// Friend request repository provider - uses REST API
-  const FriendRequestRepositoryProvider._()
+  FriendRequestRepositoryProvider._()
     : super(
         from: null,
         argument: null,
@@ -64,7 +64,7 @@ String _$friendRequestRepositoryHash() =>
 /// Stream of incoming friend requests (polling-based).
 
 @ProviderFor(incomingFriendRequests)
-const incomingFriendRequestsProvider = IncomingFriendRequestsProvider._();
+final incomingFriendRequestsProvider = IncomingFriendRequestsProvider._();
 
 /// Stream of incoming friend requests (polling-based).
 
@@ -79,7 +79,7 @@ final class IncomingFriendRequestsProvider
         $FutureModifier<List<FriendRequest>>,
         $StreamProvider<List<FriendRequest>> {
   /// Stream of incoming friend requests (polling-based).
-  const IncomingFriendRequestsProvider._()
+  IncomingFriendRequestsProvider._()
     : super(
         from: null,
         argument: null,
@@ -111,7 +111,7 @@ String _$incomingFriendRequestsHash() =>
 /// Future of sent friend requests.
 
 @ProviderFor(sentFriendRequests)
-const sentFriendRequestsProvider = SentFriendRequestsProvider._();
+final sentFriendRequestsProvider = SentFriendRequestsProvider._();
 
 /// Future of sent friend requests.
 
@@ -126,7 +126,7 @@ final class SentFriendRequestsProvider
         $FutureModifier<List<FriendRequest>>,
         $FutureProvider<List<FriendRequest>> {
   /// Future of sent friend requests.
-  const SentFriendRequestsProvider._()
+  SentFriendRequestsProvider._()
     : super(
         from: null,
         argument: null,
@@ -158,7 +158,7 @@ String _$sentFriendRequestsHash() =>
 /// Count of pending incoming requests (for badge display).
 
 @ProviderFor(pendingRequestCount)
-const pendingRequestCountProvider = PendingRequestCountProvider._();
+final pendingRequestCountProvider = PendingRequestCountProvider._();
 
 /// Count of pending incoming requests (for badge display).
 
@@ -166,7 +166,7 @@ final class PendingRequestCountProvider
     extends $FunctionalProvider<int, int, int>
     with $Provider<int> {
   /// Count of pending incoming requests (for badge display).
-  const PendingRequestCountProvider._()
+  PendingRequestCountProvider._()
     : super(
         from: null,
         argument: null,
@@ -205,13 +205,13 @@ String _$pendingRequestCountHash() =>
 /// Friend request mutations notifier.
 
 @ProviderFor(FriendRequestNotifier)
-const friendRequestProvider = FriendRequestNotifierProvider._();
+final friendRequestProvider = FriendRequestNotifierProvider._();
 
 /// Friend request mutations notifier.
 final class FriendRequestNotifierProvider
     extends $NotifierProvider<FriendRequestNotifier, void> {
   /// Friend request mutations notifier.
-  const FriendRequestNotifierProvider._()
+  FriendRequestNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -248,7 +248,6 @@ abstract class _$FriendRequestNotifier extends $Notifier<void> {
   @$mustCallSuper
   @override
   void runBuild() {
-    build();
     final ref = this.ref as $Ref<void, void>;
     final element =
         ref.element
@@ -258,6 +257,6 @@ abstract class _$FriendRequestNotifier extends $Notifier<void> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, null);
+    element.handleCreate(ref, build);
   }
 }

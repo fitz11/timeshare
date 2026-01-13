@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeshare/data/exceptions/email_not_verified_exception.dart';
 import 'package:timeshare/data/services/rest_api_auth_service.dart';
 import 'package:timeshare/providers/auth/auth_providers.dart';
 
@@ -56,6 +57,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         );
       }
       // Navigation handled by AuthGate reacting to auth state change
+    } on EmailNotVerifiedException catch (e) {
+      if (mounted) {
+        _showEmailNotVerifiedDialog(e.email);
+      }
     } on AuthException catch (e) {
       setState(() {
         _errorMessage = e.message;
@@ -71,6 +76,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         });
       }
     }
+  }
+
+  void _showEmailNotVerifiedDialog(String email) {
+    showDialog(
+      context: context,
+      builder: (context) => _EmailNotVerifiedDialog(
+        ref: ref,
+        email: email,
+      ),
+    );
   }
 
   void _toggleMode() {
@@ -447,6 +462,115 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Text('Send Reset Link'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Dialog shown when login fails due to unverified email.
+class _EmailNotVerifiedDialog extends StatefulWidget {
+  final WidgetRef ref;
+  final String email;
+
+  const _EmailNotVerifiedDialog({
+    required this.ref,
+    required this.email,
+  });
+
+  @override
+  State<_EmailNotVerifiedDialog> createState() =>
+      _EmailNotVerifiedDialogState();
+}
+
+class _EmailNotVerifiedDialogState extends State<_EmailNotVerifiedDialog> {
+  bool _isLoading = false;
+  bool _sent = false;
+
+  Future<void> _resend() async {
+    setState(() => _isLoading = true);
+
+    try {
+      await widget.ref.read(resendVerificationEmailProvider)(widget.email);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _sent = true;
+        });
+      }
+    } catch (e) {
+      // Always show success to prevent enumeration
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _sent = true;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_sent) {
+      return AlertDialog(
+        title: const Text('Check Your Email'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.mark_email_read_outlined,
+              size: 48,
+              color: Colors.green,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'If an unverified account exists for ${widget.email}, '
+              'you will receive a verification link shortly.',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Done'),
+          ),
+        ],
+      );
+    }
+
+    return AlertDialog(
+      title: const Text('Email Not Verified'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.warning_amber_outlined,
+            size: 48,
+            color: Colors.orange,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Your email address (${widget.email}) has not been verified yet. '
+            'Please check your inbox for the verification link, or request a new one.',
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _isLoading ? null : _resend,
+          child: _isLoading
+              ? const SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Resend Verification'),
         ),
       ],
     );

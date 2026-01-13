@@ -12,11 +12,13 @@ import 'package:timeshare/providers/cal/cal_providers.dart';
 class EventListItem extends ConsumerWidget {
   final Event event;
   final bool showDate;
+  final String? calendarName;
 
   const EventListItem({
     super.key,
     required this.event,
     this.showDate = true,
+    this.calendarName,
   });
 
   void _onTap(BuildContext context, WidgetRef ref) {
@@ -52,7 +54,6 @@ class EventListItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calendars = ref.watch(calendarsProvider);
     final copyMode = ref.watch(interactionModeStateProvider);
     final copiedEvent = ref.watch(copyEventStateProvider);
     final theme = Theme.of(context);
@@ -64,21 +65,9 @@ class EventListItem extends ConsumerWidget {
         copiedEvent != null &&
         copiedEvent == event;
 
-    // Find the calendar name for this event
-    final calendarName = calendars.when(
-      data: (calList) {
-        try {
-          final calendar = calList.firstWhere(
-            (cal) => cal.id == event.calendarId,
-          );
-          return calendar.name;
-        } catch (e) {
-          return 'Unknown Calendar';
-        }
-      },
-      loading: () => 'Loading...',
-      error: (_, __) => 'Error',
-    );
+    // Use passed name or look up via scoped provider (avoids watching all calendars)
+    final String displayCalendarName =
+        calendarName ?? ref.watch(calendarNameProvider(event.calendarId ?? ''));
 
     // Format time if available
     final timeStr = DateFormat.jm().format(event.time);
@@ -122,7 +111,7 @@ class EventListItem extends ConsumerWidget {
           const SizedBox(width: 4),
           Flexible(
             child: Text(
-              calendarName,
+              displayCalendarName,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),

@@ -2,7 +2,9 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:timeshare/data/exceptions/conflict_exception.dart';
 import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
@@ -17,12 +19,23 @@ import 'package:timeshare/data/services/api_client.dart';
 class RestApiRepository implements CalendarRepository {
   final ApiClient _client;
   final Duration _pollInterval;
+  static final _random = Random();
+
+  /// Maximum jitter added to polling interval to prevent synchronized requests.
+  static const _maxJitterMs = 5000;
 
   RestApiRepository({
     required ApiClient client,
     Duration pollInterval = const Duration(seconds: 30),
   })  : _client = client,
         _pollInterval = pollInterval;
+
+  /// Adds random jitter (0-5 seconds) to prevent thundering herd.
+  Future<void> _jitter() async {
+    await Future<void>.delayed(
+      Duration(milliseconds: _random.nextInt(_maxJitterMs)),
+    );
+  }
 
   // ============ Calendar Operations ============
 
@@ -31,13 +44,14 @@ class RestApiRepository implements CalendarRepository {
     // Initial fetch
     yield await getAllAvailableCalendars(uid: uid);
 
-    // Poll for updates
+    // Poll for updates with jitter to prevent synchronized requests
     await for (final _ in Stream.periodic(_pollInterval)) {
+      await _jitter();
       try {
         yield await getAllAvailableCalendars(uid: uid);
       } catch (e) {
-        // On error, yield previous value (stream continues)
-        // Errors are logged by the ApiClient
+        // On error, log and continue polling (don't break stream)
+        debugPrint('Calendar polling error (continuing): $e');
       }
     }
   }
@@ -116,12 +130,14 @@ class RestApiRepository implements CalendarRepository {
     // Initial fetch
     yield await getEventsForCalendar(calendarId);
 
-    // Poll for updates
+    // Poll for updates with jitter to prevent synchronized requests
     await for (final _ in Stream.periodic(_pollInterval)) {
+      await _jitter();
       try {
         yield await getEventsForCalendar(calendarId);
       } catch (e) {
-        // On error, continue polling (don't break stream)
+        // On error, log and continue polling (don't break stream)
+        debugPrint('Event polling error for calendar $calendarId (continuing): $e');
       }
     }
   }
@@ -140,8 +156,9 @@ class RestApiRepository implements CalendarRepository {
     }
     yield events;
 
-    // Poll for updates
+    // Poll for updates with jitter to prevent synchronized requests
     await for (final _ in Stream.periodic(_pollInterval)) {
+      await _jitter();
       try {
         final updatedEvents = <Event>[];
         for (final id in calendarIds) {
@@ -149,7 +166,8 @@ class RestApiRepository implements CalendarRepository {
         }
         yield updatedEvents;
       } catch (e) {
-        // On error, continue polling
+        // On error, log and continue polling (don't break stream)
+        debugPrint('Events polling error for calendars (continuing): $e');
       }
     }
   }

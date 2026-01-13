@@ -33,29 +33,33 @@ void main() {
     });
 
     testWidgets('displays list of events', (tester) async {
-      final events = [
-        Event(
-          id: 'event-1',
-          name: 'Event 1',
-          time: DateTime.utc(2024, 6, 15),
-          calendarId: 'cal1',
-          color: Colors.blue,
-        ),
-        Event(
-          id: 'event-2',
-          name: 'Event 2',
-          time: DateTime.utc(2024, 6, 16),
-          calendarId: 'cal1',
-          color: Colors.red,
-        ),
-      ];
+      final event1 = Event(
+        id: 'event-1',
+        name: 'Event 1',
+        time: DateTime.utc(2024, 6, 15),
+        calendarId: 'cal1',
+        color: Colors.blue,
+      );
+      final event2 = Event(
+        id: 'event-2',
+        name: 'Event 2',
+        time: DateTime.utc(2024, 6, 16),
+        calendarId: 'cal1',
+        color: Colors.red,
+      );
+      final events = [event1, event2];
+      final eventsMap = {
+        DateTime.utc(2024, 6, 15): [event1],
+        DateTime.utc(2024, 6, 16): [event2],
+      };
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             visibleEventsProvider.overrideWithValue(
-              VisibleEvents(map: {}, list: events),
+              VisibleEvents(map: eventsMap, list: events),
             ),
+            calendarNamesMapProvider.overrideWithValue({'cal1': 'Test Calendar'}),
           ],
           child: const MaterialApp(
             home: Scaffold(
@@ -79,13 +83,15 @@ void main() {
         time: DateTime.utc(2024, 6, 15),
         calendarId: 'cal1',
       );
+      final eventsMap = {DateTime.utc(2024, 6, 15): [event]};
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             visibleEventsProvider.overrideWithValue(
-              VisibleEvents(map: {}, list: [event]),
+              VisibleEvents(map: eventsMap, list: [event]),
             ),
+            calendarNamesMapProvider.overrideWithValue({'cal1': 'Test Calendar'}),
             // InteractionMode.normal is the default, so no override needed
           ],
           child: const MaterialApp(
@@ -110,13 +116,15 @@ void main() {
         time: DateTime.utc(2024, 6, 15),
         calendarId: 'cal1',
       );
+      final eventsMap = {DateTime.utc(2024, 6, 15): [event]};
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             visibleEventsProvider.overrideWithValue(
-              VisibleEvents(map: {}, list: [event]),
+              VisibleEvents(map: eventsMap, list: [event]),
             ),
+            calendarNamesMapProvider.overrideWithValue({'cal1': 'Test Calendar'}),
           ],
           child: const MaterialApp(
             home: Scaffold(
@@ -135,21 +143,22 @@ void main() {
     });
 
     testWidgets('ListView is created for events', (tester) async {
-      final events = [
-        Event(
-          id: 'event-test',
-          name: 'Test Event',
-          time: DateTime.utc(2024, 6, 15),
-          calendarId: 'cal1',
-        ),
-      ];
+      final event = Event(
+        id: 'event-test',
+        name: 'Test Event',
+        time: DateTime.utc(2024, 6, 15),
+        calendarId: 'cal1',
+      );
+      final events = [event];
+      final eventsMap = {DateTime.utc(2024, 6, 15): events};
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             visibleEventsProvider.overrideWithValue(
-              VisibleEvents(map: {}, list: events),
+              VisibleEvents(map: eventsMap, list: events),
             ),
+            calendarNamesMapProvider.overrideWithValue({'cal1': 'Test Calendar'}),
           ],
           child: const MaterialApp(
             home: Scaffold(

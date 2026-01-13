@@ -44,6 +44,21 @@ abstract class AuthService {
   /// Request a password reset email for the given email address.
   /// Always succeeds from the client's perspective (to prevent email enumeration).
   Future<void> requestPasswordReset(String email);
+
+  /// The email address pending verification, or null if not in pending state.
+  String? get pendingVerificationEmail;
+
+  /// Verify email with the token from the verification link.
+  /// Returns the user ID on success. Stores API key internally.
+  /// Throws [AuthException] on failure.
+  Future<String> verifyEmail(String token);
+
+  /// Resend verification email for the given email address.
+  /// Always succeeds from the client's perspective (prevents email enumeration).
+  Future<void> resendVerificationEmail(String email);
+
+  /// Clear the pending verification state and return to unauthenticated.
+  void cancelPendingVerification();
 }
 
 /// Represents the current authentication state.
@@ -56,6 +71,9 @@ enum AuthState {
 
   /// A user is authenticated.
   authenticated,
+
+  /// User registered but email not yet verified.
+  pendingVerification,
 
   /// An error occurred during authentication.
   error,

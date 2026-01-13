@@ -6,6 +6,7 @@ import 'package:timeshare/data/services/auth_service.dart';
 import 'package:timeshare/providers/auth/auth_providers.dart';
 import 'package:timeshare/ui/shell/home_scaffold.dart';
 import 'package:timeshare/ui/features/auth/auth_screen.dart';
+import 'package:timeshare/ui/features/auth/email_verification_pending_screen.dart';
 
 /// Authentication gate - shows appropriate screen based on auth state.
 ///
@@ -58,6 +59,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
             );
           case AuthState.authenticated:
             return const HomeScaffold();
+          case AuthState.pendingVerification:
+            return const EmailVerificationPendingScreen();
           case AuthState.unauthenticated:
           case AuthState.error:
             return const AuthScreen();
@@ -66,7 +69,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       loading: () => const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       ),
-      error: (_, __) => const AuthScreen(),
+      error: (_, _) => const AuthScreen(),
     );
   }
 }

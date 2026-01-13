@@ -14,6 +14,7 @@ import 'package:timeshare/data/services/auth_service.dart';
 class RestApiUserRepository implements UserRepositoryInterface {
   final ApiClient _client;
   final AuthService _authService;
+  // ignore: unused_field
   final CalendarRepository _calendarRepo;
 
   RestApiUserRepository({
@@ -135,16 +136,7 @@ class RestApiUserRepository implements UserRepositoryInterface {
       throw Exception('You must be logged in to delete your account.');
     }
 
-    // Delete all owned calendars first (cascade deletion)
-    // The backend should handle this, but we do it client-side for consistency
-    final calendars = await _calendarRepo.getAllAvailableCalendars(uid: currentUid);
-    for (final calendar in calendars) {
-      if (calendar.owner == currentUid) {
-        await _calendarRepo.deleteCalendar(calendar.id);
-      }
-    }
-
-    // Delete user account via API
+    // Delete user account via API - backend handles cascade deletion of owned calendars
     await _client.delete('/api/v1/timeshare/users/$currentUid/');
 
     // Sign out locally

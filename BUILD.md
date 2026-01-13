@@ -94,28 +94,38 @@ xcrun altool --upload-app -f build/ios/ipa/*.ipa -t ios \
   -u "your@apple.id" -p "@keychain:AC_PASSWORD"
 ```
 
-## CI/CD
+## Web Deployment
 
-### GitHub Actions (Android)
+To build and deploy the web app to the squishygoose server:
 
-The workflow at `.github/workflows/main.yaml` runs:
-1. **Test job**: `flutter analyze` and `flutter test`
-2. **Android build**: Debug APK (release requires secrets)
+```bash
+./scripts/deploy-web.sh
+```
 
-#### Setting Up Signed Android Builds
+This script:
+1. Builds the web release (`flutter build web --release`)
+2. Copies files to `../squishygoose/static/timeshare/`
 
-1. Base64 encode your keystore:
-   ```bash
-   base64 -i ~/upload-keystore.jks | pbcopy
-   ```
+**Required directory structure:**
+```
+parent/
+  timeshare/       <- this repo
+  squishygoose/    <- deployment target (sibling directory)
+```
 
-2. Add these GitHub Secrets:
-   - `ANDROID_KEYSTORE_BASE64`: The base64 keystore
-   - `ANDROID_KEYSTORE_PASSWORD`: Keystore password
-   - `ANDROID_KEY_ALIAS`: Key alias (e.g., "upload")
-   - `ANDROID_KEY_PASSWORD`: Key password
+## CI (Continuous Integration)
 
-3. Uncomment the release build section in the workflow
+### GitHub Actions
+
+The workflow at `.github/workflows/main.yaml` runs CI checks only (no deployment):
+
+1. **Analyze**: `flutter analyze`
+2. **Test**: `flutter test`
+3. **Build**: `flutter build web --release`
+
+The web build artifact is uploaded for download. **Deployment is manual.**
+
+Android and iOS builds are done locally or via platform-specific CI (Xcode Cloud).
 
 ### Xcode Cloud (iOS)
 

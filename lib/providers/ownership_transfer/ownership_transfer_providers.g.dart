@@ -11,7 +11,7 @@ part of 'ownership_transfer_providers.dart';
 /// Ownership transfer repository provider - uses REST API
 
 @ProviderFor(ownershipTransferRepository)
-const ownershipTransferRepositoryProvider =
+final ownershipTransferRepositoryProvider =
     OwnershipTransferRepositoryProvider._();
 
 /// Ownership transfer repository provider - uses REST API
@@ -25,7 +25,7 @@ final class OwnershipTransferRepositoryProvider
         >
     with $Provider<OwnershipTransferRepository> {
   /// Ownership transfer repository provider - uses REST API
-  const OwnershipTransferRepositoryProvider._()
+  OwnershipTransferRepositoryProvider._()
     : super(
         from: null,
         argument: null,
@@ -65,7 +65,7 @@ String _$ownershipTransferRepositoryHash() =>
 /// Stream of incoming ownership transfer requests (polling-based).
 
 @ProviderFor(incomingOwnershipTransfers)
-const incomingOwnershipTransfersProvider =
+final incomingOwnershipTransfersProvider =
     IncomingOwnershipTransfersProvider._();
 
 /// Stream of incoming ownership transfer requests (polling-based).
@@ -81,7 +81,7 @@ final class IncomingOwnershipTransfersProvider
         $FutureModifier<List<OwnershipTransferRequest>>,
         $StreamProvider<List<OwnershipTransferRequest>> {
   /// Stream of incoming ownership transfer requests (polling-based).
-  const IncomingOwnershipTransfersProvider._()
+  IncomingOwnershipTransfersProvider._()
     : super(
         from: null,
         argument: null,
@@ -113,7 +113,7 @@ String _$incomingOwnershipTransfersHash() =>
 /// Future of sent ownership transfer requests.
 
 @ProviderFor(sentOwnershipTransfers)
-const sentOwnershipTransfersProvider = SentOwnershipTransfersProvider._();
+final sentOwnershipTransfersProvider = SentOwnershipTransfersProvider._();
 
 /// Future of sent ownership transfer requests.
 
@@ -128,7 +128,7 @@ final class SentOwnershipTransfersProvider
         $FutureModifier<List<OwnershipTransferRequest>>,
         $FutureProvider<List<OwnershipTransferRequest>> {
   /// Future of sent ownership transfer requests.
-  const SentOwnershipTransfersProvider._()
+  SentOwnershipTransfersProvider._()
     : super(
         from: null,
         argument: null,
@@ -160,7 +160,7 @@ String _$sentOwnershipTransfersHash() =>
 /// Count of pending incoming transfer requests (for badge display).
 
 @ProviderFor(pendingTransferCount)
-const pendingTransferCountProvider = PendingTransferCountProvider._();
+final pendingTransferCountProvider = PendingTransferCountProvider._();
 
 /// Count of pending incoming transfer requests (for badge display).
 
@@ -168,7 +168,7 @@ final class PendingTransferCountProvider
     extends $FunctionalProvider<int, int, int>
     with $Provider<int> {
   /// Count of pending incoming transfer requests (for badge display).
-  const PendingTransferCountProvider._()
+  PendingTransferCountProvider._()
     : super(
         from: null,
         argument: null,
@@ -207,13 +207,13 @@ String _$pendingTransferCountHash() =>
 /// Ownership transfer mutations notifier.
 
 @ProviderFor(OwnershipTransferNotifier)
-const ownershipTransferProvider = OwnershipTransferNotifierProvider._();
+final ownershipTransferProvider = OwnershipTransferNotifierProvider._();
 
 /// Ownership transfer mutations notifier.
 final class OwnershipTransferNotifierProvider
     extends $NotifierProvider<OwnershipTransferNotifier, void> {
   /// Ownership transfer mutations notifier.
-  const OwnershipTransferNotifierProvider._()
+  OwnershipTransferNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -250,7 +250,6 @@ abstract class _$OwnershipTransferNotifier extends $Notifier<void> {
   @$mustCallSuper
   @override
   void runBuild() {
-    build();
     final ref = this.ref as $Ref<void, void>;
     final element =
         ref.element
@@ -260,6 +259,6 @@ abstract class _$OwnershipTransferNotifier extends $Notifier<void> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, null);
+    element.handleCreate(ref, build);
   }
 }

@@ -26,9 +26,9 @@ A simple calendar sharing thing. Designed to be easier to edit than others.
 > **Important Security Notice:** Please read this section carefully before storing sensitive information in Timeshare.
 
 #### Password Security
-Your password is managed by Firebase Authentication (Google). It is:
-- Never stored in Timeshare's database
-- Handled entirely by Google's secure authentication infrastructure
+Your password is:
+- Securely hashed on the server using industry-standard algorithms
+- Never stored in plain text
 - Not visible to the app developer or maintainers
 
 #### Data Storage - Please Read Carefully
@@ -36,8 +36,8 @@ Your password is managed by Firebase Authentication (Google). It is:
 **Your calendar data is NOT end-to-end encrypted.** This means:
 
 - Data is encrypted during transmission (HTTPS)
-- Data is encrypted at rest by Google's infrastructure
-- However, data **can be read by** database administrators and anyone with Firestore access
+- Data is encrypted at rest by the server infrastructure
+- However, data **can be read by** database administrators
 
 **What data is stored:**
 - Your email address and display name
