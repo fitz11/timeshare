@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'timeshare-32d37.firebasestorage.app',
     iosClientId:
         '360570170039-fjlr1os90jd7rue6s96bhccgphv1ea2h.apps.googleusercontent.com',
-    iosBundleId: 'com.fitzsimmons.timeshare',
+    iosBundleId: 'dev.squishygoose.timeshare',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -77,7 +77,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'timeshare-32d37.firebasestorage.app',
     iosClientId:
         '360570170039-fjlr1os90jd7rue6s96bhccgphv1ea2h.apps.googleusercontent.com',
-    iosBundleId: 'com.fitzsimmons.timeshare',
+    iosBundleId: 'dev.squishygoose.timeshare',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
