@@ -1,4 +1,5 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:timeshare/services/logging/api_call_tracker.dart';
@@ -7,7 +8,7 @@ import 'package:timeshare/services/logging/api_call_tracker.dart';
 ///
 /// Provides structured logging with different behavior for debug and release:
 /// - Debug: Verbose console output for all levels
-/// - Release: Errors only, reported to Firebase Crashlytics
+/// - Release: Errors only, logged to console
 ///
 /// Also tracks API call rates to detect excessive calls.
 class AppLogger {
@@ -16,7 +17,6 @@ class AppLogger {
   AppLogger._internal();
 
   Logger? _logger;
-  FirebaseCrashlytics? _crashlytics;
   bool _initialized = false;
 
   /// API call trackers by operation name.
@@ -41,15 +41,6 @@ class AppLogger {
       ),
       level: kDebugMode ? Level.debug : Level.error,
     );
-
-    try {
-      _crashlytics = FirebaseCrashlytics.instance;
-      // Enable Crashlytics collection in release mode
-      await _crashlytics!.setCrashlyticsCollectionEnabled(!kDebugMode);
-    } catch (_) {
-      // Crashlytics not available (e.g., in tests)
-      _crashlytics = null;
-    }
 
     _initialized = true;
     debug('AppLogger initialized', tag: 'Logger');
@@ -89,10 +80,9 @@ class AppLogger {
     } else {
       debugPrint('[WARNING] $formatted');
     }
-    _crashlytics?.log('WARNING: $formatted');
   }
 
-  /// Log error message (always logged and reported to Crashlytics).
+  /// Log error message (always logged).
   void error(
     String message, {
     Object? error,
@@ -107,25 +97,11 @@ class AppLogger {
       debugPrint('[ERROR] $formatted');
       if (error != null) debugPrint('Error: $error');
     }
-
-    if (error != null) {
-      _crashlytics?.recordError(
-        error,
-        stackTrace,
-        reason: formatted,
-        fatal: fatal,
-      );
-    } else {
-      _crashlytics?.log('ERROR: $formatted');
-    }
-
-    // Add custom key for filtering in Crashlytics dashboard
-    _crashlytics?.setCustomKey('last_error_tag', tag ?? 'unknown');
   }
 
-  /// Execute and log a Firestore API call with timing.
+  /// Execute and log an API call with timing.
   ///
-  /// Tracks call rate and logs timing. Reports slow calls to Crashlytics.
+  /// Tracks call rate and logs timing.
   Future<T> logApiCall<T>(
     String operationName,
     Future<T> Function() operation,
@@ -144,7 +120,7 @@ class AppLogger {
         debug('$operationName completed in ${elapsed}ms', tag: 'API');
       }
 
-      // Log slow operations to Crashlytics
+      // Log slow operations
       if (elapsed > slowCallThresholdMs) {
         warning('Slow API call: $operationName took ${elapsed}ms', tag: 'API');
       }
@@ -185,16 +161,6 @@ class AppLogger {
         tag: 'RateLimit',
       );
     }
-  }
-
-  /// Set a custom key for Crashlytics filtering.
-  void setCustomKey(String key, String value) {
-    _crashlytics?.setCustomKey(key, value);
-  }
-
-  /// Set the current user identifier for crash reports.
-  void setUserId(String? userId) {
-    _crashlytics?.setUserIdentifier(userId ?? '');
   }
 
   /// Get current call count for an operation (useful for testing).

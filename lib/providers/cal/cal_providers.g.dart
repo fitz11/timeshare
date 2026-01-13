@@ -54,12 +54,12 @@ final class AppLoggerProvider
 
 String _$appLoggerHash() => r'df8d663b25029b9f0a06806ba7ff51cc86d2ed83';
 
-/// Repository provider with logging wrapper
+/// Repository provider with logging wrapper - uses REST API
 
 @ProviderFor(calendarRepository)
 const calendarRepositoryProvider = CalendarRepositoryProvider._();
 
-/// Repository provider with logging wrapper
+/// Repository provider with logging wrapper - uses REST API
 
 final class CalendarRepositoryProvider
     extends
@@ -69,7 +69,7 @@ final class CalendarRepositoryProvider
           CalendarRepository
         >
     with $Provider<CalendarRepository> {
-  /// Repository provider with logging wrapper
+  /// Repository provider with logging wrapper - uses REST API
   const CalendarRepositoryProvider._()
     : super(
         from: null,
@@ -105,7 +105,7 @@ final class CalendarRepositoryProvider
 }
 
 String _$calendarRepositoryHash() =>
-    r'241c2977d7b0f5eb5ecc6e11223b85f6e0eab0c8';
+    r'd46b3d0dbb983e97b83ebeb1949f15dea956f10e';
 
 /// Main calendar stream - automatically updates when Firestore changes
 /// Keep alive to prevent re-initialization when navigating away

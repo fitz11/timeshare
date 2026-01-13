@@ -1,4 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timeshare/data/converters/timestamp_converter.dart';
 
@@ -10,15 +11,26 @@ void main() {
       expect(result, dateTime);
     });
 
-    test('converts Timestamp to DateTime', () {
-      final timestamp = Timestamp.fromDate(DateTime(2024, 6, 15, 10, 30));
-      final result = fromTimestamp(timestamp);
+    test('parses ISO 8601 string to DateTime', () {
+      const isoString = '2024-06-15T10:30:00.000';
+      final result = fromTimestamp(isoString);
       expect(result.year, 2024);
       expect(result.month, 6);
       expect(result.day, 15);
+      expect(result.hour, 10);
+      expect(result.minute, 30);
     });
 
-    test('throws exception for invalid input', () {
+    test('parses UTC ISO 8601 string', () {
+      const isoString = '2024-06-15T10:30:00.000Z';
+      final result = fromTimestamp(isoString);
+      expect(result.year, 2024);
+      expect(result.month, 6);
+      expect(result.day, 15);
+      expect(result.isUtc, true);
+    });
+
+    test('throws exception for invalid string', () {
       expect(() => fromTimestamp('invalid'), throwsException);
     });
 

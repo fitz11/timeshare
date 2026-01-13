@@ -7,7 +7,7 @@ import '../../mocks/mock_providers.dart';
 void main() {
   group('CreateEventDialog', () {
     testWidgets('shows dialog with calendar name in title', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(
@@ -24,7 +24,7 @@ void main() {
     });
 
     testWidgets('has event name text field', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(
@@ -42,7 +42,7 @@ void main() {
     });
 
     testWidgets('has date picker field', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(
@@ -60,7 +60,7 @@ void main() {
     });
 
     testWidgets('has color chips for selection', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(
@@ -82,7 +82,7 @@ void main() {
     });
 
     testWidgets('has shape checkbox', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(
@@ -101,7 +101,7 @@ void main() {
 
     testWidgets('Add Event button is disabled when event name is empty',
         (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(
@@ -125,7 +125,7 @@ void main() {
 
     testWidgets('Add Event button is enabled when event name is entered',
         (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(
@@ -155,7 +155,7 @@ void main() {
     });
 
     testWidgets('Cancel button closes dialog', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: MaterialApp(
           home: Scaffold(
             body: Builder(
@@ -192,7 +192,7 @@ void main() {
     });
 
     testWidgets('Close button closes dialog', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: MaterialApp(
           home: Scaffold(
             body: Builder(
@@ -229,7 +229,7 @@ void main() {
     });
 
     testWidgets('color selection updates when chip is tapped', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(
@@ -266,7 +266,7 @@ void main() {
     });
 
     testWidgets('checkbox can be toggled', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
             body: CreateEventDialog(

@@ -1,18 +1,33 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:timeshare/data/repo/user_repo.dart';
+import 'package:timeshare/data/repo/rest_api_user_repo.dart';
 import 'package:timeshare/data/repo/logged_user_repo.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
+import 'package:timeshare/data/services/api_client.dart';
 import 'package:timeshare/providers/auth/auth_providers.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/config/config_providers.dart';
 
 part 'user_providers.g.dart';
 
+/// User repository provider - uses REST API
 @riverpod
 LoggedUserRepository userRepository(Ref ref) {
+  final config = ref.watch(appConfigProvider);
+  final authService = ref.watch(authServiceProvider);
   final calendarRepo = ref.watch(calendarRepositoryProvider);
   final logger = ref.watch(appLoggerProvider);
+
+  final apiClient = HttpApiClient(
+    baseUrl: config.apiBaseUrl,
+    getApiKey: () => authService.apiKey,
+  );
+
   return LoggedUserRepository(
-    UserRepository(calendarRepo: calendarRepo),
+    RestApiUserRepository(
+      client: apiClient,
+      authService: authService,
+      calendarRepo: calendarRepo,
+    ),
     logger,
   );
 }

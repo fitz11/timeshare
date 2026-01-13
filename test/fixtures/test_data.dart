@@ -5,6 +5,11 @@ import 'package:timeshare/data/models/user/app_user.dart';
 
 /// Test data fixtures for unit and widget tests.
 class TestData {
+  // Common test IDs
+  static const testUserId = 'test-user-123';
+  static const testCalendarId = 'test-user-123_Test Calendar';
+  static const testEventId = 'event-1';
+
   // Test users
   static final testUser = AppUser(
     uid: 'test-user-123',

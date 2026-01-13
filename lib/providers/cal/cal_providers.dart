@@ -6,8 +6,11 @@ import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/models/event/event_recurrence.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
 import 'package:timeshare/data/enums.dart';
-import 'package:timeshare/data/repo/firebase_repo.dart';
+import 'package:timeshare/data/repo/rest_api_repo.dart';
 import 'package:timeshare/data/repo/logged_calendar_repo.dart';
+import 'package:timeshare/data/services/api_client.dart';
+import 'package:timeshare/providers/auth/auth_providers.dart';
+import 'package:timeshare/providers/config/config_providers.dart';
 import 'package:timeshare/services/logging/app_logger.dart';
 
 part 'cal_providers.g.dart';
@@ -18,10 +21,20 @@ const _uuid = Uuid();
 @riverpod
 AppLogger appLogger(Ref ref) => AppLogger();
 
-/// Repository provider with logging wrapper
+/// Repository provider with logging wrapper - uses REST API
 @riverpod
-CalendarRepository calendarRepository(Ref ref) =>
-    LoggedCalendarRepository(FirebaseRepository(), ref.watch(appLoggerProvider));
+CalendarRepository calendarRepository(Ref ref) {
+  final config = ref.watch(appConfigProvider);
+  final authService = ref.watch(authServiceProvider);
+  final apiClient = HttpApiClient(
+    baseUrl: config.apiBaseUrl,
+    getApiKey: () => authService.apiKey,
+  );
+  return LoggedCalendarRepository(
+    RestApiRepository(client: apiClient),
+    ref.watch(appLoggerProvider),
+  );
+}
 
 /// Main calendar stream - automatically updates when Firestore changes
 /// Keep alive to prevent re-initialization when navigating away

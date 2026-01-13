@@ -7,7 +7,7 @@ import '../mocks/mock_providers.dart';
 void main() {
   group('userRepositoryProvider', () {
     test('provides a UserRepository instance', () async {
-      final container = await createTestContainer();
+      final container = createTestContainer();
       addTearDown(container.dispose);
 
       final repo = container.read(userRepositoryProvider);
@@ -18,7 +18,7 @@ void main() {
 
   group('UserFriendsNotifier', () {
     test('loads friends on build', () async {
-      final container = await createTestContainer();
+      final container = createTestContainer();
       addTearDown(container.dispose);
 
       final friends = await container.read(userFriendsProvider.future);
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('returns empty when signed out', () async {
-      final container = await createTestContainer(signedIn: false);
+      final container = createTestContainer(signedIn: false);
       addTearDown(container.dispose);
 
       final friends = await container.read(userFriendsProvider.future);
@@ -38,7 +38,7 @@ void main() {
 
   group('userSearchProvider', () {
     test('returns matches for valid query', () async {
-      final container = await createTestContainer();
+      final container = createTestContainer();
       addTearDown(container.dispose);
 
       final results = await container.read(
@@ -49,7 +49,7 @@ void main() {
     });
 
     test('returns empty for short query', () async {
-      final container = await createTestContainer();
+      final container = createTestContainer();
       addTearDown(container.dispose);
 
       final results = await container.read(
@@ -60,7 +60,7 @@ void main() {
     });
 
     test('returns empty for empty query', () async {
-      final container = await createTestContainer();
+      final container = createTestContainer();
       addTearDown(container.dispose);
 
       final results = await container.read(
@@ -73,7 +73,7 @@ void main() {
 
   group('CurrentUserNotifier', () {
     test('loads current user on build', () async {
-      final container = await createTestContainer();
+      final container = createTestContainer();
       addTearDown(container.dispose);
 
       final user = await container.read(currentUserProvider.future);
@@ -83,7 +83,7 @@ void main() {
     });
 
     test('returns null when signed out', () async {
-      final container = await createTestContainer(signedIn: false);
+      final container = createTestContainer(signedIn: false);
       addTearDown(container.dispose);
 
       final user = await container.read(currentUserProvider.future);

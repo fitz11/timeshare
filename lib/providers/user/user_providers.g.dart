@@ -8,9 +8,12 @@ part of 'user_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// User repository provider - uses REST API
 
 @ProviderFor(userRepository)
 const userRepositoryProvider = UserRepositoryProvider._();
+
+/// User repository provider - uses REST API
 
 final class UserRepositoryProvider
     extends
@@ -20,6 +23,7 @@ final class UserRepositoryProvider
           LoggedUserRepository
         >
     with $Provider<LoggedUserRepository> {
+  /// User repository provider - uses REST API
   const UserRepositoryProvider._()
     : super(
         from: null,
@@ -54,7 +58,7 @@ final class UserRepositoryProvider
   }
 }
 
-String _$userRepositoryHash() => r'685b7bf3c4ba3b7c1118c75374c3cbb81fbfc785';
+String _$userRepositoryHash() => r'2915b0543a9f7dd6919286580326060313ebaeb2';
 
 @ProviderFor(UserFriendsNotifier)
 const userFriendsProvider = UserFriendsNotifierProvider._();

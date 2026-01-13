@@ -7,7 +7,7 @@ import '../../mocks/mock_providers.dart';
 void main() {
   group('FriendsPage', () {
     testWidgets('shows loading indicator initially', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),
@@ -19,7 +19,7 @@ void main() {
     });
 
     testWidgets('shows empty state when no friends', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),
@@ -37,7 +37,7 @@ void main() {
     });
 
     testWidgets('shows friend cards when friends exist', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),
@@ -51,7 +51,7 @@ void main() {
     });
 
     testWidgets('shows share button for each friend', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),
@@ -64,7 +64,7 @@ void main() {
     });
 
     testWidgets('shows menu button for each friend', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),
@@ -77,7 +77,7 @@ void main() {
     });
 
     testWidgets('menu contains remove friend option', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),
@@ -94,7 +94,7 @@ void main() {
     });
 
     testWidgets('shows people icon in empty state', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),
@@ -108,7 +108,7 @@ void main() {
     });
 
     testWidgets('friend card shows avatar with initials', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),
@@ -121,7 +121,7 @@ void main() {
     });
 
     testWidgets('can pull to refresh', (tester) async {
-      final scope = await createTestProviderScope(
+      final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(body: FriendsPage()),
         ),

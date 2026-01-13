@@ -1,124 +1,100 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:timeshare/data/services/api_client.dart';
+import 'package:timeshare/data/services/rest_api_auth_service.dart';
 import 'package:timeshare/utils/error_utils.dart';
 
 void main() {
-  group('formatError - FirebaseAuthException', () {
-    test('formats user-not-found error', () {
-      final error = FirebaseAuthException(code: 'user-not-found');
+  group('formatError - AuthException', () {
+    test('formats auth exception with message', () {
+      final error = AuthException(statusCode: 401, message: 'Invalid credentials');
       final message = formatError(error);
-      expect(message, 'No account found with this email.');
+      expect(message, 'Invalid credentials');
     });
 
-    test('formats wrong-password error', () {
-      final error = FirebaseAuthException(code: 'wrong-password');
+    test('formats auth exception with different message', () {
+      final error = AuthException(statusCode: 403, message: 'Account has been disabled');
       final message = formatError(error);
-      expect(message, 'Incorrect password.');
-    });
-
-    test('formats email-already-in-use error', () {
-      final error = FirebaseAuthException(code: 'email-already-in-use');
-      final message = formatError(error);
-      expect(message, 'An account already exists with this email.');
-    });
-
-    test('formats weak-password error', () {
-      final error = FirebaseAuthException(code: 'weak-password');
-      final message = formatError(error);
-      expect(message, 'Please choose a stronger password.');
-    });
-
-    test('formats invalid-email error', () {
-      final error = FirebaseAuthException(code: 'invalid-email');
-      final message = formatError(error);
-      expect(message, 'Please enter a valid email address.');
-    });
-
-    test('formats user-disabled error', () {
-      final error = FirebaseAuthException(code: 'user-disabled');
-      final message = formatError(error);
-      expect(message, 'This account has been disabled.');
-    });
-
-    test('formats too-many-requests error', () {
-      final error = FirebaseAuthException(code: 'too-many-requests');
-      final message = formatError(error);
-      expect(message, 'Too many attempts. Please try again later.');
-    });
-
-    test('formats network-request-failed error', () {
-      final error = FirebaseAuthException(code: 'network-request-failed');
-      final message = formatError(error);
-      expect(message, 'Network error. Please check your connection.');
-    });
-
-    test('formats unknown auth error with generic message', () {
-      final error = FirebaseAuthException(code: 'unknown-error-code');
-      final message = formatError(error);
-      expect(message, 'Authentication error. Please try again.');
+      expect(message, 'Account has been disabled');
     });
   });
 
-  group('formatError - FirebaseException', () {
-    test('formats permission-denied error', () {
-      final error = FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'permission-denied',
-      );
+  group('formatError - ApiException', () {
+    test('formats 400 error with message', () {
+      final error = ApiException(statusCode: 400, message: 'Invalid email format');
+      final message = formatError(error);
+      expect(message, 'Invalid email format');
+    });
+
+    test('formats 400 error without message', () {
+      final error = ApiException(statusCode: 400, message: '');
+      final message = formatError(error);
+      expect(message, 'Invalid request. Please check your input.');
+    });
+
+    test('formats 401 error', () {
+      final error = ApiException(statusCode: 401, message: 'Unauthorized');
+      final message = formatError(error);
+      expect(message, 'Your session has expired. Please sign in again.');
+    });
+
+    test('formats 403 error', () {
+      final error = ApiException(statusCode: 403, message: 'Forbidden');
       final message = formatError(error);
       expect(message, 'You do not have permission to perform this action.');
     });
 
-    test('formats not-found error', () {
-      final error = FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'not-found',
-      );
+    test('formats 404 error', () {
+      final error = ApiException(statusCode: 404, message: 'Not found');
       final message = formatError(error);
       expect(message, 'The requested item was not found.');
     });
 
-    test('formats unavailable error', () {
-      final error = FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'unavailable',
-      );
+    test('formats 409 error with message', () {
+      final error = ApiException(statusCode: 409, message: 'Email already exists');
       final message = formatError(error);
-      expect(message, 'Service temporarily unavailable. Please try again.');
+      expect(message, 'Email already exists');
     });
 
-    test('formats cancelled error', () {
-      final error = FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'cancelled',
-      );
+    test('formats 409 error without message', () {
+      final error = ApiException(statusCode: 409, message: '');
       final message = formatError(error);
-      expect(message, 'The operation was cancelled.');
+      expect(message, 'A conflict occurred. Please try again.');
     });
 
-    test('formats deadline-exceeded error', () {
-      final error = FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'deadline-exceeded',
-      );
-      final message = formatError(error);
-      expect(message, 'The operation timed out. Please try again.');
-    });
-
-    test('formats resource-exhausted error', () {
-      final error = FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'resource-exhausted',
-      );
+    test('formats 429 error', () {
+      final error = ApiException(statusCode: 429, message: 'Rate limited');
       final message = formatError(error);
       expect(message, 'Too many requests. Please try again later.');
     });
 
-    test('formats unknown firebase error with generic message', () {
-      final error = FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'unknown-code',
-      );
+    test('formats 500 error', () {
+      final error = ApiException(statusCode: 500, message: 'Internal server error');
+      final message = formatError(error);
+      expect(message, 'Server error. Please try again later.');
+    });
+
+    test('formats 502 error', () {
+      final error = ApiException(statusCode: 502, message: 'Bad gateway');
+      final message = formatError(error);
+      expect(message, 'Server error. Please try again later.');
+    });
+
+    test('formats 503 error', () {
+      final error = ApiException(statusCode: 503, message: 'Service unavailable');
+      final message = formatError(error);
+      expect(message, 'Server error. Please try again later.');
+    });
+
+    test('formats unknown status code with message', () {
+      final error = ApiException(statusCode: 418, message: "I'm a teapot");
+      final message = formatError(error);
+      expect(message, "I'm a teapot");
+    });
+
+    test('formats unknown status code without message', () {
+      final error = ApiException(statusCode: 418, message: '');
       final message = formatError(error);
       expect(message, 'An error occurred. Please try again.');
     });

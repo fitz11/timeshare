@@ -1,20 +1,20 @@
 import 'package:timeshare/data/models/user/app_user.dart';
-import 'package:timeshare/data/repo/user_repo.dart';
+import 'package:timeshare/data/repo/user_repo_interface.dart';
 import 'package:timeshare/services/logging/app_logger.dart';
 
-/// Decorator that wraps a UserRepository to add logging.
+/// Decorator that wraps a UserRepositoryInterface to add logging.
 ///
-/// All Firestore operations are logged with timing metrics.
-class LoggedUserRepository {
-  final UserRepository _delegate;
+/// All API operations are logged with timing metrics.
+class LoggedUserRepository implements UserRepositoryInterface {
+  final UserRepositoryInterface _delegate;
   final AppLogger _logger;
 
   LoggedUserRepository(this._delegate, this._logger);
 
-  /// Passthrough to delegate - no Firestore operation.
+  @override
   String? get currentUserId => _delegate.currentUserId;
 
-  /// Get current user with logging.
+  @override
   Future<AppUser?> get currentUser {
     return _logger.logApiCall(
       'getCurrentUser',
@@ -22,6 +22,7 @@ class LoggedUserRepository {
     );
   }
 
+  @override
   Future<void> signInOrRegister() {
     return _logger.logApiCall(
       'signInOrRegister',
@@ -29,6 +30,7 @@ class LoggedUserRepository {
     );
   }
 
+  @override
   Future<AppUser?> getUserById([String uid = '']) {
     return _logger.logApiCall(
       'getUserById',
@@ -36,6 +38,7 @@ class LoggedUserRepository {
     );
   }
 
+  @override
   Future<List<AppUser>> searchUsersByEmail(String email) {
     return _logger.logApiCall(
       'searchUsersByEmail',
@@ -43,6 +46,7 @@ class LoggedUserRepository {
     );
   }
 
+  @override
   Future<List<AppUser>> getFriendsOfUser([String uid = '']) {
     return _logger.logApiCall(
       'getFriendsOfUser',
@@ -50,6 +54,7 @@ class LoggedUserRepository {
     );
   }
 
+  @override
   Future<void> addFriend(String targetUid) {
     return _logger.logApiCall(
       'addFriend',
@@ -57,6 +62,7 @@ class LoggedUserRepository {
     );
   }
 
+  @override
   Future<void> removeFriend(String targetUid) {
     return _logger.logApiCall(
       'removeFriend',
@@ -64,6 +70,7 @@ class LoggedUserRepository {
     );
   }
 
+  @override
   Future<void> updateDisplayName(String newDisplayName) {
     return _logger.logApiCall(
       'updateDisplayName',
@@ -71,6 +78,7 @@ class LoggedUserRepository {
     );
   }
 
+  @override
   Future<void> deleteUserAccount() {
     return _logger.logApiCall(
       'deleteUserAccount',

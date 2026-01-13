@@ -8,54 +8,70 @@ part of 'auth_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Auth service provider - creates RestApiAuthService with secure storage.
+/// This is the main authentication service for the app.
 
-@ProviderFor(auth)
-const authProvider = AuthProvider._();
+@ProviderFor(authService)
+const authServiceProvider = AuthServiceProvider._();
 
-final class AuthProvider
-    extends $FunctionalProvider<FirebaseAuth, FirebaseAuth, FirebaseAuth>
-    with $Provider<FirebaseAuth> {
-  const AuthProvider._()
+/// Auth service provider - creates RestApiAuthService with secure storage.
+/// This is the main authentication service for the app.
+
+final class AuthServiceProvider
+    extends $FunctionalProvider<AuthService, AuthService, AuthService>
+    with $Provider<AuthService> {
+  /// Auth service provider - creates RestApiAuthService with secure storage.
+  /// This is the main authentication service for the app.
+  const AuthServiceProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'authProvider',
+        name: r'authServiceProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$authHash();
+  String debugGetCreateSourceHash() => _$authServiceHash();
 
   @$internal
   @override
-  $ProviderElement<FirebaseAuth> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<AuthService> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  FirebaseAuth create(Ref ref) {
-    return auth(ref);
+  AuthService create(Ref ref) {
+    return authService(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(FirebaseAuth value) {
+  Override overrideWithValue(AuthService value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<FirebaseAuth>(value),
+      providerOverride: $SyncValueProvider<AuthService>(value),
     );
   }
 }
 
-String _$authHash() => r'32f5302faf182139a28024fdbc77728e9b3c1598';
+String _$authServiceHash() => r'427fc5706db9dc1b3093bc065dbf7ed5d1d76c4d';
+
+/// Stream of authentication state changes.
+/// Use this to react to login/logout events.
 
 @ProviderFor(authState)
 const authStateProvider = AuthStateProvider._();
 
+/// Stream of authentication state changes.
+/// Use this to react to login/logout events.
+
 final class AuthStateProvider
-    extends $FunctionalProvider<AsyncValue<User?>, User?, Stream<User?>>
-    with $FutureModifier<User?>, $StreamProvider<User?> {
+    extends
+        $FunctionalProvider<AsyncValue<AuthState>, AuthState, Stream<AuthState>>
+    with $FutureModifier<AuthState>, $StreamProvider<AuthState> {
+  /// Stream of authentication state changes.
+  /// Use this to react to login/logout events.
   const AuthStateProvider._()
     : super(
         from: null,
@@ -72,16 +88,16 @@ final class AuthStateProvider
 
   @$internal
   @override
-  $StreamProviderElement<User?> $createElement($ProviderPointer pointer) =>
+  $StreamProviderElement<AuthState> $createElement($ProviderPointer pointer) =>
       $StreamProviderElement(pointer);
 
   @override
-  Stream<User?> create(Ref ref) {
+  Stream<AuthState> create(Ref ref) {
     return authState(ref);
   }
 }
 
-String _$authStateHash() => r'244a01ab2094a9eac9fce21af7960e59e9762d44';
+String _$authStateHash() => r'bd5da458de66f08e9ed18bc1b68ace9d936fd6f4';
 
 /// Current user ID - synchronous access to the current user's UID.
 /// Returns null if not logged in.
@@ -130,14 +146,16 @@ final class CurrentUserIdProvider
   }
 }
 
-String _$currentUserIdHash() => r'2a29cd94d4e3feccc236d00c6e8eea10b5308fd4';
+String _$currentUserIdHash() => r'56589a806d33eea9e557b8340b0bdfe0cbe84984';
 
 /// Sign out the current user.
+/// Revokes the API key server-side and clears stored credentials.
 
 @ProviderFor(signOut)
 const signOutProvider = SignOutProvider._();
 
 /// Sign out the current user.
+/// Revokes the API key server-side and clears stored credentials.
 
 final class SignOutProvider
     extends
@@ -148,6 +166,7 @@ final class SignOutProvider
         >
     with $Provider<Future<void> Function()> {
   /// Sign out the current user.
+  /// Revokes the API key server-side and clears stored credentials.
   const SignOutProvider._()
     : super(
         from: null,
@@ -182,4 +201,4 @@ final class SignOutProvider
   }
 }
 
-String _$signOutHash() => r'147103bb8a246d05bc04d73a3c6c43902dbebea9';
+String _$signOutHash() => r'acde860d503d02fd8f3ab3692b07873e63fa0fef';

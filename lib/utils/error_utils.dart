@@ -1,14 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import 'package:flutter/foundation.dart';
+import 'package:timeshare/data/services/api_client.dart';
+import 'package:timeshare/data/services/rest_api_auth_service.dart';
 
 /// Converts exceptions to user-friendly error messages.
 /// Hides internal implementation details from users.
 String formatError(Object error) {
-  if (error is FirebaseAuthException) {
-    return _formatAuthError(error);
+  if (error is AuthException) {
+    return error.message;
   }
-  if (error is FirebaseException) {
-    return _formatFirebaseError(error);
+  if (error is ApiException) {
+    return _formatApiError(error);
   }
   if (error is Exception) {
     // Extract message from Exception('message')
@@ -25,46 +28,30 @@ String formatError(Object error) {
   return 'An unexpected error occurred. Please try again.';
 }
 
-String _formatAuthError(FirebaseAuthException error) {
-  switch (error.code) {
-    case 'user-not-found':
-      return 'No account found with this email.';
-    case 'wrong-password':
-      return 'Incorrect password.';
-    case 'email-already-in-use':
-      return 'An account already exists with this email.';
-    case 'weak-password':
-      return 'Please choose a stronger password.';
-    case 'invalid-email':
-      return 'Please enter a valid email address.';
-    case 'user-disabled':
-      return 'This account has been disabled.';
-    case 'too-many-requests':
-      return 'Too many attempts. Please try again later.';
-    case 'network-request-failed':
-      return 'Network error. Please check your connection.';
-    default:
-      debugPrint('Unhandled auth error code: ${error.code}');
-      return 'Authentication error. Please try again.';
-  }
-}
-
-String _formatFirebaseError(FirebaseException error) {
-  switch (error.code) {
-    case 'permission-denied':
+String _formatApiError(ApiException error) {
+  switch (error.statusCode) {
+    case 400:
+      return error.message.isNotEmpty
+          ? error.message
+          : 'Invalid request. Please check your input.';
+    case 401:
+      return 'Your session has expired. Please sign in again.';
+    case 403:
       return 'You do not have permission to perform this action.';
-    case 'not-found':
+    case 404:
       return 'The requested item was not found.';
-    case 'unavailable':
-      return 'Service temporarily unavailable. Please try again.';
-    case 'cancelled':
-      return 'The operation was cancelled.';
-    case 'deadline-exceeded':
-      return 'The operation timed out. Please try again.';
-    case 'resource-exhausted':
+    case 409:
+      return error.message.isNotEmpty
+          ? error.message
+          : 'A conflict occurred. Please try again.';
+    case 429:
       return 'Too many requests. Please try again later.';
+    case >= 500:
+      return 'Server error. Please try again later.';
     default:
-      debugPrint('Unhandled Firebase error code: ${error.code}');
-      return 'An error occurred. Please try again.';
+      debugPrint('Unhandled API error code: ${error.statusCode}');
+      return error.message.isNotEmpty
+          ? error.message
+          : 'An error occurred. Please try again.';
   }
 }

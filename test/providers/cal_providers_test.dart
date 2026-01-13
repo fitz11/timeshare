@@ -10,7 +10,7 @@ import '../mocks/mock_providers.dart';
 void main() {
   group('calendarRepositoryProvider', () {
     test('provides a CalendarRepository instance', () async {
-      final container = await createTestContainer();
+      final container = createTestContainer();
       addTearDown(container.dispose);
 
       final repo = container.read(calendarRepositoryProvider);
@@ -21,7 +21,7 @@ void main() {
 
   group('calendarsProvider', () {
     test('streams calendars from repository', () async {
-      final container = await createTestContainer();
+      final container = createTestContainer();
       addTearDown(container.dispose);
 
       final calendarsAsync = container.read(calendarsProvider);
