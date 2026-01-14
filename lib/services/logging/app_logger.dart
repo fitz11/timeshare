@@ -39,7 +39,8 @@ class AppLogger {
         printEmojis: true,
         dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
       ),
-      level: kDebugMode ? Level.debug : Level.warning,
+      // TEMP: Production level lowered to debug for console visibility
+      level: Level.debug,
     );
 
     _initialized = true;
@@ -54,32 +55,23 @@ class AppLogger {
   void debug(String message, {String? tag}) {
     if (!kDebugMode) return;
     final formatted = _formatMessage(message, tag);
-    if (_logger != null) {
-      _logger!.d(formatted);
-    } else {
-      debugPrint('[DEBUG] $formatted');
-    }
+    // TEMP: Using print for developer console visibility
+    print('[DEBUG] $formatted');
   }
 
   /// Log info message (debug mode only).
   void info(String message, {String? tag}) {
     if (!kDebugMode) return;
     final formatted = _formatMessage(message, tag);
-    if (_logger != null) {
-      _logger!.i(formatted);
-    } else {
-      debugPrint('[INFO] $formatted');
-    }
+    // TEMP: Using print for developer console visibility
+    print('[INFO] $formatted');
   }
 
   /// Log warning message (always logged).
   void warning(String message, {String? tag}) {
     final formatted = _formatMessage(message, tag);
-    if (_logger != null) {
-      _logger!.w(formatted);
-    } else {
-      debugPrint('[WARNING] $formatted');
-    }
+    // TEMP: Using print for developer console visibility
+    print('[WARNING] $formatted');
   }
 
   /// Log error message (always logged).
@@ -91,12 +83,10 @@ class AppLogger {
     bool fatal = false,
   }) {
     final formatted = _formatMessage(message, tag);
-    if (_logger != null) {
-      _logger!.e(formatted, error: error, stackTrace: stackTrace);
-    } else {
-      debugPrint('[ERROR] $formatted');
-      if (error != null) debugPrint('Error: $error');
-    }
+    // TEMP: Using print for developer console visibility
+    print('[ERROR] $formatted');
+    if (error != null) print('Error: $error');
+    if (stackTrace != null) print('StackTrace: $stackTrace');
   }
 
   /// Execute and log an API call with timing.
