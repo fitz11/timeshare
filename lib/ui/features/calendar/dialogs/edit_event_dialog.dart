@@ -11,31 +11,29 @@ import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/services/logging/app_logger.dart';
 
 final _logger = AppLogger();
-const _tag = 'CreateEventDialog';
+const _tag = 'EditEventDialog';
 
 /// Date representing "indefinite" recurrence (Jan 1, 2099)
 final _indefiniteDate = DateTime(2099, 1, 1);
 
-/// Dialog for creating a new event
-class CreateEventDialog extends ConsumerStatefulWidget {
-  final String calendarId;
-  final String calendarName;
+/// Dialog for editing an existing event
+class EditEventDialog extends ConsumerStatefulWidget {
+  final Event event;
 
-  const CreateEventDialog({
+  const EditEventDialog({
     super.key,
-    required this.calendarId,
-    required this.calendarName,
+    required this.event,
   });
 
   @override
-  ConsumerState<CreateEventDialog> createState() => _CreateEventDialogState();
+  ConsumerState<EditEventDialog> createState() => _EditEventDialogState();
 }
 
-class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
+class _EditEventDialogState extends ConsumerState<EditEventDialog> {
   bool _canSubmit = false;
-  BoxShape _selectedShape = BoxShape.circle;
-  Color _selectedColor = Colors.black;
-  EventRecurrence _selectedRecurrence = EventRecurrence.none;
+  late BoxShape _selectedShape;
+  late Color _selectedColor;
+  late EventRecurrence _selectedRecurrence;
   DateTime? _recurrenceEndDate;
   bool _repeatIndefinitely = false;
 
@@ -48,17 +46,33 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
   @override
   void initState() {
     super.initState();
-    _eventNameController = TextEditingController();
-    _selectedDate = normalizeDate(DateTime.now());
-    _selectedTime = TimeOfDay.now();
+    // Initialize from existing event
+    _eventNameController = TextEditingController(text: widget.event.name);
+    _selectedDate = normalizeDate(widget.event.time);
+    _selectedTime = TimeOfDay.fromDateTime(widget.event.time);
+    _selectedShape = widget.event.shape;
+    _selectedColor = widget.event.color;
+    _selectedRecurrence = widget.event.recurrence;
+    _recurrenceEndDate = widget.event.recurrenceEndDate;
+
+    // Check if it's set to indefinite
+    if (_recurrenceEndDate != null &&
+        _recurrenceEndDate!.year == 2099 &&
+        _recurrenceEndDate!.month == 1 &&
+        _recurrenceEndDate!.day == 1) {
+      _repeatIndefinitely = true;
+    }
+
     _dateController = TextEditingController(
       text: DateFormat.yMMMd().format(_selectedDate!),
     );
     _timeController = TextEditingController();
+
     // Initialize time controller after context is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _timeController.text = _selectedTime!.format(context);
+        _updateCanSubmit();
       }
     });
   }
@@ -104,8 +118,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
       }
     }
 
-    Event newEvent = Event(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+    Event updatedEvent = widget.event.copyWith(
       name: selectedName,
       time: eventDateTime,
       color: _selectedColor,
@@ -114,18 +127,57 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
       recurrenceEndDate: endDate,
     );
 
-    _logger.info('Creating event: ${newEvent.name}', tag: _tag);
+    _logger.info('Updating event: ${updatedEvent.name}', tag: _tag);
 
     // Close dialog immediately (optimistic)
     Navigator.pop(context);
 
     // Fire mutation in background
+    if (widget.event.calendarId != null) {
+      _updateEventAsync(updatedEvent);
+    }
+  }
+
+  Future<void> _updateEventAsync(Event updatedEvent) async {
+    try {
+      await ref
+          .read(calendarMutationsProvider.notifier)
+          .updateEventOptimistic(
+            calendarId: widget.event.calendarId!,
+            event: updatedEvent,
+          );
+    } catch (error) {
+      if (mounted) {
+        _logger.error('Failed to update event', error: error, tag: _tag);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update event: $error'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+
+  void _onDelete() {
+    if (widget.event.calendarId == null) return;
+
+    _logger.info('Deleting event: ${widget.event.name}', tag: _tag);
+
+    // Close dialog immediately (optimistic)
+    Navigator.pop(context);
+
+    // Fire delete in background
     ref
         .read(calendarMutationsProvider.notifier)
-        .addEventOptimistic(calendarId: widget.calendarId, event: newEvent)
+        .deleteEventOptimistic(
+          calendarId: widget.event.calendarId!,
+          eventId: widget.event.id,
+        )
         .then((result) {
       if (result.isFailure && mounted) {
-        _logger.error('Failed to create event', error: result.error, tag: _tag);
+        _logger.error('Failed to delete event', error: result.error, tag: _tag);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result.error!),
@@ -141,7 +193,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
@@ -169,13 +221,16 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
   Future<void> _pickRecurrenceEndDate(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _recurrenceEndDate ?? _selectedDate?.add(const Duration(days: 30)) ?? DateTime.now().add(const Duration(days: 30)),
+      initialDate: _recurrenceEndDate ??
+          _selectedDate?.add(const Duration(days: 30)) ??
+          DateTime.now().add(const Duration(days: 30)),
       firstDate: _selectedDate ?? DateTime.now(),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {
         _recurrenceEndDate = normalizeDate(picked);
+        _repeatIndefinitely = false;
       });
     }
   }
@@ -204,6 +259,10 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final calendarName = ref.watch(
+      calendarNameProvider(widget.event.calendarId ?? ''),
+    );
+
     return Dialog(
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -220,7 +279,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Add Event to ${widget.calendarName}',
+                      'Edit Event',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
@@ -241,6 +300,15 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Calendar name (read-only info)
+                    Text(
+                      'Calendar: $calendarName',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                    ),
+                    const SizedBox(height: 16),
+
                     // Event name field
                     TextField(
                       decoration: const InputDecoration(
@@ -409,40 +477,39 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 12,
-                      children:
-                          [
-                            Colors.black,
-                            Colors.red,
-                            Colors.blue,
-                            Colors.green,
-                          ].map((color) {
-                            final isSelected = _selectedColor == color;
-                            return ChoiceChip(
-                              label: Text(_colorToName(color)),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                if (selected) {
-                                  setState(() {
-                                    _selectedColor = color;
-                                  });
-                                }
-                              },
-                              avatar: Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  color: color,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Colors.grey,
-                                    width: isSelected ? 2 : 1,
-                                  ),
-                                ),
+                      children: [
+                        Colors.black,
+                        Colors.red,
+                        Colors.blue,
+                        Colors.green,
+                      ].map((color) {
+                        final isSelected = _selectedColor == color;
+                        return ChoiceChip(
+                          label: Text(_colorToName(color)),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            if (selected) {
+                              setState(() {
+                                _selectedColor = color;
+                              });
+                            }
+                          },
+                          avatar: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey,
+                                width: isSelected ? 2 : 1,
                               ),
-                            );
-                          }).toList(),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),
@@ -454,8 +521,17 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // Delete button on the left
+                  TextButton.icon(
+                    onPressed: _onDelete,
+                    icon: const Icon(Icons.delete_outline),
+                    label: const Text('Delete'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                  const Spacer(),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: const Text('Cancel'),
@@ -466,9 +542,9 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.add, size: 20),
+                        Icon(Icons.save, size: 20),
                         SizedBox(width: 4),
-                        Text('Add Event'),
+                        Text('Save'),
                       ],
                     ),
                   ),

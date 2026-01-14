@@ -218,13 +218,17 @@ class CalendarAdminPage extends ConsumerWidget {
                           content: Text(
                             'Transfer request sent to ${friend.displayName}',
                           ),
+                          duration: const Duration(seconds: 5),
                         ),
                       );
                     }
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to send request: $e')),
+                        SnackBar(
+                          content: Text('Failed to send request: $e'),
+                          duration: const Duration(seconds: 5),
+                        ),
                       );
                     }
                   }
@@ -338,6 +342,7 @@ class _SharedUserTile extends ConsumerWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Access revoked for ${displayName ?? "user"}'),
+                    duration: const Duration(seconds: 5),
                   ),
                 );
               }

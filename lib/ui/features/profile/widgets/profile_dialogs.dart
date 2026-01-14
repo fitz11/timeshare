@@ -40,7 +40,10 @@ void showEditDisplayNameDialog(
             final newName = controller.text.trim();
             if (newName.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Display name cannot be empty')),
+                const SnackBar(
+                  content: Text('Display name cannot be empty'),
+                  duration: Duration(seconds: 5),
+                ),
               );
               return;
             }
@@ -49,6 +52,7 @@ void showEditDisplayNameDialog(
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Display name must be 50 characters or less'),
+                  duration: Duration(seconds: 5),
                 ),
               );
               return;
@@ -62,6 +66,7 @@ void showEditDisplayNameDialog(
                   content: Text(
                     'Display name can only contain letters, spaces, hyphens, and apostrophes',
                   ),
+                  duration: Duration(seconds: 5),
                 ),
               );
               return;
@@ -80,7 +85,10 @@ void showEditDisplayNameDialog(
               if (context.mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Display name updated')),
+                  const SnackBar(
+                    content: Text('Display name updated'),
+                    duration: Duration(seconds: 5),
+                  ),
                 );
               }
             } catch (e) {
@@ -88,6 +96,7 @@ void showEditDisplayNameDialog(
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Failed to update: ${formatError(e)}'),
+                    duration: const Duration(seconds: 5),
                   ),
                 );
               }
@@ -123,6 +132,7 @@ void showLogoutDialog(BuildContext context, WidgetRef ref) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Failed to sign out: ${formatError(e)}'),
+                    duration: const Duration(seconds: 5),
                   ),
                 );
               }
@@ -316,13 +326,19 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password changed successfully')),
+          const SnackBar(
+            content: Text('Password changed successfully'),
+            duration: Duration(seconds: 5),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to change password: ${formatError(e)}')),
+          SnackBar(
+            content: Text('Failed to change password: ${formatError(e)}'),
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     } finally {
@@ -556,7 +572,10 @@ class _ChangeEmailDialogState extends State<_ChangeEmailDialog> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email changed successfully')),
+          const SnackBar(
+            content: Text('Email changed successfully'),
+            duration: Duration(seconds: 5),
+          ),
         );
         // Refresh user data
         widget.ref.invalidate(currentUserProvider);
@@ -564,7 +583,10 @@ class _ChangeEmailDialogState extends State<_ChangeEmailDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to change email: ${formatError(e)}')),
+          SnackBar(
+            content: Text('Failed to change email: ${formatError(e)}'),
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     } finally {

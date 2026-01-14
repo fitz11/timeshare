@@ -22,24 +22,39 @@ void showCreateCalendarDialog(BuildContext context, WidgetRef ref) {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () async {
+          onPressed: () {
             final name = nameController.text.trim();
             if (name.isEmpty) return;
 
             final uid = ref.read(currentUserIdProvider);
             if (uid == null) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Please log in to create calendars.')),
+                const SnackBar(
+                    content: Text('Please log in to create calendars.'),
+                    duration: Duration(seconds: 5),
+                  ),
               );
               return;
             }
 
-            await ref
-                .read(calendarMutationsProvider.notifier)
-                .addCalendar(ownerUid: uid, name: name);
-
-            // ignore: use_build_context_synchronously
+            // Close dialog immediately (optimistic)
             Navigator.pop(context);
+
+            // Fire mutation in background
+            ref
+                .read(calendarMutationsProvider.notifier)
+                .addCalendarOptimistic(ownerUid: uid, name: name)
+                .then((result) {
+              if (result.isFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result.error!),
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    duration: const Duration(seconds: 5),
+                  ),
+                );
+              }
+            });
           },
           child: const Text('Create'),
         ),

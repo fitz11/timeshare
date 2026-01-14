@@ -30,7 +30,6 @@ class HomeScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Providers are already initialized in AuthGate, just watch them here
     final HomePages index = ref.watch(navIndexProvider);
 
     return LayoutBuilder(

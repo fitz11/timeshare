@@ -3,11 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/models/event/event.dart';
+import 'package:timeshare/data/models/event/event_recurrence.dart';
 import 'package:timeshare/data/enums.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
+import 'package:timeshare/ui/features/calendar/dialogs/edit_event_dialog.dart';
 
 class EventListItem extends ConsumerWidget {
   final Event event;
@@ -22,18 +24,36 @@ class EventListItem extends ConsumerWidget {
   });
 
   void _onTap(BuildContext context, WidgetRef ref) {
+    // Repeating events open editor instead of copy mode
+    if (event.recurrence != EventRecurrence.none) {
+      _openEditDialog(context, ref);
+      return;
+    }
+
     ref.read(interactionModeStateProvider.notifier).setCopy();
     ref.read(copyEventStateProvider.notifier).set(event);
-    _showSnackBar(context);
+    _showSnackBar(context, ref);
   }
 
-  void _showSnackBar(BuildContext context) {
+  void _openEditDialog(BuildContext context, WidgetRef ref) {
+    // Fetch source event (with original start time) rather than expanded occurrence
+    final sourceEvent = ref.read(sourceEventProvider(event.id));
+    if (sourceEvent == null) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => EditEventDialog(event: sourceEvent),
+    );
+  }
+
+  void _showSnackBar(BuildContext context, WidgetRef ref) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 5),
         content: Row(
           children: [
-            Icon(Icons.copy, color: Colors.white, size: 20),
+            const Icon(Icons.copy, color: Colors.white, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -45,11 +65,27 @@ class EventListItem extends ConsumerWidget {
         action: SnackBarAction(
           label: 'Cancel',
           onPressed: () {
-            // Reset copy mode handled by provider
+            ref.read(copyEventStateProvider.notifier).clear();
+            ref.read(interactionModeStateProvider.notifier).setNormal();
           },
         ),
       ),
     );
+  }
+
+  String _recurrenceToShortLabel(EventRecurrence recurrence) {
+    switch (recurrence) {
+      case EventRecurrence.none:
+        return '';
+      case EventRecurrence.daily:
+        return 'Daily';
+      case EventRecurrence.weekly:
+        return 'Weekly';
+      case EventRecurrence.monthly:
+        return 'Monthly';
+      case EventRecurrence.yearly:
+        return 'Yearly';
+    }
   }
 
   @override
@@ -119,6 +155,23 @@ class EventListItem extends ConsumerWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
+          // Recurrence indicator
+          if (event.recurrence != EventRecurrence.none) ...[
+            const SizedBox(width: 8),
+            Icon(
+              Icons.repeat,
+              size: 12,
+              color: colorScheme.primary,
+            ),
+            const SizedBox(width: 2),
+            Text(
+              _recurrenceToShortLabel(event.recurrence),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ],
       ),
       trailing: Column(

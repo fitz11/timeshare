@@ -15,7 +15,10 @@ void showShareCalendarDialog(
   final currentUserId = ref.read(currentUserIdProvider);
   if (currentUserId == null) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please log in to share calendars.')),
+      const SnackBar(
+        content: Text('Please log in to share calendars.'),
+        duration: Duration(seconds: 5),
+      ),
     );
     return;
   }
@@ -23,7 +26,10 @@ void showShareCalendarDialog(
   final calendarsAsync = ref.read(calendarsProvider);
   if (!calendarsAsync.hasValue) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Calendars are still loading.')),
+      const SnackBar(
+        content: Text('Calendars are still loading.'),
+        duration: Duration(seconds: 5),
+      ),
     );
     return;
   }
@@ -89,6 +95,7 @@ void showShareCalendarDialog(
                             SnackBar(
                               content: Text('Failed to update: ${formatError(e)}'),
                               backgroundColor: Theme.of(dialogContext).colorScheme.error,
+                              duration: const Duration(seconds: 5),
                             ),
                           );
                         }

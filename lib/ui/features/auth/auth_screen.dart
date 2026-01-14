@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/exceptions/email_not_verified_exception.dart';
 import 'package:timeshare/data/services/rest_api_auth_service.dart';
@@ -61,23 +62,29 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           _displayNameController.text.trim(),
         );
       }
+      // Signal to password managers that autofill is complete and credentials can be saved
+      TextInput.finishAutofillContext();
       // Navigation handled by AuthGate reacting to auth state change
     } on EmailNotVerifiedException catch (e) {
       if (mounted) {
         _showEmailNotVerifiedDialog(e.email, fromSignup: !_isLogin);
       }
     } on AuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message;
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.message;
+        });
+      }
     } catch (e, stackTrace) {
       // Log the actual error type and message for debugging
       debugPrint('Auth error (${e.runtimeType}): $e');
       debugPrint('Stack trace: $stackTrace');
-      setState(() {
-        // Show more detail to help diagnose production issues
-        _errorMessage = 'Error: ${e.runtimeType}. Please try again or contact support.';
-      });
+      if (mounted) {
+        setState(() {
+          // Show more detail to help diagnose production issues
+          _errorMessage = 'Error: ${e.runtimeType}. Please try again or contact support.';
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -548,8 +555,11 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
                 prefixIcon: Icon(Icons.email_outlined),
               ),
               keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.done,
               autocorrect: false,
               autofocus: true,
+              autofillHints: const [AutofillHints.email],
+              onFieldSubmitted: (_) => _submit(),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Please enter your email';

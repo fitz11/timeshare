@@ -15,8 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Event {
 
- String get id; String get name; DateTime get time; List<String>? get atendees;@ColorConverter() Color get color;@ShapeConverter() BoxShape get shape; EventRecurrence get recurrence; DateTime? get recurrenceEndDate;// calendarId is populated at runtime from the subcollection path, not stored
-@JsonKey(includeFromJson: false, includeToJson: false) String? get calendarId; int get version;
+ String get id; String get name; DateTime get time; List<String>? get atendees;@ColorConverter() Color get color;@ShapeConverter() BoxShape get shape; EventRecurrence get recurrence; DateTime? get recurrenceEndDate;// calendarId is populated at runtime from the subcollection path, not stored in backend
+@JsonKey(includeToJson: false) String? get calendarId; int get version;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +49,7 @@ abstract mixin class $EventCopyWith<$Res>  {
   factory $EventCopyWith(Event value, $Res Function(Event) _then) = _$EventCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, DateTime time, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeFromJson: false, includeToJson: false) String? calendarId, int version
+ String id, String name, DateTime time, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeToJson: false) String? calendarId, int version
 });
 
 
@@ -163,7 +163,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId,  int version)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
 return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
@@ -184,7 +184,7 @@ return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId,  int version)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)  $default,) {final _that = this;
 switch (_that) {
 case _Event():
 return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
@@ -204,7 +204,7 @@ return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false)  String? calendarId,  int version)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  DateTime time,  List<String>? atendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)?  $default,) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
 return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
@@ -219,7 +219,7 @@ return $default(_that.id,_that.name,_that.time,_that.atendees,_that.color,_that.
 @JsonSerializable()
 
 class _Event implements Event {
-   _Event({required this.id, required this.name, required this.time, final  List<String>? atendees, @ColorConverter() this.color = Colors.black, @ShapeConverter() this.shape = BoxShape.circle, this.recurrence = EventRecurrence.none, this.recurrenceEndDate, @JsonKey(includeFromJson: false, includeToJson: false) this.calendarId, this.version = 1}): _atendees = atendees;
+   _Event({required this.id, required this.name, required this.time, final  List<String>? atendees, @ColorConverter() this.color = Colors.black, @ShapeConverter() this.shape = BoxShape.circle, this.recurrence = EventRecurrence.none, this.recurrenceEndDate, @JsonKey(includeToJson: false) this.calendarId, this.version = 1}): _atendees = atendees;
   factory _Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
 @override final  String id;
@@ -238,8 +238,8 @@ class _Event implements Event {
 @override@JsonKey()@ShapeConverter() final  BoxShape shape;
 @override@JsonKey() final  EventRecurrence recurrence;
 @override final  DateTime? recurrenceEndDate;
-// calendarId is populated at runtime from the subcollection path, not stored
-@override@JsonKey(includeFromJson: false, includeToJson: false) final  String? calendarId;
+// calendarId is populated at runtime from the subcollection path, not stored in backend
+@override@JsonKey(includeToJson: false) final  String? calendarId;
 @override@JsonKey() final  int version;
 
 /// Create a copy of Event
@@ -275,7 +275,7 @@ abstract mixin class _$EventCopyWith<$Res> implements $EventCopyWith<$Res> {
   factory _$EventCopyWith(_Event value, $Res Function(_Event) _then) = __$EventCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, DateTime time, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeFromJson: false, includeToJson: false) String? calendarId, int version
+ String id, String name, DateTime time, List<String>? atendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeToJson: false) String? calendarId, int version
 });
 
 

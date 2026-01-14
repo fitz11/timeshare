@@ -25,6 +25,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   recurrenceEndDate: json['recurrenceEndDate'] == null
       ? null
       : DateTime.parse(json['recurrenceEndDate'] as String),
+  calendarId: json['calendarId'] as String?,
   version: (json['version'] as num?)?.toInt() ?? 1,
 );
 

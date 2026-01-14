@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/providers/nav/nav_providers.dart';
-import 'package:timeshare/ui/features/calendar/widgets/calendar_filter_sheet.dart';
+import 'package:timeshare/ui/features/calendar/widgets/calendar_filter_dialog.dart';
 import 'package:timeshare/ui/features/friends/dialogs/user_search_dialog.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -64,10 +64,9 @@ Widget calFilterButton(BuildContext context) {
   return IconButton(
     icon: Icon(Icons.filter),
     onPressed: () {
-      showModalBottomSheet(
+      showDialog(
         context: context,
-        isScrollControlled: true,
-        builder: (context) => const CalendarFilterSheet(),
+        builder: (context) => const CalendarFilterDialog(),
       );
     },
   );

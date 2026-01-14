@@ -7,38 +7,35 @@ import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/ui/features/calendar/pages/calendar_admin_page.dart';
 import 'package:timeshare/utils/error_utils.dart';
 
-class CalendarFilterSheet extends ConsumerWidget {
-  const CalendarFilterSheet({super.key});
+class CalendarFilterDialog extends ConsumerWidget {
+  const CalendarFilterDialog({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allCalendars = ref.watch(calendarsProvider);
+    // Use optimistic calendars for instant UI feedback
+    final allCalendars = ref.watch(calendarsWithOptimisticProvider);
     final selectedIds = ref.watch(selectedCalendarIdsProvider);
     final currentUserId = ref.watch(currentUserIdProvider);
 
-    return allCalendars.when(
-      data: (calendars) => Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Select calendars',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            if (calendars.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24.0),
-                child: Text(
-                  'No calendars available',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              )
-            else
-              ...calendars.map((calendar) {
+    return AlertDialog(
+      title: const Text('Select calendars'),
+      content: allCalendars.when(
+        data: (calendars) {
+          if (calendars.isEmpty) {
+            return Text(
+              'No calendars available',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            );
+          }
+          return SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: calendars.length,
+              itemBuilder: (context, index) {
+                final calendar = calendars[index];
                 final isSelected = selectedIds.contains(calendar.id);
                 final isOwner = calendar.owner == currentUserId;
                 return Row(
@@ -83,30 +80,15 @@ class CalendarFilterSheet extends ConsumerWidget {
                       ),
                   ],
                 );
-              }),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-      loading: () => Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(
-              'Loading calendars...',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              },
             ),
-          ],
+          );
+        },
+        loading: () => const Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Center(child: CircularProgressIndicator()),
         ),
-      ),
-      error: (error, stackTrace) => Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
+        error: (error, stackTrace) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
@@ -136,6 +118,12 @@ class CalendarFilterSheet extends ConsumerWidget {
           ],
         ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
     );
   }
 }

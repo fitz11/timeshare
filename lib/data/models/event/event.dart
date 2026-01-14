@@ -25,8 +25,8 @@ abstract class Event with _$Event {
     @ShapeConverter() @Default(BoxShape.circle) BoxShape shape,
     @Default(EventRecurrence.none) EventRecurrence recurrence,
     DateTime? recurrenceEndDate,
-    // calendarId is populated at runtime from the subcollection path, not stored
-    @JsonKey(includeFromJson: false, includeToJson: false) String? calendarId,
+    // calendarId is populated at runtime from the subcollection path, not stored in backend
+    @JsonKey(includeToJson: false) String? calendarId,
     @Default(1) int version,
   }) = _Event;
 

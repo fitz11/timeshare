@@ -39,15 +39,29 @@ class DeleteEventDialog extends ConsumerWidget {
                 ),
                 onTap: () {
                   final event = events[index];
+                  // Close dialog immediately (optimistic)
+                  Navigator.pop(context);
+
                   if (event.calendarId != null) {
+                    // Fire delete in background
                     ref
                         .read(calendarMutationsProvider.notifier)
-                        .deleteEvent(
+                        .deleteEventOptimistic(
                           calendarId: event.calendarId!,
                           eventId: event.id,
+                        )
+                        .then((result) {
+                      if (result.isFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(result.error!),
+                            backgroundColor: Theme.of(context).colorScheme.error,
+                            duration: const Duration(seconds: 5),
+                          ),
                         );
+                      }
+                    });
                   }
-                  Navigator.pop(context);
                 },
               ),
             );

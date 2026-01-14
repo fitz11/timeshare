@@ -249,6 +249,7 @@ class FriendsPage extends ConsumerWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('${friend.displayName} removed from friends'),
+                  duration: const Duration(seconds: 5),
                 ),
               );
             },

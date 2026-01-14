@@ -129,13 +129,17 @@ class _FriendRequestCard extends ConsumerWidget {
             content: Text(
               '${request.fromDisplayName ?? "User"} added as friend',
             ),
+            duration: const Duration(seconds: 5),
           ),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to accept request: $e')),
+          SnackBar(
+            content: Text('Failed to accept request: $e'),
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     }
@@ -148,13 +152,19 @@ class _FriendRequestCard extends ConsumerWidget {
           );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Request declined')),
+          const SnackBar(
+            content: Text('Request declined'),
+            duration: Duration(seconds: 5),
+          ),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to decline request: $e')),
+          SnackBar(
+            content: Text('Failed to decline request: $e'),
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     }

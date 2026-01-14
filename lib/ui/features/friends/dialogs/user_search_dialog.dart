@@ -73,6 +73,7 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
                                       content: Text(
                                         'Friend request sent to ${user.displayName}',
                                       ),
+                                      duration: const Duration(seconds: 5),
                                     ),
                                   );
                                 } on ApiException catch (e) {
@@ -82,6 +83,7 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
                                       content: Text(e.message),
                                       backgroundColor:
                                           Theme.of(context).colorScheme.error,
+                                      duration: const Duration(seconds: 5),
                                     ),
                                   );
                                 } catch (e) {
@@ -90,6 +92,7 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
                                       content: Text('Failed to send request: $e'),
                                       backgroundColor:
                                           Theme.of(context).colorScheme.error,
+                                      duration: const Duration(seconds: 5),
                                     ),
                                   );
                                 }

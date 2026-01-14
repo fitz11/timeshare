@@ -239,7 +239,7 @@ final class CalendarMutationsProvider
   }
 }
 
-String _$calendarMutationsHash() => r'e1c0ac8a7c563591972c82416b919584aee116ce';
+String _$calendarMutationsHash() => r'04d70f3145bd8cb4d520271deca7135584aec96f';
 
 /// Calendar mutations with optimistic update support.
 /// Includes conflict detection and retry mechanisms for concurrent edit handling.
@@ -302,7 +302,7 @@ final class SelectedCalendarIdsProvider
 }
 
 String _$selectedCalendarIdsHash() =>
-    r'310986f92a1d76791e7c2bd023383910506d12ad';
+    r'089920d85f1a816c4e9cbb524ea7a1c2eb1f5bf4';
 
 /// Selected calendar IDs - which calendars are visible
 /// Synchronous projection from calendars stream - no async overhead.
@@ -652,7 +652,7 @@ final class CopyEventStateProvider
   }
 }
 
-String _$copyEventStateHash() => r'3c98b1d100de285a00222149dc03b4b34a81926d';
+String _$copyEventStateHash() => r'7320bd82dfa83e6e142df778c1652ed2ed16c9a7';
 
 /// Event being copied (when in copy mode)
 
@@ -676,12 +676,14 @@ abstract class _$CopyEventState extends $Notifier<Event?> {
 
 /// Expanded events map - memoized recurrence expansion.
 /// Only recomputes when events actually change, not on filter/day changes.
+/// Uses optimistic events for instant UI feedback.
 
 @ProviderFor(expandedEventsMap)
 final expandedEventsMapProvider = ExpandedEventsMapProvider._();
 
 /// Expanded events map - memoized recurrence expansion.
 /// Only recomputes when events actually change, not on filter/day changes.
+/// Uses optimistic events for instant UI feedback.
 
 final class ExpandedEventsMapProvider
     extends
@@ -693,6 +695,7 @@ final class ExpandedEventsMapProvider
     with $Provider<Map<DateTime, List<Event>>> {
   /// Expanded events map - memoized recurrence expansion.
   /// Only recomputes when events actually change, not on filter/day changes.
+  /// Uses optimistic events for instant UI feedback.
   ExpandedEventsMapProvider._()
     : super(
         from: null,
@@ -727,7 +730,7 @@ final class ExpandedEventsMapProvider
   }
 }
 
-String _$expandedEventsMapHash() => r'82f6297bbdcfa5f8f070d05b92071a21a290be6a';
+String _$expandedEventsMapHash() => r'daf7895446978adfe0a07529c50f8f73941625e9';
 
 /// Consolidated visible events - uses memoized expanded map.
 /// Filtering is O(n), not O(n × 365) on day/filter changes.
@@ -920,3 +923,330 @@ final class CalendarNamesMapProvider
 }
 
 String _$calendarNamesMapHash() => r'8837dec100b81a2f22d478b7a42c138ced7f5811';
+
+/// Look up source event by ID (non-expanded, original recurrence start time).
+/// Used by EditEventDialog to get the true source event rather than an expanded occurrence.
+
+@ProviderFor(sourceEvent)
+final sourceEventProvider = SourceEventFamily._();
+
+/// Look up source event by ID (non-expanded, original recurrence start time).
+/// Used by EditEventDialog to get the true source event rather than an expanded occurrence.
+
+final class SourceEventProvider
+    extends $FunctionalProvider<Event?, Event?, Event?>
+    with $Provider<Event?> {
+  /// Look up source event by ID (non-expanded, original recurrence start time).
+  /// Used by EditEventDialog to get the true source event rather than an expanded occurrence.
+  SourceEventProvider._({
+    required SourceEventFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'sourceEventProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$sourceEventHash();
+
+  @override
+  String toString() {
+    return r'sourceEventProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<Event?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Event? create(Ref ref) {
+    final argument = this.argument as String;
+    return sourceEvent(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Event? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Event?>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SourceEventProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$sourceEventHash() => r'2de5f04f93953bb28c541b70e81543c40b72374f';
+
+/// Look up source event by ID (non-expanded, original recurrence start time).
+/// Used by EditEventDialog to get the true source event rather than an expanded occurrence.
+
+final class SourceEventFamily extends $Family
+    with $FunctionalFamilyOverride<Event?, String> {
+  SourceEventFamily._()
+    : super(
+        retry: null,
+        name: r'sourceEventProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Look up source event by ID (non-expanded, original recurrence start time).
+  /// Used by EditEventDialog to get the true source event rather than an expanded occurrence.
+
+  SourceEventProvider call(String eventId) =>
+      SourceEventProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'sourceEventProvider';
+}
+
+/// Pending calendar operations for optimistic UI updates.
+/// Tracks calendars being added/deleted before server confirmation.
+
+@ProviderFor(OptimisticCalendars)
+final optimisticCalendarsProvider = OptimisticCalendarsProvider._();
+
+/// Pending calendar operations for optimistic UI updates.
+/// Tracks calendars being added/deleted before server confirmation.
+final class OptimisticCalendarsProvider
+    extends $NotifierProvider<OptimisticCalendars, OptimisticState<Calendar>> {
+  /// Pending calendar operations for optimistic UI updates.
+  /// Tracks calendars being added/deleted before server confirmation.
+  OptimisticCalendarsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'optimisticCalendarsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$optimisticCalendarsHash();
+
+  @$internal
+  @override
+  OptimisticCalendars create() => OptimisticCalendars();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(OptimisticState<Calendar> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<OptimisticState<Calendar>>(value),
+    );
+  }
+}
+
+String _$optimisticCalendarsHash() =>
+    r'5747a677c04c47c4248bac5e204c57bba4721815';
+
+/// Pending calendar operations for optimistic UI updates.
+/// Tracks calendars being added/deleted before server confirmation.
+
+abstract class _$OptimisticCalendars
+    extends $Notifier<OptimisticState<Calendar>> {
+  OptimisticState<Calendar> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<OptimisticState<Calendar>, OptimisticState<Calendar>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<OptimisticState<Calendar>, OptimisticState<Calendar>>,
+              OptimisticState<Calendar>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Pending event operations for optimistic UI updates.
+
+@ProviderFor(OptimisticEvents)
+final optimisticEventsProvider = OptimisticEventsProvider._();
+
+/// Pending event operations for optimistic UI updates.
+final class OptimisticEventsProvider
+    extends $NotifierProvider<OptimisticEvents, OptimisticState<Event>> {
+  /// Pending event operations for optimistic UI updates.
+  OptimisticEventsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'optimisticEventsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$optimisticEventsHash();
+
+  @$internal
+  @override
+  OptimisticEvents create() => OptimisticEvents();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(OptimisticState<Event> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<OptimisticState<Event>>(value),
+    );
+  }
+}
+
+String _$optimisticEventsHash() => r'820ede6a8e8f0fed94579f53a86bbbe79da8effc';
+
+/// Pending event operations for optimistic UI updates.
+
+abstract class _$OptimisticEvents extends $Notifier<OptimisticState<Event>> {
+  OptimisticState<Event> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<OptimisticState<Event>, OptimisticState<Event>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<OptimisticState<Event>, OptimisticState<Event>>,
+              OptimisticState<Event>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Calendars with optimistic updates merged in.
+/// Use this instead of calendarsProvider for UI that should show optimistic state.
+
+@ProviderFor(calendarsWithOptimistic)
+final calendarsWithOptimisticProvider = CalendarsWithOptimisticProvider._();
+
+/// Calendars with optimistic updates merged in.
+/// Use this instead of calendarsProvider for UI that should show optimistic state.
+
+final class CalendarsWithOptimisticProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Calendar>>,
+          AsyncValue<List<Calendar>>,
+          AsyncValue<List<Calendar>>
+        >
+    with $Provider<AsyncValue<List<Calendar>>> {
+  /// Calendars with optimistic updates merged in.
+  /// Use this instead of calendarsProvider for UI that should show optimistic state.
+  CalendarsWithOptimisticProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'calendarsWithOptimisticProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$calendarsWithOptimisticHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<List<Calendar>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<List<Calendar>> create(Ref ref) {
+    return calendarsWithOptimistic(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<List<Calendar>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<List<Calendar>>>(value),
+    );
+  }
+}
+
+String _$calendarsWithOptimisticHash() =>
+    r'a908bde6fbde56d97a466f0d41b94f38f01d427b';
+
+/// Events with optimistic updates merged in.
+/// Use this instead of eventsForSelectedCalendarsProvider for UI that should show optimistic state.
+
+@ProviderFor(eventsWithOptimistic)
+final eventsWithOptimisticProvider = EventsWithOptimisticProvider._();
+
+/// Events with optimistic updates merged in.
+/// Use this instead of eventsForSelectedCalendarsProvider for UI that should show optimistic state.
+
+final class EventsWithOptimisticProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Event>>,
+          AsyncValue<List<Event>>,
+          AsyncValue<List<Event>>
+        >
+    with $Provider<AsyncValue<List<Event>>> {
+  /// Events with optimistic updates merged in.
+  /// Use this instead of eventsForSelectedCalendarsProvider for UI that should show optimistic state.
+  EventsWithOptimisticProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'eventsWithOptimisticProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventsWithOptimisticHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<List<Event>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<List<Event>> create(Ref ref) {
+    return eventsWithOptimistic(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<List<Event>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<List<Event>>>(value),
+    );
+  }
+}
+
+String _$eventsWithOptimisticHash() =>
+    r'8c7468bea62f474ee46f478d94c0dc473a52df0f';

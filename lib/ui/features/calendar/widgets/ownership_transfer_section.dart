@@ -102,13 +102,17 @@ class _OwnershipTransferCard extends ConsumerWidget {
             content: Text(
               'You are now the owner of "${transfer.calendarName}"',
             ),
+            duration: const Duration(seconds: 5),
           ),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to accept transfer: $e')),
+          SnackBar(
+            content: Text('Failed to accept transfer: $e'),
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     }
@@ -121,13 +125,19 @@ class _OwnershipTransferCard extends ConsumerWidget {
           .declineTransfer(requestId: transfer.id);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Transfer declined')),
+          const SnackBar(
+            content: Text('Transfer declined'),
+            duration: Duration(seconds: 5),
+          ),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to decline transfer: $e')),
+          SnackBar(
+            content: Text('Failed to decline transfer: $e'),
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     }

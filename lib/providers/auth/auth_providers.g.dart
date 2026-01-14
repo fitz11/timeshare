@@ -55,7 +55,7 @@ final class AuthServiceProvider
   }
 }
 
-String _$authServiceHash() => r'427fc5706db9dc1b3093bc065dbf7ed5d1d76c4d';
+String _$authServiceHash() => r'1c4da1de34c55a560259f83bd2903e87e6aa5af0';
 
 /// Stream of authentication state changes.
 /// Use this to react to login/logout events.
@@ -97,7 +97,7 @@ final class AuthStateProvider
   }
 }
 
-String _$authStateHash() => r'bd5da458de66f08e9ed18bc1b68ace9d936fd6f4';
+String _$authStateHash() => r'7c386d773e9ed4a78b154032ac397367825d8523';
 
 /// Current user ID - synchronous access to the current user's UID.
 /// Returns null if not logged in.
@@ -146,7 +146,7 @@ final class CurrentUserIdProvider
   }
 }
 
-String _$currentUserIdHash() => r'56589a806d33eea9e557b8340b0bdfe0cbe84984';
+String _$currentUserIdHash() => r'2cf739586b6999a1df82ea76cc14d3028aa900c0';
 
 /// Sign out the current user.
 /// Revokes the API key server-side and clears stored credentials.

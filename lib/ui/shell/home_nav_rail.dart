@@ -63,7 +63,11 @@ class HomeNavRail extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: extended
-                      ? const CalDrawerContent()
+                      // SizedBox provides width constraints for SwitchListTile
+                      ? const SizedBox(
+                          width: 280,
+                          child: CalDrawerContent(),
+                        )
                       : IconButton(
                           icon: const Icon(Icons.settings),
                           tooltip: 'Calendar settings',

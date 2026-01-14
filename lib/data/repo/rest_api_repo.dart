@@ -41,14 +41,23 @@ class RestApiRepository implements CalendarRepository {
 
   @override
   Stream<List<Calendar>> watchAllAvailableCalendars({String? uid}) async* {
+    List<Calendar>? lastValue;
+
     // Initial fetch
-    yield await getAllAvailableCalendars(uid: uid);
+    final initial = await getAllAvailableCalendars(uid: uid);
+    lastValue = initial;
+    yield initial;
 
     // Poll for updates with jitter to prevent synchronized requests
     await for (final _ in Stream.periodic(_pollInterval)) {
       await _jitter();
       try {
-        yield await getAllAvailableCalendars(uid: uid);
+        final newValue = await getAllAvailableCalendars(uid: uid);
+        // Only emit if data actually changed
+        if (!listEquals(lastValue, newValue)) {
+          lastValue = newValue;
+          yield newValue;
+        }
       } catch (e) {
         // On error, log and continue polling (don't break stream)
         debugPrint('Calendar polling error (continuing): $e');
@@ -128,14 +137,23 @@ class RestApiRepository implements CalendarRepository {
 
   @override
   Stream<List<Event>> watchEventsForCalendar(String calendarId) async* {
+    List<Event>? lastValue;
+
     // Initial fetch
-    yield await getEventsForCalendar(calendarId);
+    final initial = await getEventsForCalendar(calendarId);
+    lastValue = initial;
+    yield initial;
 
     // Poll for updates with jitter to prevent synchronized requests
     await for (final _ in Stream.periodic(_pollInterval)) {
       await _jitter();
       try {
-        yield await getEventsForCalendar(calendarId);
+        final newValue = await getEventsForCalendar(calendarId);
+        // Only emit if data actually changed
+        if (!listEquals(lastValue, newValue)) {
+          lastValue = newValue;
+          yield newValue;
+        }
       } catch (e) {
         // On error, log and continue polling (don't break stream)
         debugPrint('Event polling error for calendar $calendarId (continuing): $e');
@@ -150,11 +168,14 @@ class RestApiRepository implements CalendarRepository {
       return;
     }
 
+    List<Event>? lastValue;
+
     // Initial fetch
     final events = <Event>[];
     for (final id in calendarIds) {
       events.addAll(await getEventsForCalendar(id));
     }
+    lastValue = events;
     yield events;
 
     // Poll for updates with jitter to prevent synchronized requests
@@ -165,7 +186,11 @@ class RestApiRepository implements CalendarRepository {
         for (final id in calendarIds) {
           updatedEvents.addAll(await getEventsForCalendar(id));
         }
-        yield updatedEvents;
+        // Only emit if data actually changed
+        if (!listEquals(lastValue, updatedEvents)) {
+          lastValue = updatedEvents;
+          yield updatedEvents;
+        }
       } catch (e) {
         // On error, log and continue polling (don't break stream)
         debugPrint('Events polling error for calendars (continuing): $e');
