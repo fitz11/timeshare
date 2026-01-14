@@ -2,9 +2,9 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:timeshare/data/exceptions/email_not_verified_exception.dart';
 import 'package:timeshare/data/services/auth_service.dart';
 
@@ -17,7 +17,7 @@ import 'package:timeshare/data/services/auth_service.dart';
 /// - Secure credential persistence
 class RestApiAuthService implements AuthService {
   final String baseUrl;
-  final HttpClient _httpClient;
+  final http.Client _httpClient;
   final SecureStorage _storage;
 
   String? _apiKey;
@@ -28,12 +28,9 @@ class RestApiAuthService implements AuthService {
   RestApiAuthService({
     required this.baseUrl,
     required SecureStorage storage,
-    HttpClient? httpClient,
+    http.Client? httpClient,
   })  : _storage = storage,
-        _httpClient = httpClient ??
-            (HttpClient()
-              ..connectionTimeout = const Duration(seconds: 30)
-              ..idleTimeout = const Duration(seconds: 60));
+        _httpClient = httpClient ?? http.Client();
 
   @override
   String? get apiKey => _apiKey;
@@ -223,27 +220,28 @@ class RestApiAuthService implements AuthService {
     bool authenticated = false,
   }) async {
     final uri = Uri.parse('$baseUrl$path');
-    final request = await _httpClient.postUrl(uri);
-
-    request.headers.set('Content-Type', 'application/json');
-    request.headers.set('Accept', 'application/json');
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
     if (authenticated && _apiKey != null) {
-      request.headers.set('Authorization', 'Api-Key $_apiKey');
+      headers['Authorization'] = 'Api-Key $_apiKey';
     }
 
-    request.write(jsonEncode(body));
-
-    final response = await request.close();
-    final responseBody = await response.transform(utf8.decoder).join();
+    final response = await _httpClient.post(
+      uri,
+      headers: headers,
+      body: jsonEncode(body),
+    );
 
     if (response.statusCode >= 400) {
       throw AuthException(
         statusCode: response.statusCode,
-        message: _extractErrorMessage(responseBody, response.statusCode),
+        message: _extractErrorMessage(response.body, response.statusCode),
       );
     }
 
-    return responseBody;
+    return response.body;
   }
 
   /// POST JSON to the API and return both status code and body.
@@ -253,43 +251,43 @@ class RestApiAuthService implements AuthService {
     bool authenticated = false,
   }) async {
     final uri = Uri.parse('$baseUrl$path');
-    final request = await _httpClient.postUrl(uri);
-
-    request.headers.set('Content-Type', 'application/json');
-    request.headers.set('Accept', 'application/json');
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
     if (authenticated && _apiKey != null) {
-      request.headers.set('Authorization', 'Api-Key $_apiKey');
+      headers['Authorization'] = 'Api-Key $_apiKey';
     }
 
-    request.write(jsonEncode(body));
+    final response = await _httpClient.post(
+      uri,
+      headers: headers,
+      body: jsonEncode(body),
+    );
 
-    final response = await request.close();
-    final responseBody = await response.transform(utf8.decoder).join();
-
-    return (response.statusCode, responseBody);
+    return (response.statusCode, response.body);
   }
 
   /// GET JSON from the API.
   Future<String> _getJson(String path, {bool authenticated = false}) async {
     final uri = Uri.parse('$baseUrl$path');
-    final request = await _httpClient.getUrl(uri);
-
-    request.headers.set('Accept', 'application/json');
+    final headers = <String, String>{
+      'Accept': 'application/json',
+    };
     if (authenticated && _apiKey != null) {
-      request.headers.set('Authorization', 'Api-Key $_apiKey');
+      headers['Authorization'] = 'Api-Key $_apiKey';
     }
 
-    final response = await request.close();
-    final responseBody = await response.transform(utf8.decoder).join();
+    final response = await _httpClient.get(uri, headers: headers);
 
     if (response.statusCode >= 400) {
       throw AuthException(
         statusCode: response.statusCode,
-        message: _extractErrorMessage(responseBody, response.statusCode),
+        message: _extractErrorMessage(response.body, response.statusCode),
       );
     }
 
-    return responseBody;
+    return response.body;
   }
 
   String _extractErrorMessage(String body, int statusCode) {

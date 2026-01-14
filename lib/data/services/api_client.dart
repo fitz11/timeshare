@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import 'dart:convert';
-import 'dart:io';
+
+import 'package:http/http.dart' as http;
 
 /// Exception thrown when an API request fails.
 class ApiException implements Exception {
@@ -53,27 +54,26 @@ abstract class ApiClient {
 /// Callback type for retrieving the current API key.
 typedef ApiKeyProvider = String? Function();
 
-/// HTTP implementation of [ApiClient] using dart:io HttpClient.
+/// HTTP implementation of [ApiClient] using package:http.
 ///
 /// Handles:
 /// - API key authentication via Authorization header
 /// - JSON content-type headers
 /// - Base URL prefixing
 /// - Error response parsing
+///
+/// Uses package:http which works on all platforms (web, mobile, desktop).
 class HttpApiClient implements ApiClient {
   final String baseUrl;
-  final HttpClient _httpClient;
+  final http.Client _httpClient;
   final ApiKeyProvider _getApiKey;
 
   HttpApiClient({
     required this.baseUrl,
     required ApiKeyProvider getApiKey,
-    HttpClient? httpClient,
+    http.Client? httpClient,
   })  : _getApiKey = getApiKey,
-        _httpClient = httpClient ??
-            (HttpClient()
-              ..connectionTimeout = const Duration(seconds: 30)
-              ..idleTimeout = const Duration(seconds: 60));
+        _httpClient = httpClient ?? http.Client();
 
   Map<String, String> get _defaultHeaders => {
         'Content-Type': 'application/json',
@@ -97,24 +97,24 @@ class HttpApiClient implements ApiClient {
     final uri = Uri.parse('$baseUrl$path');
     final headers = _buildHeaders();
 
-    final request = await _httpClient.openUrl(method, uri);
-
-    // Set headers
-    headers.forEach((key, value) {
-      request.headers.set(key, value);
-    });
-
-    // Write body if present
-    if (body != null) {
-      request.write(body);
+    final http.Response response;
+    switch (method) {
+      case 'GET':
+        response = await _httpClient.get(uri, headers: headers);
+      case 'POST':
+        response = await _httpClient.post(uri, headers: headers, body: body);
+      case 'PUT':
+        response = await _httpClient.put(uri, headers: headers, body: body);
+      case 'PATCH':
+        response = await _httpClient.patch(uri, headers: headers, body: body);
+      case 'DELETE':
+        response = await _httpClient.delete(uri, headers: headers);
+      default:
+        throw ArgumentError('Unsupported HTTP method: $method');
     }
 
-    final response = await request.close();
-    final responseBody = await response.transform(utf8.decoder).join();
-    final responseHeaders = <String, String>{};
-    response.headers.forEach((name, values) {
-      responseHeaders[name] = values.join(', ');
-    });
+    final responseBody = response.body;
+    final responseHeaders = response.headers;
 
     // Check for errors
     if (response.statusCode >= 400) {
