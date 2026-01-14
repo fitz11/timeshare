@@ -99,9 +99,14 @@ class RestApiAuthService implements AuthService {
       );
     } on EmailNotVerifiedException {
       rethrow;
+    } on AuthException {
+      rethrow;
     } catch (e) {
       _authStateController.add(AuthState.error);
-      rethrow;
+      throw AuthException(
+        statusCode: 0,
+        message: 'Unable to connect to server. Please check your internet connection.',
+      );
     }
   }
 
@@ -131,11 +136,14 @@ class RestApiAuthService implements AuthService {
         statusCode: statusCode,
         message: _extractErrorMessage(responseBody, statusCode),
       );
-    } catch (e) {
-      if (e is! AuthException) {
-        _authStateController.add(AuthState.error);
-      }
+    } on AuthException {
       rethrow;
+    } catch (e) {
+      _authStateController.add(AuthState.error);
+      throw AuthException(
+        statusCode: 0,
+        message: 'Unable to connect to server. Please check your internet connection.',
+      );
     }
   }
 
