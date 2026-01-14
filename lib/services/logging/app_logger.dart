@@ -39,7 +39,7 @@ class AppLogger {
         printEmojis: true,
         dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
       ),
-      level: kDebugMode ? Level.debug : Level.error,
+      level: kDebugMode ? Level.debug : Level.warning,
     );
 
     _initialized = true;
