@@ -89,9 +89,10 @@ class RestApiRepository implements CalendarRepository {
     bool share,
   ) async {
     final endpoint = share ? 'share' : 'unshare';
+    // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
     await _client.post(
       '/api/v1/timeshare/calendars/$calendarId/$endpoint/',
-      body: jsonEncode({'target_uid': targetUid}),
+      body: jsonEncode({'targetUid': targetUid}),
     );
   }
 

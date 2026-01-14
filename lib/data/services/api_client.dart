@@ -140,9 +140,9 @@ class HttpApiClient implements ApiClient {
         if (json.containsKey('detail')) return json['detail'];
         if (json.containsKey('message')) return json['message'];
         if (json.containsKey('error')) return json['error'];
-        // Validation errors
-        if (json.containsKey('non_field_errors')) {
-          return (json['non_field_errors'] as List).join(', ');
+        // Validation errors (camelCase from djangorestframework-camel-case)
+        if (json.containsKey('nonFieldErrors')) {
+          return (json['nonFieldErrors'] as List).join(', ');
         }
       }
     } catch (_) {

@@ -60,9 +60,10 @@ class RestApiAuthService implements AuthService {
           throw AuthException(
               statusCode: 500, message: 'Invalid response format');
         }
-        final apiKey = data['api_key'] as String?;
+        // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
+        final apiKey = data['apiKey'] as String?;
         if (apiKey == null) {
-          throw AuthException(statusCode: 500, message: 'Missing api_key');
+          throw AuthException(statusCode: 500, message: 'Missing apiKey');
         }
         final user = data['user'] as Map<String, dynamic>?;
         if (user == null) {
@@ -87,7 +88,8 @@ class RestApiAuthService implements AuthService {
 
       if (statusCode == 403) {
         final data = jsonDecode(responseBody);
-        if (data['email_not_verified'] == true) {
+        // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
+        if (data['emailNotVerified'] == true) {
           _authStateController.add(AuthState.unauthenticated);
           // Auto-send verification email when login blocked due to unverified email
           await resendVerificationEmail(email);
@@ -144,7 +146,8 @@ class RestApiAuthService implements AuthService {
       if (statusCode == 409) {
         try {
           final data = jsonDecode(responseBody);
-          if (data['email_not_verified'] == true) {
+          // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
+          if (data['emailNotVerified'] == true) {
             _authStateController.add(AuthState.unauthenticated);
             // Auto-send verification email for existing unverified account
             await resendVerificationEmail(email);
@@ -238,13 +241,18 @@ class RestApiAuthService implements AuthService {
   }
 
   /// Validate the current API key by calling a lightweight endpoint.
+  ///
+  /// Uses a timeout to prevent the app from hanging indefinitely on web
+  /// if the server is slow or unreachable.
   Future<bool> _validateApiKey() async {
     if (_apiKey == null) return false;
 
     try {
-      await _getJson('/api/v1/timeshare/auth/me/', authenticated: true);
+      await _getJson('/api/v1/timeshare/auth/me/', authenticated: true)
+          .timeout(const Duration(seconds: 10));
       return true;
     } catch (e) {
+      // Timeout, network error, or invalid API key - treat as invalid
       return false;
     }
   }
@@ -333,8 +341,9 @@ class RestApiAuthService implements AuthService {
         if (json.containsKey('detail')) return json['detail'];
         if (json.containsKey('message')) return json['message'];
         if (json.containsKey('error')) return json['error'];
-        if (json.containsKey('non_field_errors')) {
-          return (json['non_field_errors'] as List).join(', ');
+        // Validation errors (camelCase from djangorestframework-camel-case)
+        if (json.containsKey('nonFieldErrors')) {
+          return (json['nonFieldErrors'] as List).join(', ');
         }
       }
     } catch (_) {}
@@ -426,9 +435,10 @@ class RestApiAuthService implements AuthService {
       if (data is! Map<String, dynamic>) {
         throw AuthException(statusCode: 500, message: 'Invalid response format');
       }
-      final apiKey = data['api_key'] as String?;
+      // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
+      final apiKey = data['apiKey'] as String?;
       if (apiKey == null) {
-        throw AuthException(statusCode: 500, message: 'Missing api_key');
+        throw AuthException(statusCode: 500, message: 'Missing apiKey');
       }
       final user = data['user'] as Map<String, dynamic>?;
       if (user == null) {

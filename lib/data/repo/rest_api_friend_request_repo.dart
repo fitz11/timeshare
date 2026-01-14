@@ -51,9 +51,10 @@ class RestApiFriendRequestRepository implements FriendRequestRepository {
 
   @override
   Future<FriendRequest> sendRequest(String targetUid) async {
+    // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
     final response = await _client.post(
       '/api/v1/timeshare/friend-requests/',
-      body: jsonEncode({'to_uid': targetUid}),
+      body: jsonEncode({'toUid': targetUid}),
     );
     return FriendRequest.fromJson(jsonDecode(response.body));
   }

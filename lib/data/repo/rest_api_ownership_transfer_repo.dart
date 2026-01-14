@@ -54,11 +54,12 @@ class RestApiOwnershipTransferRepository implements OwnershipTransferRepository 
     String calendarId,
     String toUid,
   ) async {
+    // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
     final response = await _client.post(
       '/api/v1/timeshare/ownership-transfers/',
       body: jsonEncode({
-        'calendar_id': calendarId,
-        'to_uid': toUid,
+        'calendarId': calendarId,
+        'toUid': toUid,
       }),
     );
     return OwnershipTransferRequest.fromJson(jsonDecode(response.body));

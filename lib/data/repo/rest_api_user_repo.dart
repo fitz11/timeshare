@@ -123,9 +123,10 @@ class RestApiUserRepository implements UserRepositoryInterface {
     final currentUid = currentUserId;
     if (currentUid == null) return;
 
+    // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
     await _client.patch(
       '/api/v1/timeshare/users/$currentUid/',
-      body: jsonEncode({'display_name': newDisplayName}),
+      body: jsonEncode({'displayName': newDisplayName}),
     );
   }
 
