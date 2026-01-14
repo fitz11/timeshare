@@ -195,10 +195,24 @@ class EventList extends ConsumerWidget {
         },
         onDismissed: (_) {
           if (event.calendarId != null) {
-            ref.read(calendarMutationsProvider.notifier).deleteEvent(
+            ref
+                .read(calendarMutationsProvider.notifier)
+                .deleteEventOptimistic(
                   calendarId: event.calendarId!,
                   eventId: event.id,
+                )
+                .then((result) {
+              if (!context.mounted) return;
+              if (result.isFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result.error ?? 'Failed to delete event'),
+                    backgroundColor: colorScheme.error,
+                    duration: const Duration(seconds: 5),
+                  ),
                 );
+              }
+            });
           }
         },
         child: item,
