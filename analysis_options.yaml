@@ -8,8 +8,9 @@
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
 analyzer:
-  plugins:
-    - custom_lint
+  # NOTE: custom_lint plugin disabled until riverpod_lint is compatible with Dart SDK 3.9.2
+  # plugins:
+  #   - custom_lint
   errors:
     # @JsonKey on freezed constructor params triggers this; it's expected behavior
     invalid_annotation_target: ignore

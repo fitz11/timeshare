@@ -33,8 +33,11 @@ dev_dependencies:
   freezed: ^3.0.6
   json_serializable: ^6.9.5
   riverpod_generator: ^4.0.0+1
-  custom_lint: ^0.8.0
-  riverpod_lint: ^3.1.0
+  # NOTE: custom_lint and riverpod_lint temporarily removed due to
+  # incompatibility with Dart SDK 3.9.2. Re-add when riverpod_lint
+  # releases an update supporting the newer analyzer versions.
+  # custom_lint: ^0.8.0
+  # riverpod_lint: ^3.1.0
   mockito: ^5.4.4
   clock: ^1.1.1
 
