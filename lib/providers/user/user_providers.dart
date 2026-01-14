@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/repo/rest_api_user_repo.dart';
 import 'package:timeshare/data/repo/logged_user_repo.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
@@ -9,11 +9,8 @@ import 'package:timeshare/providers/auth/auth_providers.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/providers/config/config_providers.dart';
 
-part 'user_providers.g.dart';
-
-/// User repository provider - uses REST API
-@riverpod
-LoggedUserRepository userRepository(Ref ref) {
+/// User repository provider - uses REST API.
+final userRepositoryProvider = Provider<LoggedUserRepository>((ref) {
   final config = ref.watch(appConfigProvider);
   final authService = ref.watch(authServiceProvider);
   final calendarRepo = ref.watch(calendarRepositoryProvider);
@@ -32,15 +29,14 @@ LoggedUserRepository userRepository(Ref ref) {
     ),
     logger,
   );
-}
+});
 
-@riverpod
-class UserFriendsNotifier extends _$UserFriendsNotifier {
+/// User friends notifier with optimistic updates.
+class UserFriendsNotifier extends AsyncNotifier<List<AppUser>> {
   @override
   Future<List<AppUser>> build() async {
     ref.keepAlive();
 
-    // Invalidate when auth state changes (logout/login)
     ref.listen(authStateProvider, (prev, next) {
       ref.invalidateSelf();
     });
@@ -49,8 +45,6 @@ class UserFriendsNotifier extends _$UserFriendsNotifier {
     return await repo.getFriendsOfUser();
   }
 
-  /// Add a friend with proper error handling.
-  /// Returns normally on success, surfaces error to UI on failure.
   Future<void> addFriend({required String targetUid}) async {
     final repo = ref.read(userRepositoryProvider);
     final previousState = state;
@@ -59,28 +53,23 @@ class UserFriendsNotifier extends _$UserFriendsNotifier {
       final newFriend = await repo.getUserById(targetUid);
       if (newFriend == null) throw Exception('User not found');
 
-      // Optimistic update
       final currentFriends = state.value ?? [];
       state = AsyncValue.data([...currentFriends, newFriend]);
 
-      // Persist to backend
       await repo.addFriend(targetUid);
     } catch (e, st) {
-      state = previousState; // Rollback on failure
-      state = AsyncValue.error(e, st); // Surface error to UI
+      state = previousState;
+      state = AsyncValue.error(e, st);
     }
   }
 
-  /// Remove a friend with proper error handling and rollback.
   Future<void> removeFriend({required String targetUid}) async {
     final repo = ref.read(userRepositoryProvider);
     final previousState = state;
 
-    // Safe state access
     final currentFriends = state.value;
     if (currentFriends == null) return;
 
-    // Optimistic update
     state = AsyncValue.data(
       currentFriends.where((friend) => friend.uid != targetUid).toList(),
     );
@@ -88,66 +77,60 @@ class UserFriendsNotifier extends _$UserFriendsNotifier {
     try {
       await repo.removeFriend(targetUid);
     } catch (e, st) {
-      state = previousState; // Rollback on failure
-      state = AsyncValue.error(e, st); // Surface error to UI
+      state = previousState;
+      state = AsyncValue.error(e, st);
     }
   }
 
-  /// Remove a friend with cascade deletion.
-  ///
-  /// This removes the friend from both users' lists AND revokes
-  /// all calendar sharing between the two users.
   Future<void> removeFriendWithCascade({required String targetUid}) async {
     final repo = ref.read(userRepositoryProvider);
     final previousState = state;
 
-    // Safe state access
     final currentFriends = state.value;
     if (currentFriends == null) return;
 
-    // Optimistic update
     state = AsyncValue.data(
       currentFriends.where((friend) => friend.uid != targetUid).toList(),
     );
 
     try {
       await repo.removeFriendWithCascade(targetUid);
-      // Also refresh calendars since sharing may have changed
       ref.invalidate(calendarsProvider);
     } catch (e, st) {
-      state = previousState; // Rollback on failure
-      state = AsyncValue.error(e, st); // Surface error to UI
+      state = previousState;
+      state = AsyncValue.error(e, st);
     }
   }
 }
 
-@riverpod
-Future<List<AppUser>> userSearch(Ref ref, String email) async {
-  // Skip search for short queries (repo requires 5+ chars anyway)
-  // This avoids unnecessary provider re-evaluations and API calls
+final userFriendsProvider =
+    AsyncNotifierProvider<UserFriendsNotifier, List<AppUser>>(
+  UserFriendsNotifier.new,
+);
+
+/// Search users by email.
+final userSearchProvider =
+    FutureProvider.family<List<AppUser>, String>((ref, email) async {
   if (email.trim().length < 5) {
     return [];
   }
   return await ref.read(userRepositoryProvider).searchUsersByEmail(email);
-}
+});
 
-@riverpod
-class CurrentUserNotifier extends _$CurrentUserNotifier {
+/// Current user notifier with profile management.
+class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
   @override
   Future<AppUser?> build() async {
     ref.keepAlive();
 
-    // Invalidate when auth state changes (logout/login)
     ref.listen(authStateProvider, (prev, next) {
       ref.invalidateSelf();
     });
 
-    // Use ref.read() - we only need the repo once, not reactive dependency
     final repo = ref.read(userRepositoryProvider);
     return await repo.currentUser;
   }
 
-  /// Update display name with proper error handling.
   Future<void> updateDisplayName(String newDisplayName) async {
     final repo = ref.read(userRepositoryProvider);
     final currentUid = repo.currentUserId;
@@ -156,7 +139,6 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     final previousState = state;
 
     try {
-      // Optimistic update
       final currentUser = state.value;
       if (currentUser != null) {
         state = AsyncValue.data(
@@ -166,21 +148,22 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
 
       await repo.updateDisplayName(newDisplayName);
     } catch (e, st) {
-      state = previousState; // Rollback on failure
-      state = AsyncValue.error(e, st); // Surface error to UI
+      state = previousState;
+      state = AsyncValue.error(e, st);
     }
   }
 
-  /// Delete the current user's account and all associated data.
-  /// This performs cascade deletion of calendars, events, and user data.
   Future<void> deleteAccount() async {
     final repo = ref.read(userRepositoryProvider);
 
     try {
       await repo.deleteUserAccount();
-      // Auth state change will trigger invalidation
     } catch (e, st) {
-      state = AsyncValue.error(e, st); // Surface error to UI
+      state = AsyncValue.error(e, st);
     }
   }
 }
+
+final currentUserProvider = AsyncNotifierProvider<CurrentUserNotifier, AppUser?>(
+  CurrentUserNotifier.new,
+);

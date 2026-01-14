@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/enums.dart';
 
-part 'nav_providers.g.dart';
-
-@riverpod
-class NavIndexNotifier extends _$NavIndexNotifier {
+class NavIndexNotifier extends Notifier<HomePages> {
   @override
   HomePages build() {
     return HomePages.calendar;
@@ -15,3 +12,7 @@ class NavIndexNotifier extends _$NavIndexNotifier {
   void updateWithInt(int newPage) => state = HomePages.values[newPage];
   void update(HomePages newPage) => state = newPage;
 }
+
+final navIndexProvider = NotifierProvider<NavIndexNotifier, HomePages>(
+  NavIndexNotifier.new,
+);
