@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppUser {
 
- String get uid; String get email; String get displayName; String? get photoUrl; bool get isAdmin;@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime get joinedAt; List<String> get friends;
+ String get uid; String get email; String get displayName; String? get photoUrl; bool get isAdmin;@JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp) DateTime get joinedAt; List<String> get friends;
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $AppUserCopyWith<$Res>  {
   factory $AppUserCopyWith(AppUser value, $Res Function(AppUser) _then) = _$AppUserCopyWithImpl;
 @useResult
 $Res call({
- String uid, String email, String displayName, String? photoUrl, bool isAdmin,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime joinedAt, List<String> friends
+ String uid, String email, String displayName, String? photoUrl, bool isAdmin,@JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp) DateTime joinedAt, List<String> friends
 });
 
 
@@ -159,7 +159,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email,  String displayName,  String? photoUrl,  bool isAdmin, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime joinedAt,  List<String> friends)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email,  String displayName,  String? photoUrl,  bool isAdmin, @JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp)  DateTime joinedAt,  List<String> friends)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
 return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.isAdmin,_that.joinedAt,_that.friends);case _:
@@ -180,7 +180,7 @@ return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.isA
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email,  String displayName,  String? photoUrl,  bool isAdmin, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime joinedAt,  List<String> friends)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email,  String displayName,  String? photoUrl,  bool isAdmin, @JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp)  DateTime joinedAt,  List<String> friends)  $default,) {final _that = this;
 switch (_that) {
 case _AppUser():
 return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.isAdmin,_that.joinedAt,_that.friends);case _:
@@ -200,7 +200,7 @@ return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.isA
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email,  String displayName,  String? photoUrl,  bool isAdmin, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime joinedAt,  List<String> friends)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email,  String displayName,  String? photoUrl,  bool isAdmin, @JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp)  DateTime joinedAt,  List<String> friends)?  $default,) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
 return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.isAdmin,_that.joinedAt,_that.friends);case _:
@@ -215,7 +215,7 @@ return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.isA
 @JsonSerializable()
 
 class _AppUser implements AppUser {
-  const _AppUser({required this.uid, required this.email, required this.displayName, this.photoUrl, this.isAdmin = false, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) required this.joinedAt, final  List<String> friends = const []}): _friends = friends;
+  const _AppUser({required this.uid, required this.email, required this.displayName, this.photoUrl, this.isAdmin = false, @JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp) required this.joinedAt, final  List<String> friends = const []}): _friends = friends;
   factory _AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);
 
 @override final  String uid;
@@ -223,7 +223,7 @@ class _AppUser implements AppUser {
 @override final  String displayName;
 @override final  String? photoUrl;
 @override@JsonKey() final  bool isAdmin;
-@override@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) final  DateTime joinedAt;
+@override@JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp) final  DateTime joinedAt;
  final  List<String> _friends;
 @override@JsonKey() List<String> get friends {
   if (_friends is EqualUnmodifiableListView) return _friends;
@@ -265,7 +265,7 @@ abstract mixin class _$AppUserCopyWith<$Res> implements $AppUserCopyWith<$Res> {
   factory _$AppUserCopyWith(_AppUser value, $Res Function(_AppUser) _then) = __$AppUserCopyWithImpl;
 @override @useResult
 $Res call({
- String uid, String email, String displayName, String? photoUrl, bool isAdmin,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime joinedAt, List<String> friends
+ String uid, String email, String displayName, String? photoUrl, bool isAdmin,@JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp) DateTime joinedAt, List<String> friends
 });
 
 

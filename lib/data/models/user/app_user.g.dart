@@ -12,7 +12,7 @@ _AppUser _$AppUserFromJson(Map<String, dynamic> json) => _AppUser(
   displayName: json['displayName'] as String,
   photoUrl: json['photoUrl'] as String?,
   isAdmin: json['isAdmin'] as bool? ?? false,
-  joinedAt: fromTimestamp(json['joinedAt']),
+  joinedAt: fromTimestamp(json['dateJoined']),
   friends:
       (json['friends'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
@@ -24,6 +24,6 @@ Map<String, dynamic> _$AppUserToJson(_AppUser instance) => <String, dynamic>{
   'displayName': instance.displayName,
   'photoUrl': instance.photoUrl,
   'isAdmin': instance.isAdmin,
-  'joinedAt': toTimestamp(instance.joinedAt),
+  'dateJoined': toTimestamp(instance.joinedAt),
   'friends': instance.friends,
 };

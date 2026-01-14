@@ -79,9 +79,10 @@ class RestApiAuthService implements AuthService {
         // Emit authenticated state immediately so UI updates
         _authStateController.add(AuthState.authenticated);
 
-        // Persist credentials (storage writes can hang on web, so do after state change)
-        await _storage.write(key: _apiKeyStorageKey, value: _apiKey!);
-        await _storage.write(key: _userIdStorageKey, value: _userId!);
+        // Persist credentials in background (storage writes can hang on web)
+        // Using unawaited to prevent login from hanging if storage is slow
+        unawaited(_storage.write(key: _apiKeyStorageKey, value: _apiKey!));
+        unawaited(_storage.write(key: _userIdStorageKey, value: _userId!));
 
         return _userId!;
       }
@@ -136,8 +137,8 @@ class RestApiAuthService implements AuthService {
         // Emit state immediately so UI updates
         _authStateController.add(AuthState.pendingVerification);
 
-        // Persist pending email (storage writes can hang on web, so do after state change)
-        await _storage.write(key: _pendingEmailStorageKey, value: email);
+        // Persist pending email in background (storage writes can hang on web)
+        unawaited(_storage.write(key: _pendingEmailStorageKey, value: email));
 
         return ''; // No user ID yet - must verify email first
       }
@@ -457,10 +458,10 @@ class RestApiAuthService implements AuthService {
       // Emit authenticated state immediately so UI updates
       _authStateController.add(AuthState.authenticated);
 
-      // Persist state changes (storage writes can hang on web, so do after state change)
-      await _storage.delete(key: _pendingEmailStorageKey);
-      await _storage.write(key: _apiKeyStorageKey, value: _apiKey!);
-      await _storage.write(key: _userIdStorageKey, value: _userId!);
+      // Persist state changes in background (storage writes can hang on web)
+      unawaited(_storage.delete(key: _pendingEmailStorageKey));
+      unawaited(_storage.write(key: _apiKeyStorageKey, value: _apiKey!));
+      unawaited(_storage.write(key: _userIdStorageKey, value: _userId!));
 
       return _userId!;
     } catch (e) {

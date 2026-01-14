@@ -14,7 +14,7 @@ abstract class AppUser with _$AppUser {
     required String displayName,
     String? photoUrl,
     @Default(false) bool isAdmin,
-    @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) required DateTime joinedAt,
+    @JsonKey(name: 'dateJoined', fromJson: fromTimestamp, toJson: toTimestamp) required DateTime joinedAt,
     @Default([]) List<String> friends,
   }) = _AppUser;
 

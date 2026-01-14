@@ -122,7 +122,7 @@ class TestData {
         'displayName': 'Test User',
         'photoUrl': null,
         'isAdmin': false,
-        'joinedAt': DateTime(2024, 1, 15).toUtc(),
+        'dateJoined': DateTime(2024, 1, 15).toUtc(),
         'friends': ['friend-user-456'],
       };
 }

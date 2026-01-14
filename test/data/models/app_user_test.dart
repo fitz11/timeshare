@@ -157,7 +157,7 @@ void main() {
         'displayName': 'From JSON',
         'photoUrl': null,
         'isAdmin': false,
-        'joinedAt': DateTime.utc(2024, 1, 15),
+        'dateJoined': DateTime.utc(2024, 1, 15),
         'friends': <String>[],
       };
 
