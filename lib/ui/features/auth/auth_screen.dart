@@ -24,6 +24,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   String? _errorMessage;
+  String? _infoMessage;
+  String? _pendingVerificationEmail;
+  bool _isResendingVerification = false;
 
   @override
   void dispose() {
@@ -39,6 +42,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _infoMessage = null;
+      _pendingVerificationEmail = null;
     });
 
     try {
@@ -90,13 +95,41 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         email: email,
         fromSignup: fromSignup,
       ),
-    );
+    ).then((_) {
+      if (mounted) {
+        setState(() {
+          _infoMessage = 'Please verify your email, then sign in again.';
+          _pendingVerificationEmail = email;
+        });
+      }
+    });
+  }
+
+  Future<void> _resendVerificationEmail() async {
+    if (_pendingVerificationEmail == null || _isResendingVerification) return;
+
+    setState(() => _isResendingVerification = true);
+
+    try {
+      await ref.read(resendVerificationEmailProvider)(_pendingVerificationEmail!);
+      if (mounted) {
+        setState(() {
+          _infoMessage = 'Verification email sent! Check your inbox.';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isResendingVerification = false);
+      }
+    }
   }
 
   void _toggleMode() {
     setState(() {
       _isLogin = !_isLogin;
       _errorMessage = null;
+      _infoMessage = null;
+      _pendingVerificationEmail = null;
     });
   }
 
@@ -122,7 +155,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
+              constraints: const BoxConstraints(maxWidth: 450),
               child: AutofillGroup(
                 child: Form(
                   key: _formKey,
@@ -193,6 +226,63 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   ),
 
                   const SizedBox(height: 32),
+
+                  // Info message (e.g., after email verification dialog)
+                  if (_infoMessage != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                color: theme.colorScheme.onPrimaryContainer,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _infoMessage!,
+                                  style: TextStyle(color: theme.colorScheme.onPrimaryContainer),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (_pendingVerificationEmail != null) ...[
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton.icon(
+                                onPressed: _isResendingVerification ? null : _resendVerificationEmail,
+                                icon: _isResendingVerification
+                                    ? SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: theme.colorScheme.primary,
+                                        ),
+                                      )
+                                    : const Icon(Icons.email_outlined, size: 18),
+                                label: const Text('Resend verification email'),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
 
                   // Error message
                   if (_errorMessage != null) ...[

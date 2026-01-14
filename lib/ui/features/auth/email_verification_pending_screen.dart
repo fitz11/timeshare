@@ -71,7 +71,9 @@ class _EmailVerificationPendingScreenState
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 450),
+              child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Email icon
@@ -194,6 +196,7 @@ class _EmailVerificationPendingScreenState
                   child: const Text('Sign in'),
                 ),
               ],
+              ),
             ),
           ),
         ),
