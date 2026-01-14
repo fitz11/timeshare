@@ -181,7 +181,7 @@ ThemeData buildTheme(ColorScheme colorScheme, Brightness brightness) {
     // AppBar Theme
     appBarTheme: AppBarTheme(
       elevation: 0,
-      centerTitle: false,
+      centerTitle: true,
       scrolledUnderElevation: 1,
       shape: const Border(
         bottom: BorderSide(color: Colors.transparent, width: 0),

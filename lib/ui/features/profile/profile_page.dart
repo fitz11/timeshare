@@ -404,6 +404,18 @@ class ProfilePage extends ConsumerWidget {
           ),
 
           const SizedBox(height: 32),
+
+          // Version Info
+          Center(
+            child: Text(
+              'Version 2.0.0',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
         ],
         ),
       ),

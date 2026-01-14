@@ -50,6 +50,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final title = page.name[0].toUpperCase() + page.name.substring(1);
     return AppBar(
       title: Text(title),
+      centerTitle: true,
       elevation: 8,
       leading: _buildLeadingForIndex(context, page),
       actions: _buildActionsForIndex(context, ref, page),
