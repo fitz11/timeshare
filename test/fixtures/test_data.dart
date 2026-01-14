@@ -109,7 +109,7 @@ class TestData {
         'id': 'event-1',
         'name': 'Test Event',
         'time': '2024-06-15T10:00:00.000Z',
-        'atendees': null,
+        'attendees': null,
         'color': Colors.blue.toARGB32(),
         'shape': 'circle',
         'recurrence': 'none',

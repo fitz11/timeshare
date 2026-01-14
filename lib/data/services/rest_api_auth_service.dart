@@ -127,7 +127,7 @@ class RestApiAuthService implements AuthService {
           await _postJsonWithStatus('/api/v1/timeshare/auth/register/', {
         'email': email,
         'password': password,
-        'display_name': displayName,
+        'displayName': displayName,
       });
 
       if (statusCode == 201) {
@@ -382,8 +382,8 @@ class RestApiAuthService implements AuthService {
     await _postJson(
       '/api/v1/timeshare/auth/change-password/',
       {
-        'current_password': currentPassword,
-        'new_password': newPassword,
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
       },
       authenticated: true,
     );
@@ -401,7 +401,7 @@ class RestApiAuthService implements AuthService {
     await _postJson(
       '/api/v1/timeshare/auth/change-email/',
       {
-        'new_email': newEmail,
+        'newEmail': newEmail,
         'password': password,
       },
       authenticated: true,

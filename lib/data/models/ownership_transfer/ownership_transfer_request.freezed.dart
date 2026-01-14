@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OwnershipTransferRequest {
 
- String get id; String get calendarId; String get calendarName; String get fromUid; String get toUid; TransferStatus get status;@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime get createdAt;// Denormalized fields for display (populated by backend)
+ String get id;@JsonKey(name: 'calendar') String get calendarId; String get calendarName;@JsonKey(name: 'fromUser') String get fromUid;@JsonKey(name: 'toUser') String get toUid; TransferStatus get status;@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime get createdAt;// Denormalized fields for display (populated by backend)
  String? get fromDisplayName; String? get fromEmail; String? get toDisplayName; String? get toEmail;
 /// Create a copy of OwnershipTransferRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -49,7 +49,7 @@ abstract mixin class $OwnershipTransferRequestCopyWith<$Res>  {
   factory $OwnershipTransferRequestCopyWith(OwnershipTransferRequest value, $Res Function(OwnershipTransferRequest) _then) = _$OwnershipTransferRequestCopyWithImpl;
 @useResult
 $Res call({
- String id, String calendarId, String calendarName, String fromUid, String toUid, TransferStatus status,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime createdAt, String? fromDisplayName, String? fromEmail, String? toDisplayName, String? toEmail
+ String id,@JsonKey(name: 'calendar') String calendarId, String calendarName,@JsonKey(name: 'fromUser') String fromUid,@JsonKey(name: 'toUser') String toUid, TransferStatus status,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime createdAt, String? fromDisplayName, String? fromEmail, String? toDisplayName, String? toEmail
 });
 
 
@@ -164,7 +164,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String calendarId,  String calendarName,  String fromUid,  String toUid,  TransferStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt,  String? fromDisplayName,  String? fromEmail,  String? toDisplayName,  String? toEmail)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'calendar')  String calendarId,  String calendarName, @JsonKey(name: 'fromUser')  String fromUid, @JsonKey(name: 'toUser')  String toUid,  TransferStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt,  String? fromDisplayName,  String? fromEmail,  String? toDisplayName,  String? toEmail)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OwnershipTransferRequest() when $default != null:
 return $default(_that.id,_that.calendarId,_that.calendarName,_that.fromUid,_that.toUid,_that.status,_that.createdAt,_that.fromDisplayName,_that.fromEmail,_that.toDisplayName,_that.toEmail);case _:
@@ -185,7 +185,7 @@ return $default(_that.id,_that.calendarId,_that.calendarName,_that.fromUid,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String calendarId,  String calendarName,  String fromUid,  String toUid,  TransferStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt,  String? fromDisplayName,  String? fromEmail,  String? toDisplayName,  String? toEmail)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'calendar')  String calendarId,  String calendarName, @JsonKey(name: 'fromUser')  String fromUid, @JsonKey(name: 'toUser')  String toUid,  TransferStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt,  String? fromDisplayName,  String? fromEmail,  String? toDisplayName,  String? toEmail)  $default,) {final _that = this;
 switch (_that) {
 case _OwnershipTransferRequest():
 return $default(_that.id,_that.calendarId,_that.calendarName,_that.fromUid,_that.toUid,_that.status,_that.createdAt,_that.fromDisplayName,_that.fromEmail,_that.toDisplayName,_that.toEmail);case _:
@@ -205,7 +205,7 @@ return $default(_that.id,_that.calendarId,_that.calendarName,_that.fromUid,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String calendarId,  String calendarName,  String fromUid,  String toUid,  TransferStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt,  String? fromDisplayName,  String? fromEmail,  String? toDisplayName,  String? toEmail)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'calendar')  String calendarId,  String calendarName, @JsonKey(name: 'fromUser')  String fromUid, @JsonKey(name: 'toUser')  String toUid,  TransferStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt,  String? fromDisplayName,  String? fromEmail,  String? toDisplayName,  String? toEmail)?  $default,) {final _that = this;
 switch (_that) {
 case _OwnershipTransferRequest() when $default != null:
 return $default(_that.id,_that.calendarId,_that.calendarName,_that.fromUid,_that.toUid,_that.status,_that.createdAt,_that.fromDisplayName,_that.fromEmail,_that.toDisplayName,_that.toEmail);case _:
@@ -220,14 +220,14 @@ return $default(_that.id,_that.calendarId,_that.calendarName,_that.fromUid,_that
 @JsonSerializable()
 
 class _OwnershipTransferRequest extends OwnershipTransferRequest {
-  const _OwnershipTransferRequest({required this.id, required this.calendarId, required this.calendarName, required this.fromUid, required this.toUid, this.status = TransferStatus.pending, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) required this.createdAt, this.fromDisplayName, this.fromEmail, this.toDisplayName, this.toEmail}): super._();
+  const _OwnershipTransferRequest({required this.id, @JsonKey(name: 'calendar') required this.calendarId, required this.calendarName, @JsonKey(name: 'fromUser') required this.fromUid, @JsonKey(name: 'toUser') required this.toUid, this.status = TransferStatus.pending, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) required this.createdAt, this.fromDisplayName, this.fromEmail, this.toDisplayName, this.toEmail}): super._();
   factory _OwnershipTransferRequest.fromJson(Map<String, dynamic> json) => _$OwnershipTransferRequestFromJson(json);
 
 @override final  String id;
-@override final  String calendarId;
+@override@JsonKey(name: 'calendar') final  String calendarId;
 @override final  String calendarName;
-@override final  String fromUid;
-@override final  String toUid;
+@override@JsonKey(name: 'fromUser') final  String fromUid;
+@override@JsonKey(name: 'toUser') final  String toUid;
 @override@JsonKey() final  TransferStatus status;
 @override@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) final  DateTime createdAt;
 // Denormalized fields for display (populated by backend)
@@ -269,7 +269,7 @@ abstract mixin class _$OwnershipTransferRequestCopyWith<$Res> implements $Owners
   factory _$OwnershipTransferRequestCopyWith(_OwnershipTransferRequest value, $Res Function(_OwnershipTransferRequest) _then) = __$OwnershipTransferRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String calendarId, String calendarName, String fromUid, String toUid, TransferStatus status,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime createdAt, String? fromDisplayName, String? fromEmail, String? toDisplayName, String? toEmail
+ String id,@JsonKey(name: 'calendar') String calendarId, String calendarName,@JsonKey(name: 'fromUser') String fromUid,@JsonKey(name: 'toUser') String toUid, TransferStatus status,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime createdAt, String? fromDisplayName, String? fromEmail, String? toDisplayName, String? toEmail
 });
 
 

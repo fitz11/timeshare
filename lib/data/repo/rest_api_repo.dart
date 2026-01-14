@@ -74,9 +74,10 @@ class RestApiRepository implements CalendarRepository {
 
   @override
   Future<void> createCalendar(Calendar calendar) async {
+    // API only expects 'name' field for calendar creation
     await _client.post(
       '/api/v1/timeshare/calendars/',
-      body: jsonEncode(calendar.toJson()),
+      body: jsonEncode({'name': calendar.name}),
     );
   }
 
@@ -253,6 +254,6 @@ class RestApiRepository implements CalendarRepository {
 
   @override
   Future<void> deleteAllEventsForCalendar(String calendarId) async {
-    await _client.delete('/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/events/');
+    await _client.delete('/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/events/clear/');
   }
 }

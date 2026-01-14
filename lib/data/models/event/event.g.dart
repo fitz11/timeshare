@@ -10,7 +10,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   id: json['id'] as String,
   name: json['name'] as String,
   time: DateTime.parse(json['time'] as String),
-  atendees: (json['atendees'] as List<dynamic>?)
+  attendees: (json['attendees'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
   color: json['color'] == null
@@ -33,7 +33,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
   'time': instance.time.toIso8601String(),
-  'atendees': instance.atendees,
+  'attendees': instance.attendees,
   'color': const ColorConverter().toJson(instance.color),
   'shape': const ShapeConverter().toJson(instance.shape),
   'recurrence': _$EventRecurrenceEnumMap[instance.recurrence]!,

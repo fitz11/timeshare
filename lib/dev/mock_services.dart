@@ -365,7 +365,7 @@ class MockApiClient implements ApiClient {
         'id': eventId,
         'name': data['name'] ?? 'New Event',
         'time': data['time'] ?? DateTime.now().toIso8601String(),
-        'atendees': data['atendees'],
+        'attendees': data['attendees'],
         'color': data['color'],
         'shape': data['shape'] ?? 'circle',
         'recurrence': data['recurrence'] ?? 'none',

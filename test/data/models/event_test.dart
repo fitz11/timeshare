@@ -22,7 +22,7 @@ void main() {
         id: 'event-2',
         name: 'Full Event',
         time: DateTime.utc(2024, 6, 15, 14, 30),
-        atendees: ['user1', 'user2'],
+        attendees: ['user1', 'user2'],
         color: Colors.red,
         shape: BoxShape.rectangle,
         recurrence: EventRecurrence.weekly,
@@ -30,7 +30,7 @@ void main() {
       );
 
       expect(event.name, 'Full Event');
-      expect(event.atendees, ['user1', 'user2']);
+      expect(event.attendees, ['user1', 'user2']);
       expect(event.color, Colors.red);
       expect(event.shape, BoxShape.rectangle);
       expect(event.recurrence, EventRecurrence.weekly);
@@ -172,7 +172,7 @@ void main() {
         id: 'event-13',
         name: 'Roundtrip',
         time: DateTime.utc(2024, 6, 15, 14, 30),
-        atendees: ['user1'],
+        attendees: ['user1'],
         color: Colors.green,
         shape: BoxShape.rectangle,
         recurrence: EventRecurrence.monthly,

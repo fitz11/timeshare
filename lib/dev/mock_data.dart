@@ -256,7 +256,7 @@ Map<String, dynamic> _eventToJson(Event event) {
     'id': event.id,
     'name': event.name,
     'time': event.time.toIso8601String(),
-    'atendees': event.atendees,
+    'attendees': event.attendees,
     'color': event.color.toARGB32(),
     'shape': event.shape == BoxShape.circle ? 'circle' : 'rectangle',
     'recurrence': event.recurrence.name,

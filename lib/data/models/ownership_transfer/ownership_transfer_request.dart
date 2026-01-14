@@ -27,10 +27,10 @@ abstract class OwnershipTransferRequest with _$OwnershipTransferRequest {
 
   const factory OwnershipTransferRequest({
     required String id,
-    required String calendarId,
+    @JsonKey(name: 'calendar') required String calendarId,
     required String calendarName,
-    required String fromUid,
-    required String toUid,
+    @JsonKey(name: 'fromUser') required String fromUid,
+    @JsonKey(name: 'toUser') required String toUid,
     @Default(TransferStatus.pending) TransferStatus status,
     @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)
     required DateTime createdAt,

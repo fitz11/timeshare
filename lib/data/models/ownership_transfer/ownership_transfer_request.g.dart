@@ -10,10 +10,10 @@ _OwnershipTransferRequest _$OwnershipTransferRequestFromJson(
   Map<String, dynamic> json,
 ) => _OwnershipTransferRequest(
   id: json['id'] as String,
-  calendarId: json['calendarId'] as String,
+  calendarId: json['calendar'] as String,
   calendarName: json['calendarName'] as String,
-  fromUid: json['fromUid'] as String,
-  toUid: json['toUid'] as String,
+  fromUid: json['fromUser'] as String,
+  toUid: json['toUser'] as String,
   status:
       $enumDecodeNullable(_$TransferStatusEnumMap, json['status']) ??
       TransferStatus.pending,
@@ -28,10 +28,10 @@ Map<String, dynamic> _$OwnershipTransferRequestToJson(
   _OwnershipTransferRequest instance,
 ) => <String, dynamic>{
   'id': instance.id,
-  'calendarId': instance.calendarId,
+  'calendar': instance.calendarId,
   'calendarName': instance.calendarName,
-  'fromUid': instance.fromUid,
-  'toUid': instance.toUid,
+  'fromUser': instance.fromUid,
+  'toUser': instance.toUid,
   'status': _$TransferStatusEnumMap[instance.status]!,
   'createdAt': toTimestamp(instance.createdAt),
   'fromDisplayName': instance.fromDisplayName,
