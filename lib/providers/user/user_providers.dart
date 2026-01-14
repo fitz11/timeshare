@@ -108,22 +108,9 @@ final userFriendsProvider =
   UserFriendsNotifier.new,
 );
 
-/// Current search query for user search.
-class UserSearchQuery extends Notifier<String> {
-  @override
-  String build() => '';
-
-  void set(String query) => state = query;
-  void clear() => state = '';
-}
-
-final userSearchQueryProvider = NotifierProvider<UserSearchQuery, String>(
-  UserSearchQuery.new,
-);
-
-/// Search users by email - watches the search query provider.
-final userSearchProvider = FutureProvider<List<AppUser>>((ref) async {
-  final email = ref.watch(userSearchQueryProvider);
+/// Search users by email.
+final userSearchProvider =
+    FutureProvider.family<List<AppUser>, String>((ref, email) async {
   if (email.trim().length < 5) {
     return [];
   }
