@@ -276,7 +276,7 @@ Map<String, dynamic> _userToJson(AppUser user) {
     'displayName': user.displayName,
     'photoUrl': user.photoUrl,
     'isAdmin': user.isAdmin,
-    'joinedAt': user.joinedAt.toUtc().toIso8601String(),
+    'dateJoined': user.joinedAt.toUtc().toIso8601String(),
     'friends': user.friends,
   };
 }
