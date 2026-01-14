@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FriendRequest {
 
- String get id; String get fromUid; String get toUid; FriendRequestStatus get status;@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime get createdAt;@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime get expiresAt;// Denormalized fields for display (populated by backend)
+ String get id;@JsonKey(name: 'fromUser') String get fromUid;@JsonKey(name: 'toUser') String get toUid; FriendRequestStatus get status;@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime get createdAt;@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime get expiresAt;// Denormalized fields for display (populated by backend)
  String? get fromDisplayName; String? get fromEmail; String? get fromPhotoUrl; String? get toDisplayName; String? get toEmail; String? get toPhotoUrl;
 /// Create a copy of FriendRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -49,7 +49,7 @@ abstract mixin class $FriendRequestCopyWith<$Res>  {
   factory $FriendRequestCopyWith(FriendRequest value, $Res Function(FriendRequest) _then) = _$FriendRequestCopyWithImpl;
 @useResult
 $Res call({
- String id, String fromUid, String toUid, FriendRequestStatus status,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime createdAt,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime expiresAt, String? fromDisplayName, String? fromEmail, String? fromPhotoUrl, String? toDisplayName, String? toEmail, String? toPhotoUrl
+ String id,@JsonKey(name: 'fromUser') String fromUid,@JsonKey(name: 'toUser') String toUid, FriendRequestStatus status,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime createdAt,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime expiresAt, String? fromDisplayName, String? fromEmail, String? fromPhotoUrl, String? toDisplayName, String? toEmail, String? toPhotoUrl
 });
 
 
@@ -165,7 +165,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String fromUid,  String toUid,  FriendRequestStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime expiresAt,  String? fromDisplayName,  String? fromEmail,  String? fromPhotoUrl,  String? toDisplayName,  String? toEmail,  String? toPhotoUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'fromUser')  String fromUid, @JsonKey(name: 'toUser')  String toUid,  FriendRequestStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime expiresAt,  String? fromDisplayName,  String? fromEmail,  String? fromPhotoUrl,  String? toDisplayName,  String? toEmail,  String? toPhotoUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FriendRequest() when $default != null:
 return $default(_that.id,_that.fromUid,_that.toUid,_that.status,_that.createdAt,_that.expiresAt,_that.fromDisplayName,_that.fromEmail,_that.fromPhotoUrl,_that.toDisplayName,_that.toEmail,_that.toPhotoUrl);case _:
@@ -186,7 +186,7 @@ return $default(_that.id,_that.fromUid,_that.toUid,_that.status,_that.createdAt,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String fromUid,  String toUid,  FriendRequestStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime expiresAt,  String? fromDisplayName,  String? fromEmail,  String? fromPhotoUrl,  String? toDisplayName,  String? toEmail,  String? toPhotoUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'fromUser')  String fromUid, @JsonKey(name: 'toUser')  String toUid,  FriendRequestStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime expiresAt,  String? fromDisplayName,  String? fromEmail,  String? fromPhotoUrl,  String? toDisplayName,  String? toEmail,  String? toPhotoUrl)  $default,) {final _that = this;
 switch (_that) {
 case _FriendRequest():
 return $default(_that.id,_that.fromUid,_that.toUid,_that.status,_that.createdAt,_that.expiresAt,_that.fromDisplayName,_that.fromEmail,_that.fromPhotoUrl,_that.toDisplayName,_that.toEmail,_that.toPhotoUrl);case _:
@@ -206,7 +206,7 @@ return $default(_that.id,_that.fromUid,_that.toUid,_that.status,_that.createdAt,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String fromUid,  String toUid,  FriendRequestStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime expiresAt,  String? fromDisplayName,  String? fromEmail,  String? fromPhotoUrl,  String? toDisplayName,  String? toEmail,  String? toPhotoUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'fromUser')  String fromUid, @JsonKey(name: 'toUser')  String toUid,  FriendRequestStatus status, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime createdAt, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)  DateTime expiresAt,  String? fromDisplayName,  String? fromEmail,  String? fromPhotoUrl,  String? toDisplayName,  String? toEmail,  String? toPhotoUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _FriendRequest() when $default != null:
 return $default(_that.id,_that.fromUid,_that.toUid,_that.status,_that.createdAt,_that.expiresAt,_that.fromDisplayName,_that.fromEmail,_that.fromPhotoUrl,_that.toDisplayName,_that.toEmail,_that.toPhotoUrl);case _:
@@ -221,12 +221,12 @@ return $default(_that.id,_that.fromUid,_that.toUid,_that.status,_that.createdAt,
 @JsonSerializable()
 
 class _FriendRequest extends FriendRequest {
-  const _FriendRequest({required this.id, required this.fromUid, required this.toUid, this.status = FriendRequestStatus.pending, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) required this.createdAt, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) required this.expiresAt, this.fromDisplayName, this.fromEmail, this.fromPhotoUrl, this.toDisplayName, this.toEmail, this.toPhotoUrl}): super._();
+  const _FriendRequest({required this.id, @JsonKey(name: 'fromUser') required this.fromUid, @JsonKey(name: 'toUser') required this.toUid, this.status = FriendRequestStatus.pending, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) required this.createdAt, @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) required this.expiresAt, this.fromDisplayName, this.fromEmail, this.fromPhotoUrl, this.toDisplayName, this.toEmail, this.toPhotoUrl}): super._();
   factory _FriendRequest.fromJson(Map<String, dynamic> json) => _$FriendRequestFromJson(json);
 
 @override final  String id;
-@override final  String fromUid;
-@override final  String toUid;
+@override@JsonKey(name: 'fromUser') final  String fromUid;
+@override@JsonKey(name: 'toUser') final  String toUid;
 @override@JsonKey() final  FriendRequestStatus status;
 @override@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) final  DateTime createdAt;
 @override@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) final  DateTime expiresAt;
@@ -271,7 +271,7 @@ abstract mixin class _$FriendRequestCopyWith<$Res> implements $FriendRequestCopy
   factory _$FriendRequestCopyWith(_FriendRequest value, $Res Function(_FriendRequest) _then) = __$FriendRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String fromUid, String toUid, FriendRequestStatus status,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime createdAt,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime expiresAt, String? fromDisplayName, String? fromEmail, String? fromPhotoUrl, String? toDisplayName, String? toEmail, String? toPhotoUrl
+ String id,@JsonKey(name: 'fromUser') String fromUid,@JsonKey(name: 'toUser') String toUid, FriendRequestStatus status,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime createdAt,@JsonKey(fromJson: fromTimestamp, toJson: toTimestamp) DateTime expiresAt, String? fromDisplayName, String? fromEmail, String? fromPhotoUrl, String? toDisplayName, String? toEmail, String? toPhotoUrl
 });
 
 

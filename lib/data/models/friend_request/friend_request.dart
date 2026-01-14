@@ -26,8 +26,8 @@ abstract class FriendRequest with _$FriendRequest {
 
   const factory FriendRequest({
     required String id,
-    required String fromUid,
-    required String toUid,
+    @JsonKey(name: 'fromUser') required String fromUid,
+    @JsonKey(name: 'toUser') required String toUid,
     @Default(FriendRequestStatus.pending) FriendRequestStatus status,
     @JsonKey(fromJson: fromTimestamp, toJson: toTimestamp)
     required DateTime createdAt,

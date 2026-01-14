@@ -9,8 +9,8 @@ part of 'friend_request.dart';
 _FriendRequest _$FriendRequestFromJson(Map<String, dynamic> json) =>
     _FriendRequest(
       id: json['id'] as String,
-      fromUid: json['fromUid'] as String,
-      toUid: json['toUid'] as String,
+      fromUid: json['fromUser'] as String,
+      toUid: json['toUser'] as String,
       status:
           $enumDecodeNullable(_$FriendRequestStatusEnumMap, json['status']) ??
           FriendRequestStatus.pending,
@@ -27,8 +27,8 @@ _FriendRequest _$FriendRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$FriendRequestToJson(_FriendRequest instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'fromUid': instance.fromUid,
-      'toUid': instance.toUid,
+      'fromUser': instance.fromUid,
+      'toUser': instance.toUid,
       'status': _$FriendRequestStatusEnumMap[instance.status]!,
       'createdAt': toTimestamp(instance.createdAt),
       'expiresAt': toTimestamp(instance.expiresAt),
