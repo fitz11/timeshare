@@ -114,7 +114,7 @@ class RestApiAuthService implements AuthService {
     _authStateController.add(AuthState.loading);
 
     try {
-      final (statusCode, _) =
+      final (statusCode, responseBody) =
           await _postJsonWithStatus('/api/v1/timeshare/auth/register/', {
         'email': email,
         'password': password,
@@ -132,7 +132,7 @@ class RestApiAuthService implements AuthService {
       _authStateController.add(AuthState.error);
       throw AuthException(
         statusCode: statusCode,
-        message: 'Unexpected response from server',
+        message: _extractErrorMessage(responseBody, statusCode),
       );
     } catch (e) {
       if (e is! AuthException) {
