@@ -8,6 +8,7 @@ import 'package:timeshare/ui/core/responsive/responsive.dart';
 import 'package:timeshare/ui/features/calendar/dialogs/share_calendar_dialog.dart';
 import 'package:timeshare/ui/features/calendar/widgets/ownership_transfer_section.dart';
 import 'package:timeshare/ui/features/friends/widgets/friend_requests_section.dart';
+import 'package:timeshare/ui/features/friends/widgets/outgoing_friend_requests_section.dart';
 import 'package:timeshare/utils/error_utils.dart';
 import 'package:timeshare/utils/string_utils.dart';
 
@@ -37,8 +38,7 @@ class FriendsPage extends ConsumerWidget {
               ),
               // Friends list or empty state
               if (friendsList.isEmpty)
-                SliverFillRemaining(
-                  hasScrollBody: false,
+                SliverToBoxAdapter(
                   child: _buildEmptyState(context),
                 )
               else
@@ -54,6 +54,10 @@ class FriendsPage extends ConsumerWidget {
                     ),
                   ),
                 ),
+              // Outgoing friend requests at the bottom
+              const SliverToBoxAdapter(
+                child: OutgoingFriendRequestsSection(),
+              ),
             ],
             ),
           ),
