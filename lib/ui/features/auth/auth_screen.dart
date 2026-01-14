@@ -59,7 +59,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       // Navigation handled by AuthGate reacting to auth state change
     } on EmailNotVerifiedException catch (e) {
       if (mounted) {
-        _showEmailNotVerifiedDialog(e.email);
+        _showEmailNotVerifiedDialog(e.email, fromSignup: !_isLogin);
       }
     } on AuthException catch (e) {
       setState(() {
@@ -82,12 +82,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     }
   }
 
-  void _showEmailNotVerifiedDialog(String email) {
+  void _showEmailNotVerifiedDialog(String email, {bool fromSignup = false}) {
     showDialog(
       context: context,
       builder: (context) => _EmailNotVerifiedDialog(
         ref: ref,
         email: email,
+        fromSignup: fromSignup,
       ),
     );
   }
@@ -120,42 +121,53 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Logo
-                  Container(
-                    width: 100,
-                    height: 100,
-                    margin: const EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: AutofillGroup(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Logo
+                      Center(
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              'assets/timeshareimg.png',
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.surfaceContainerHighest,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Icon(
+                                    Icons.calendar_month,
+                                    size: 60,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/timeshareimg.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(
-                            Icons.calendar_month,
-                            size: 60,
-                            color: theme.colorScheme.primary,
-                          );
-                        },
                       ),
-                    ),
-                  ),
 
                   // App Name
                   Text(
@@ -209,6 +221,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         border: OutlineInputBorder(),
                       ),
                       textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.name],
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Please enter your name';
@@ -230,6 +243,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     autocorrect: false,
+                    autofillHints: [
+                      _isLogin ? AutofillHints.email : AutofillHints.newUsername,
+                    ],
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Please enter your email';
@@ -264,6 +280,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     obscureText: _obscurePassword,
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
+                    autofillHints: [
+                      _isLogin ? AutofillHints.password : AutofillHints.newPassword,
+                    ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
@@ -327,7 +346,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                ],
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -472,14 +493,17 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
   }
 }
 
-/// Dialog shown when login fails due to unverified email.
+/// Dialog shown when authentication fails due to unverified email.
+/// A verification email is automatically sent before showing this dialog.
 class _EmailNotVerifiedDialog extends StatefulWidget {
   final WidgetRef ref;
   final String email;
+  final bool fromSignup;
 
   const _EmailNotVerifiedDialog({
     required this.ref,
     required this.email,
+    this.fromSignup = false,
   });
 
   @override
@@ -489,7 +513,7 @@ class _EmailNotVerifiedDialog extends StatefulWidget {
 
 class _EmailNotVerifiedDialogState extends State<_EmailNotVerifiedDialog> {
   bool _isLoading = false;
-  bool _sent = false;
+  bool _resentAgain = false;
 
   Future<void> _resend() async {
     setState(() => _isLoading = true);
@@ -499,7 +523,7 @@ class _EmailNotVerifiedDialogState extends State<_EmailNotVerifiedDialog> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _sent = true;
+          _resentAgain = true;
         });
       }
     } catch (e) {
@@ -507,74 +531,69 @@ class _EmailNotVerifiedDialogState extends State<_EmailNotVerifiedDialog> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _sent = true;
+          _resentAgain = true;
         });
       }
     }
   }
 
+  String get _title => widget.fromSignup
+      ? 'Account Already Exists'
+      : 'Email Not Verified';
+
+  String get _message {
+    if (widget.fromSignup) {
+      return 'An account with ${widget.email} already exists but has not been verified yet. '
+          "We've sent a new verification link to your inbox.";
+    }
+    return 'Your email address (${widget.email}) has not been verified yet. '
+        "We've sent a verification link to your inbox.";
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_sent) {
-      return AlertDialog(
-        title: const Text('Check Your Email'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.mark_email_read_outlined,
-              size: 48,
-              color: Colors.green,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'If an unverified account exists for ${widget.email}, '
-              'you will receive a verification link shortly.',
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
-          ),
-        ],
-      );
-    }
-
     return AlertDialog(
-      title: const Text('Email Not Verified'),
+      title: Text(_title),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.warning_amber_outlined,
+          Icon(
+            _resentAgain ? Icons.mark_email_read_outlined : Icons.email_outlined,
             size: 48,
-            color: Colors.orange,
+            color: _resentAgain ? Colors.green : Colors.orange,
           ),
           const SizedBox(height: 16),
           Text(
-            'Your email address (${widget.email}) has not been verified yet. '
-            'Please check your inbox for the verification link, or request a new one.',
+            _resentAgain
+                ? 'Another verification email has been sent to ${widget.email}.'
+                : _message,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Don't forget to check your spam folder.",
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
+        if (!_resentAgain)
+          TextButton(
+            onPressed: _isLoading ? null : _resend,
+            child: _isLoading
+                ? const SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Resend Email'),
+          ),
         FilledButton(
-          onPressed: _isLoading ? null : _resend,
-          child: _isLoading
-              ? const SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Resend Verification'),
+          onPressed: () => Navigator.pop(context),
+          child: const Text('OK'),
         ),
       ],
     );

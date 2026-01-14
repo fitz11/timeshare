@@ -87,6 +87,8 @@ class RestApiAuthService implements AuthService {
         final data = jsonDecode(responseBody);
         if (data['email_not_verified'] == true) {
           _authStateController.add(AuthState.unauthenticated);
+          // Auto-send verification email when login blocked due to unverified email
+          await resendVerificationEmail(email);
           throw EmailNotVerifiedException(email: email);
         }
       }
@@ -131,11 +133,29 @@ class RestApiAuthService implements AuthService {
         return ''; // No user ID yet - must verify email first
       }
 
+      // Check if signup failed because account exists but is unverified
+      if (statusCode == 409) {
+        try {
+          final data = jsonDecode(responseBody);
+          if (data['email_not_verified'] == true) {
+            _authStateController.add(AuthState.unauthenticated);
+            // Auto-send verification email for existing unverified account
+            await resendVerificationEmail(email);
+            throw EmailNotVerifiedException(email: email);
+          }
+        } catch (e) {
+          if (e is EmailNotVerifiedException) rethrow;
+          // JSON parsing failed, fall through to generic error
+        }
+      }
+
       _authStateController.add(AuthState.error);
       throw AuthException(
         statusCode: statusCode,
         message: _extractErrorMessage(responseBody, statusCode),
       );
+    } on EmailNotVerifiedException {
+      rethrow;
     } on AuthException {
       rethrow;
     } catch (e, stackTrace) {
