@@ -75,11 +75,13 @@ class RestApiAuthService implements AuthService {
         _apiKey = apiKey;
         _userId = uid;
 
-        // Persist credentials
+        // Emit authenticated state immediately so UI updates
+        _authStateController.add(AuthState.authenticated);
+
+        // Persist credentials (storage writes can hang on web, so do after state change)
         await _storage.write(key: _apiKeyStorageKey, value: _apiKey!);
         await _storage.write(key: _userIdStorageKey, value: _userId!);
 
-        _authStateController.add(AuthState.authenticated);
         return _userId!;
       }
 
@@ -128,8 +130,13 @@ class RestApiAuthService implements AuthService {
       if (statusCode == 201) {
         // Registration successful, email verification required
         _pendingVerificationEmail = email;
-        await _storage.write(key: _pendingEmailStorageKey, value: email);
+
+        // Emit state immediately so UI updates
         _authStateController.add(AuthState.pendingVerification);
+
+        // Persist pending email (storage writes can hang on web, so do after state change)
+        await _storage.write(key: _pendingEmailStorageKey, value: email);
+
         return ''; // No user ID yet - must verify email first
       }
 
@@ -436,13 +443,15 @@ class RestApiAuthService implements AuthService {
 
       // Clear pending state
       _pendingVerificationEmail = null;
-      await _storage.delete(key: _pendingEmailStorageKey);
 
-      // Persist credentials
+      // Emit authenticated state immediately so UI updates
+      _authStateController.add(AuthState.authenticated);
+
+      // Persist state changes (storage writes can hang on web, so do after state change)
+      await _storage.delete(key: _pendingEmailStorageKey);
       await _storage.write(key: _apiKeyStorageKey, value: _apiKey!);
       await _storage.write(key: _userIdStorageKey, value: _userId!);
 
-      _authStateController.add(AuthState.authenticated);
       return _userId!;
     } catch (e) {
       _authStateController.add(AuthState.error);
