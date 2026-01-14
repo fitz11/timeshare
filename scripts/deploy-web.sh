@@ -13,30 +13,29 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-TARGET_DIR="$PROJECT_DIR/../squishygoose/static/timeshare"
+SQUISHYGOOSE_DIR="$PROJECT_DIR/../squishygoose"
+TARGET_DIR="$SQUISHYGOOSE_DIR/timeshare-web"
 
 cd "$PROJECT_DIR"
 
 echo "Building web release..."
-flutter build web --release
+flutter build web --release --dart-define=ENV=prod
 
-if [ ! -d "$TARGET_DIR" ]; then
+if [ ! -d "$SQUISHYGOOSE_DIR" ]; then
     echo ""
-    echo "ERROR: Target directory not found: $TARGET_DIR"
+    echo "ERROR: squishygoose directory not found: $SQUISHYGOOSE_DIR"
     echo ""
     echo "Expected directory structure:"
     echo "  parent/"
     echo "    timeshare/      <- this repo ($(basename "$PROJECT_DIR"))"
     echo "    squishygoose/   <- must exist as sibling directory"
-    echo "      static/"
-    echo "        timeshare/  <- web files deployed here"
     echo ""
     echo "Please ensure squishygoose is a sibling directory of timeshare."
     exit 1
 fi
 
 echo "Deploying to $TARGET_DIR..."
-rm -rf "$TARGET_DIR"/*
-cp -r build/web/* "$TARGET_DIR/"
+rm -rf "$TARGET_DIR"
+cp -r build/web "$TARGET_DIR"
 
 echo "Done! Web app deployed to $TARGET_DIR"
