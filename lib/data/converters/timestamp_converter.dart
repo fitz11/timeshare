@@ -4,10 +4,12 @@ import 'package:timeshare/data/models/event/event.dart';
 
 /// Convert a value to DateTime.
 /// Handles DateTime objects and ISO 8601 strings.
+/// Returns Unix epoch (1970-01-01) if value is null or invalid type.
 DateTime fromTimestamp(dynamic value) {
   if (value is DateTime) return value;
   if (value is String) return DateTime.parse(value);
-  throw Exception('invalid timestamp: $value');
+  // Return epoch for null/invalid - prevents crashes on malformed API responses
+  return DateTime.utc(1970, 1, 1);
 }
 
 /// Convert DateTime to UTC for storage.
