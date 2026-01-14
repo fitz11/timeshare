@@ -65,9 +65,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       setState(() {
         _errorMessage = e.message;
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log the actual error type and message for debugging
+      debugPrint('Auth error (${e.runtimeType}): $e');
+      debugPrint('Stack trace: $stackTrace');
       setState(() {
-        _errorMessage = 'An unexpected error occurred. Please try again.';
+        // Show more detail to help diagnose production issues
+        _errorMessage = 'Error: ${e.runtimeType}. Please try again or contact support.';
       });
     } finally {
       if (mounted) {

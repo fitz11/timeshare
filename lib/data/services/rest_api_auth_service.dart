@@ -46,9 +46,8 @@ class RestApiAuthService implements AuthService {
 
   @override
   Future<String> login(String email, String password) async {
-    _authStateController.add(AuthState.loading);
-
     try {
+      _authStateController.add(AuthState.loading);
       final (statusCode, responseBody) =
           await _postJsonWithStatus('/api/v1/timeshare/auth/login/', {
         'email': email,
@@ -101,7 +100,9 @@ class RestApiAuthService implements AuthService {
       rethrow;
     } on AuthException {
       rethrow;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Login error (${e.runtimeType}): $e');
+      debugPrint('Login stack trace: $stackTrace');
       _authStateController.add(AuthState.error);
       throw AuthException(
         statusCode: 0,
@@ -113,9 +114,8 @@ class RestApiAuthService implements AuthService {
   @override
   Future<String> signup(
       String email, String password, String displayName) async {
-    _authStateController.add(AuthState.loading);
-
     try {
+      _authStateController.add(AuthState.loading);
       final (statusCode, responseBody) =
           await _postJsonWithStatus('/api/v1/timeshare/auth/register/', {
         'email': email,
@@ -138,7 +138,9 @@ class RestApiAuthService implements AuthService {
       );
     } on AuthException {
       rethrow;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Signup error (${e.runtimeType}): $e');
+      debugPrint('Signup stack trace: $stackTrace');
       _authStateController.add(AuthState.error);
       throw AuthException(
         statusCode: 0,
@@ -170,9 +172,8 @@ class RestApiAuthService implements AuthService {
 
   @override
   Future<bool> loadStoredCredentials() async {
-    _authStateController.add(AuthState.loading);
-
     try {
+      _authStateController.add(AuthState.loading);
       // Check for pending verification first
       final pendingEmail = await _storage.read(key: _pendingEmailStorageKey);
       if (pendingEmail != null) {
@@ -387,9 +388,8 @@ class RestApiAuthService implements AuthService {
 
   @override
   Future<String> verifyEmail(String token) async {
-    _authStateController.add(AuthState.loading);
-
     try {
+      _authStateController.add(AuthState.loading);
       final response = await _postJson(
         '/api/v1/timeshare/auth/verify-email/',
         {'token': token},
