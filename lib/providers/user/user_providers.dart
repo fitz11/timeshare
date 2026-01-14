@@ -122,8 +122,14 @@ class UserFriendsNotifier extends _$UserFriendsNotifier {
 }
 
 @riverpod
-Future<List<AppUser>> userSearch(Ref ref, String email) async =>
-    await ref.watch(userRepositoryProvider).searchUsersByEmail(email);
+Future<List<AppUser>> userSearch(Ref ref, String email) async {
+  // Skip search for short queries (repo requires 5+ chars anyway)
+  // This avoids unnecessary provider re-evaluations and API calls
+  if (email.trim().length < 5) {
+    return [];
+  }
+  return await ref.read(userRepositoryProvider).searchUsersByEmail(email);
+}
 
 @riverpod
 class CurrentUserNotifier extends _$CurrentUserNotifier {

@@ -83,7 +83,7 @@ class CalendarMutations extends _$CalendarMutations {
 
   @override
   void build() {
-    // No initial state needed
+    ref.keepAlive(); // Keep mutations provider alive to prevent ref invalidation
   }
 
   /// Add calendar with optimistic UI update.
@@ -123,23 +123,23 @@ class CalendarMutations extends _$CalendarMutations {
     required String calendarId,
     required Event event,
   }) async {
-    // Ensure event has an ID
-    final eventToAdd = event.id.isEmpty
-        ? event.copyWith(id: _uuid.v4())
-        : event;
+    // Ensure event has an ID and calendarId for proper display
+    final eventToAdd = event.copyWith(
+      id: event.id.isEmpty ? _uuid.v4() : event.id,
+      calendarId: calendarId,
+    );
 
     // Add to optimistic state immediately
     ref.read(optimisticEventsProvider.notifier).addPending(eventToAdd);
 
     try {
       final created = await _repo.addEvent(calendarId, eventToAdd);
-      // Success - remove optimistic and fetch server data immediately
-      // (server may assign different ID, so we need to sync)
-      ref.read(optimisticEventsProvider.notifier).removePending(eventToAdd.id);
-      ref.invalidate(eventsForSelectedCalendarsProvider);
+      // Success - DON'T remove optimistic here!
+      // The event stays in pending until polling brings server data with matching ID.
+      // eventsWithOptimisticProvider will clean it up automatically via deduplication.
       return MutationResult.success(created);
     } catch (e) {
-      // Failure - remove from optimistic
+      // Failure - remove from optimistic (event wasn't created)
       ref.read(optimisticEventsProvider.notifier).removePending(eventToAdd.id);
       return MutationResult.failure('Failed to create event: $e');
     }
@@ -323,13 +323,13 @@ class CalendarMutations extends _$CalendarMutations {
 }
 
 /// Selected calendar IDs - which calendars are visible
-/// Synchronous projection from calendars stream - no async overhead.
+/// Uses optimistic calendars for instant UI feedback.
 @riverpod
 class SelectedCalendarIds extends _$SelectedCalendarIds {
   @override
   Set<String> build() {
-    // Project calendar IDs synchronously from the stream value
-    final calendarsAsync = ref.watch(calendarsProvider);
+    // Use optimistic calendars for instant UI feedback
+    final calendarsAsync = ref.watch(calendarsWithOptimisticProvider);
     final calendars = calendarsAsync.value ?? [];
     return calendars.map((c) => c.id).toSet();
   }
@@ -343,7 +343,7 @@ class SelectedCalendarIds extends _$SelectedCalendarIds {
   }
 
   void selectAll() {
-    final calendars = ref.watch(calendarsProvider).value ?? [];
+    final calendars = ref.watch(calendarsWithOptimisticProvider).value ?? [];
     state = calendars.map((cal) => cal.id).toSet();
   }
 
@@ -424,9 +424,11 @@ class CopyEventState extends _$CopyEventState {
 /// Uses optimistic events for instant UI feedback.
 @riverpod
 Map<DateTime, List<Event>> expandedEventsMap(Ref ref) {
+  const tag = 'ExpandedEventsMap';
   ref.keepAlive();
   final eventsAsync = ref.watch(eventsWithOptimisticProvider);
   final events = eventsAsync.value ?? [];
+  AppLogger().debug('rebuild - input events: ${events.length}', tag: tag);
 
   final horizon = DateTime.now().add(const Duration(days: 365)); // 1 year horizon
   final eventMap = <DateTime, List<Event>>{};
@@ -585,9 +587,10 @@ class VisibleEvents {
 
 /// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
 /// Uses family modifier so each calendar ID gets its own cached provider instance.
+/// Uses optimistic calendars for instant UI feedback on new calendars.
 @riverpod
 String calendarName(Ref ref, String calendarId) {
-  final calendars = ref.watch(calendarsProvider).value ?? [];
+  final calendars = ref.watch(calendarsWithOptimisticProvider).value ?? [];
   try {
     return calendars.firstWhere((c) => c.id == calendarId).name;
   } catch (_) {
@@ -596,9 +599,10 @@ String calendarName(Ref ref, String calendarId) {
 }
 
 /// Map of calendar IDs to names - for efficient bulk lookups in lists.
+/// Uses optimistic calendars for instant UI feedback on new calendars.
 @riverpod
 Map<String, String> calendarNamesMap(Ref ref) {
-  final calendars = ref.watch(calendarsProvider).value ?? [];
+  final calendars = ref.watch(calendarsWithOptimisticProvider).value ?? [];
   return {for (final c in calendars) c.id: c.name};
 }
 
@@ -623,7 +627,10 @@ Event? sourceEvent(Ref ref, String eventId) {
 @riverpod
 class OptimisticCalendars extends _$OptimisticCalendars {
   @override
-  OptimisticState<Calendar> build() => const OptimisticState();
+  OptimisticState<Calendar> build() {
+    ref.keepAlive(); // Persist optimistic state across widget rebuilds
+    return const OptimisticState();
+  }
 
   void addPending(Calendar calendar) {
     state = state.copyWith(pending: [...state.pending, calendar]);
@@ -655,11 +662,19 @@ class OptimisticCalendars extends _$OptimisticCalendars {
 /// Pending event operations for optimistic UI updates.
 @riverpod
 class OptimisticEvents extends _$OptimisticEvents {
+  static const _tag = 'OptimisticEvents';
+
   @override
-  OptimisticState<Event> build() => const OptimisticState();
+  OptimisticState<Event> build() {
+    ref.keepAlive(); // Persist optimistic state across widget rebuilds
+    AppLogger().debug('build() called', tag: _tag);
+    return const OptimisticState();
+  }
 
   void addPending(Event event) {
+    AppLogger().debug('addPending: ${event.name} (id: ${event.id})', tag: _tag);
     state = state.copyWith(pending: [...state.pending, event]);
+    AppLogger().debug('pending count after add: ${state.pending.length}', tag: _tag);
   }
 
   /// Update an existing event optimistically (for edit operations).
@@ -746,8 +761,12 @@ AsyncValue<List<Calendar>> calendarsWithOptimistic(Ref ref) {
 /// Use this instead of eventsForSelectedCalendarsProvider for UI that should show optimistic state.
 @riverpod
 AsyncValue<List<Event>> eventsWithOptimistic(Ref ref) {
+  const tag = 'EventsWithOptimistic';
+  ref.keepAlive();
   final eventsAsync = ref.watch(eventsForSelectedCalendarsProvider);
   final optimistic = ref.watch(optimisticEventsProvider);
+
+  AppLogger().debug('rebuild - pending: ${optimistic.pending.length}, eventsAsync: ${eventsAsync.runtimeType}', tag: tag);
 
   return eventsAsync.when(
     data: (events) {
@@ -757,7 +776,21 @@ AsyncValue<List<Event>> eventsWithOptimistic(Ref ref) {
       // Get IDs of pending items (both new and updates)
       final pendingIds = optimistic.pending.map((e) => e.id).toSet();
 
-      // Replace events that have pending updates
+      // Clean up pending events that now exist in server data
+      // This handles the case where API succeeded and polling brought in the server version
+      final serverIds = events.map((e) => e.id).toSet();
+      final resolvedPendingIds = pendingIds.intersection(serverIds);
+      if (resolvedPendingIds.isNotEmpty) {
+        // Schedule cleanup after this build completes to avoid rebuild during build
+        Future.microtask(() {
+          for (final id in resolvedPendingIds) {
+            ref.read(optimisticEventsProvider.notifier).removePending(id);
+          }
+          AppLogger().debug('cleaned up ${resolvedPendingIds.length} resolved pending events', tag: tag);
+        });
+      }
+
+      // Replace events that have pending updates (for events still being processed)
       filtered = filtered.map((e) {
         if (pendingIds.contains(e.id)) {
           return optimistic.pending.firstWhere((p) => p.id == e.id);
@@ -766,14 +799,20 @@ AsyncValue<List<Event>> eventsWithOptimistic(Ref ref) {
       }).toList();
 
       // Add truly new pending items (not updates to existing events)
+      // No calendar filtering - user can only create events on visible calendars
       final existingIds = filtered.map((e) => e.id).toSet();
       final newPending = optimistic.pending.where((e) => !existingIds.contains(e.id));
 
-      return AsyncData([...filtered, ...newPending]);
+      final result = [...filtered, ...newPending];
+      AppLogger().debug('data: server=${events.length}, filtered=${filtered.length}, newPending=${newPending.length}, total=${result.length}', tag: tag);
+      return AsyncData(result);
     },
-    loading: () => optimistic.pending.isNotEmpty
-        ? AsyncData(optimistic.pending)
-        : const AsyncLoading(),
+    loading: () {
+      AppLogger().debug('loading - showing ${optimistic.pending.length} pending events', tag: tag);
+      return optimistic.pending.isNotEmpty
+          ? AsyncData(optimistic.pending)
+          : const AsyncLoading();
+    },
     error: (e, st) => AsyncError(e, st),
   );
 }

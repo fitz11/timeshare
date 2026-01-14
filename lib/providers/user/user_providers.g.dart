@@ -160,7 +160,7 @@ final class UserSearchProvider
   }
 }
 
-String _$userSearchHash() => r'cc3e6d3bcb75a33440f5edc7a2437439b5f4be85';
+String _$userSearchHash() => r'eacb4662470f9313a46eab97bc0c999cffc65f8b';
 
 final class UserSearchFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<AppUser>>, String> {

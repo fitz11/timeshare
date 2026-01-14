@@ -239,7 +239,7 @@ final class CalendarMutationsProvider
   }
 }
 
-String _$calendarMutationsHash() => r'eafa624cd50144083577b70b67b41062ba2e91f8';
+String _$calendarMutationsHash() => r'bdc448a143f75ca3273e81413a9777d914497b14';
 
 /// Calendar mutations with optimistic update support.
 /// Includes conflict detection and retry mechanisms for concurrent edit handling.
@@ -263,17 +263,17 @@ abstract class _$CalendarMutations extends $Notifier<void> {
 }
 
 /// Selected calendar IDs - which calendars are visible
-/// Synchronous projection from calendars stream - no async overhead.
+/// Uses optimistic calendars for instant UI feedback.
 
 @ProviderFor(SelectedCalendarIds)
 final selectedCalendarIdsProvider = SelectedCalendarIdsProvider._();
 
 /// Selected calendar IDs - which calendars are visible
-/// Synchronous projection from calendars stream - no async overhead.
+/// Uses optimistic calendars for instant UI feedback.
 final class SelectedCalendarIdsProvider
     extends $NotifierProvider<SelectedCalendarIds, Set<String>> {
   /// Selected calendar IDs - which calendars are visible
-  /// Synchronous projection from calendars stream - no async overhead.
+  /// Uses optimistic calendars for instant UI feedback.
   SelectedCalendarIdsProvider._()
     : super(
         from: null,
@@ -302,10 +302,10 @@ final class SelectedCalendarIdsProvider
 }
 
 String _$selectedCalendarIdsHash() =>
-    r'089920d85f1a816c4e9cbb524ea7a1c2eb1f5bf4';
+    r'ef60fc1be3c8f607f6ffb62f05a1811dc5263645';
 
 /// Selected calendar IDs - which calendars are visible
-/// Synchronous projection from calendars stream - no async overhead.
+/// Uses optimistic calendars for instant UI feedback.
 
 abstract class _$SelectedCalendarIds extends $Notifier<Set<String>> {
   Set<String> build();
@@ -730,7 +730,7 @@ final class ExpandedEventsMapProvider
   }
 }
 
-String _$expandedEventsMapHash() => r'daf7895446978adfe0a07529c50f8f73941625e9';
+String _$expandedEventsMapHash() => r'41b61df8509622acc355cc6f6eea8848aa664e40';
 
 /// Consolidated visible events - uses memoized expanded map.
 /// Filtering is O(n), not O(n × 365) on day/filter changes.
@@ -783,18 +783,21 @@ String _$visibleEventsHash() => r'91013c1b4e7cfc57174098b3c0efc0fc25af233c';
 
 /// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
 /// Uses family modifier so each calendar ID gets its own cached provider instance.
+/// Uses optimistic calendars for instant UI feedback on new calendars.
 
 @ProviderFor(calendarName)
 final calendarNameProvider = CalendarNameFamily._();
 
 /// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
 /// Uses family modifier so each calendar ID gets its own cached provider instance.
+/// Uses optimistic calendars for instant UI feedback on new calendars.
 
 final class CalendarNameProvider
     extends $FunctionalProvider<String, String, String>
     with $Provider<String> {
   /// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
   /// Uses family modifier so each calendar ID gets its own cached provider instance.
+  /// Uses optimistic calendars for instant UI feedback on new calendars.
   CalendarNameProvider._({
     required CalendarNameFamily super.from,
     required String super.argument,
@@ -846,10 +849,11 @@ final class CalendarNameProvider
   }
 }
 
-String _$calendarNameHash() => r'411142b8af2ce64575ce21228365be4e52173117';
+String _$calendarNameHash() => r'd6c1cca4fc1eb063ddedbac38be453d1a165e888';
 
 /// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
 /// Uses family modifier so each calendar ID gets its own cached provider instance.
+/// Uses optimistic calendars for instant UI feedback on new calendars.
 
 final class CalendarNameFamily extends $Family
     with $FunctionalFamilyOverride<String, String> {
@@ -864,6 +868,7 @@ final class CalendarNameFamily extends $Family
 
   /// Calendar name lookup by ID - prevents full calendar list watches in EventListItem.
   /// Uses family modifier so each calendar ID gets its own cached provider instance.
+  /// Uses optimistic calendars for instant UI feedback on new calendars.
 
   CalendarNameProvider call(String calendarId) =>
       CalendarNameProvider._(argument: calendarId, from: this);
@@ -873,11 +878,13 @@ final class CalendarNameFamily extends $Family
 }
 
 /// Map of calendar IDs to names - for efficient bulk lookups in lists.
+/// Uses optimistic calendars for instant UI feedback on new calendars.
 
 @ProviderFor(calendarNamesMap)
 final calendarNamesMapProvider = CalendarNamesMapProvider._();
 
 /// Map of calendar IDs to names - for efficient bulk lookups in lists.
+/// Uses optimistic calendars for instant UI feedback on new calendars.
 
 final class CalendarNamesMapProvider
     extends
@@ -888,6 +895,7 @@ final class CalendarNamesMapProvider
         >
     with $Provider<Map<String, String>> {
   /// Map of calendar IDs to names - for efficient bulk lookups in lists.
+  /// Uses optimistic calendars for instant UI feedback on new calendars.
   CalendarNamesMapProvider._()
     : super(
         from: null,
@@ -922,7 +930,7 @@ final class CalendarNamesMapProvider
   }
 }
 
-String _$calendarNamesMapHash() => r'8837dec100b81a2f22d478b7a42c138ced7f5811';
+String _$calendarNamesMapHash() => r'3ec9865430e24fe6a3fc1d88278be08b24a62067';
 
 /// Look up source event by ID (non-expanded, original recurrence start time).
 /// Used by EditEventDialog to get the true source event rather than an expanded occurrence.
@@ -1055,7 +1063,7 @@ final class OptimisticCalendarsProvider
 }
 
 String _$optimisticCalendarsHash() =>
-    r'e227597262459902b962f619e611e9e231d773d0';
+    r'c0b28e2a73b58630c8227aae04fa3b336aa3c4bf';
 
 /// Pending calendar operations for optimistic UI updates.
 /// Tracks calendars being added/deleted before server confirmation.
@@ -1116,7 +1124,7 @@ final class OptimisticEventsProvider
   }
 }
 
-String _$optimisticEventsHash() => r'256caf074ee6a90f8189e0ffb24ecb70de0e48de';
+String _$optimisticEventsHash() => r'73ff5344ddd8218e728d0c7ee7e8e5d0f76b894f';
 
 /// Pending event operations for optimistic UI updates.
 
@@ -1249,4 +1257,4 @@ final class EventsWithOptimisticProvider
 }
 
 String _$eventsWithOptimisticHash() =>
-    r'e311a90b05e29b4e56194289dac4523515ffb7ea';
+    r'4597b55fb30887b9dfda9494b4e09ff5a3911fd2';

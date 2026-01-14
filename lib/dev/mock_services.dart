@@ -285,6 +285,18 @@ class MockApiClient implements ApiClient {
       }
     }
 
+    // Handle user search: /api/v1/timeshare/users/search/?email=query
+    final searchMatch = RegExp(r'^/api/v1/timeshare/users/search/\?email=(.+)$').firstMatch(path);
+    if (searchMatch != null) {
+      final query = Uri.decodeComponent(searchMatch.group(1)!).toLowerCase();
+      // Search users by email (case-insensitive partial match)
+      final results = _users.values
+          .where((u) => (u['email'] as String?)?.toLowerCase().contains(query) ?? false)
+          .toList();
+      print('[MockApiClient] GET $path - found ${results.length} users matching "$query"');
+      return _jsonResponse(results);
+    }
+
     print('[MockApiClient] GET $path - NOT FOUND (404)');
     throw ApiException(statusCode: 404, message: 'Not found: $path');
   }

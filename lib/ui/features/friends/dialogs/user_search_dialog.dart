@@ -36,7 +36,7 @@ void showUserSearchDialog(BuildContext context, WidgetRef ref) {
                       debounceTimer!.cancel();
                     }
                     debounceTimer = Timer(
-                      const Duration(milliseconds: 400),
+                      const Duration(milliseconds: 500),
                       () {
                         setState(() {
                           query = value.trim();

@@ -206,11 +206,7 @@ void seedMockApiClient(MockApiClient client) {
     mockResponse(jsonEncode(<Map<String, dynamic>>[])),
   );
 
-  // User search endpoints - static response
-  client.setGetResponse(
-    '/api/v1/timeshare/users/search/?email=friend',
-    mockResponse(jsonEncode([_userToJson(MockData.friendUser)])),
-  );
+  // User search is handled dynamically by MockApiClient based on seeded users
 
   // Seed mutation endpoints for operations not yet handled statefully
   _seedMutationEndpoints(client);
