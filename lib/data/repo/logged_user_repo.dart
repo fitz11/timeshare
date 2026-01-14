@@ -42,6 +42,7 @@ class LoggedUserRepository implements UserRepositoryInterface {
 
   @override
   Future<List<AppUser>> searchUsersByEmail(String email) {
+    _logger.warning('searchUsersByEmail called with: "$email"', tag: 'UserRepo');
     return _logger.logApiCall(
       'searchUsersByEmail',
       () => _delegate.searchUsersByEmail(email),

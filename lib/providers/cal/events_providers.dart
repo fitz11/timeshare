@@ -21,7 +21,7 @@ final eventsWithOptimisticProvider = Provider<AsyncValue<List<Event>>>((ref) {
   final eventsAsync = ref.watch(eventsForSelectedCalendarsProvider);
   final optimistic = ref.watch(optimisticEventsProvider);
 
-  AppLogger().debug(
+  AppLogger().warning(
     'rebuild - pending: ${optimistic.pending.length}, eventsAsync: ${eventsAsync.runtimeType}',
     tag: tag,
   );
@@ -42,7 +42,7 @@ final eventsWithOptimisticProvider = Provider<AsyncValue<List<Event>>>((ref) {
           for (final id in resolvedPendingIds) {
             ref.read(optimisticEventsProvider.notifier).removePending(id);
           }
-          AppLogger().debug(
+          AppLogger().warning(
             'cleaned up ${resolvedPendingIds.length} resolved pending events',
             tag: tag,
           );
@@ -62,14 +62,14 @@ final eventsWithOptimisticProvider = Provider<AsyncValue<List<Event>>>((ref) {
       final newPending = optimistic.pending.where((e) => !existingIds.contains(e.id));
 
       final result = [...filtered, ...newPending];
-      AppLogger().debug(
+      AppLogger().warning(
         'data: server=${events.length}, filtered=${filtered.length}, newPending=${newPending.length}, total=${result.length}',
         tag: tag,
       );
       return AsyncData(result);
     },
     loading: () {
-      AppLogger().debug('loading - showing ${optimistic.pending.length} pending events', tag: tag);
+      AppLogger().warning('loading - showing ${optimistic.pending.length} pending events', tag: tag);
       return optimistic.pending.isNotEmpty
           ? AsyncData(optimistic.pending)
           : const AsyncLoading();
@@ -128,7 +128,7 @@ final expandedEventsMapProvider = Provider<Map<DateTime, List<Event>>>((ref) {
   ref.keepAlive();
   final eventsAsync = ref.watch(eventsWithOptimisticProvider);
   final events = eventsAsync.value ?? [];
-  AppLogger().debug('rebuild - input events: ${events.length}', tag: tag);
+  AppLogger().warning('rebuild - input events: ${events.length}', tag: tag);
 
   final horizon = DateTime.now().add(const Duration(days: 365));
   final eventMap = <DateTime, List<Event>>{};

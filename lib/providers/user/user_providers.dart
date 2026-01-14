@@ -8,6 +8,7 @@ import 'package:timeshare/data/services/api_client.dart';
 import 'package:timeshare/providers/auth/auth_providers.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/providers/config/config_providers.dart';
+import 'package:timeshare/services/logging/app_logger.dart';
 
 /// User repository provider - uses REST API.
 final userRepositoryProvider = Provider<LoggedUserRepository>((ref) {
@@ -111,10 +112,18 @@ final userFriendsProvider =
 /// Search users by email.
 final userSearchProvider =
     FutureProvider.family<List<AppUser>, String>((ref, email) async {
-  if (email.trim().length < 5) {
+  const tag = 'UserSearch';
+  final trimmed = email.trim();
+
+  if (trimmed.length < 5) {
+    AppLogger().warning('skipped - query too short: "$trimmed" (${trimmed.length} chars)', tag: tag);
     return [];
   }
-  return await ref.read(userRepositoryProvider).searchUsersByEmail(email);
+
+  AppLogger().warning('searching for: "$trimmed"', tag: tag);
+  final results = await ref.read(userRepositoryProvider).searchUsersByEmail(email);
+  AppLogger().warning('found ${results.length} results for: "$trimmed"', tag: tag);
+  return results;
 });
 
 /// Current user notifier with profile management.

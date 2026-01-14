@@ -85,14 +85,14 @@ class OptimisticEvents extends Notifier<OptimisticState<Event>> {
   @override
   OptimisticState<Event> build() {
     ref.keepAlive();
-    AppLogger().debug('build() called', tag: _tag);
+    AppLogger().warning('build() called', tag: _tag);
     return const OptimisticState();
   }
 
   void addPending(Event event) {
-    AppLogger().debug('addPending: ${event.name} (id: ${event.id})', tag: _tag);
+    AppLogger().warning('addPending: ${event.name} (id: ${event.id})', tag: _tag);
     state = state.copyWith(pending: [...state.pending, event]);
-    AppLogger().debug('pending count after add: ${state.pending.length}', tag: _tag);
+    AppLogger().warning('pending count after add: ${state.pending.length}', tag: _tag);
   }
 
   void updatePending(Event event) {

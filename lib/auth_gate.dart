@@ -37,7 +37,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   }
 
   Future<void> _initializeAuth() async {
-    _logger.debug('Initializing auth', tag: _tag);
+    _logger.warning('Initializing auth', tag: _tag);
 
     final authService = ref.read(authServiceProvider);
     await authService.loadStoredCredentials();
@@ -46,7 +46,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       setState(() {
         _initialized = true;
       });
-      _logger.debug('Auth initialized', tag: _tag);
+      _logger.warning('Auth initialized', tag: _tag);
     }
   }
 
@@ -63,7 +63,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
           );
         }
 
-        _logger.debug('Auth state: $state', tag: _tag);
+        _logger.warning('Auth state: $state', tag: _tag);
 
         switch (state) {
           case AuthState.loading:

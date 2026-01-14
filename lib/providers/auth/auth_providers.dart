@@ -13,7 +13,7 @@ const _tag = 'AuthProviders';
 /// Auth service provider - creates RestApiAuthService with secure storage.
 final authServiceProvider = Provider<AuthService>((ref) {
   final config = ref.watch(appConfigProvider);
-  _logger.debug('Creating auth service for ${config.apiBaseUrl}', tag: _tag);
+  _logger.warning('Creating auth service for ${config.apiBaseUrl}', tag: _tag);
   final service = RestApiAuthService(
     baseUrl: config.apiBaseUrl,
     storage: FlutterSecureStorageImpl(),
