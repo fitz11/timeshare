@@ -97,6 +97,7 @@ class CalendarMutations extends Notifier<void> {
     try {
       await _repo.deleteCalendar(calendarId);
       ref.read(optimisticCalendarsProvider.notifier).removeDeleting(calendarId);
+      ref.invalidate(calendarsProvider);
       return const MutationResult.success(null);
     } catch (e) {
       ref.read(optimisticCalendarsProvider.notifier).removeDeleting(calendarId);
@@ -117,6 +118,7 @@ class CalendarMutations extends Notifier<void> {
     try {
       await _repo.deleteEvent(calendarId, eventId);
       ref.read(optimisticEventsProvider.notifier).removeDeleting(eventId);
+      ref.invalidate(eventsForSelectedCalendarsProvider);
       return const MutationResult.success(null);
     } catch (e) {
       ref.read(optimisticEventsProvider.notifier).removeDeleting(eventId);
