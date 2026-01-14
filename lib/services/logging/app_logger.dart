@@ -51,19 +51,15 @@ class AppLogger {
     return tag != null ? '[$tag] $message' : message;
   }
 
-  /// Log debug message (debug mode only).
+  /// Log debug message.
   void debug(String message, {String? tag}) {
-    if (!kDebugMode) return;
     final formatted = _formatMessage(message, tag);
-    // TEMP: Using print for developer console visibility
     print('[DEBUG] $formatted');
   }
 
-  /// Log info message (debug mode only).
+  /// Log info message.
   void info(String message, {String? tag}) {
-    if (!kDebugMode) return;
     final formatted = _formatMessage(message, tag);
-    // TEMP: Using print for developer console visibility
     print('[INFO] $formatted');
   }
 

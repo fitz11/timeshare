@@ -153,6 +153,9 @@ class MockAuthService implements AuthService {
 ///
 /// Unlike a simple mock that returns pre-configured responses, this client
 /// stores data in memory and properly handles CRUD operations.
+///
+/// Includes simulated network latency to match production behavior for
+/// optimistic UI updates.
 class MockApiClient implements ApiClient {
   // In-memory data stores
   final Map<String, Map<String, dynamic>> _calendars = {};
@@ -173,8 +176,19 @@ class MockApiClient implements ApiClient {
 
   int _nextEventId = 1000;
 
-  MockApiClient() {
-    print('[MockApiClient] Constructor called');
+  /// Simulated network latency for realistic async behavior.
+  final Duration _simulatedLatency;
+
+  MockApiClient({Duration simulatedLatency = const Duration(milliseconds: 200)})
+      : _simulatedLatency = simulatedLatency {
+    print('[MockApiClient] Constructor called (latency: ${_simulatedLatency.inMilliseconds}ms)');
+  }
+
+  /// Simulate network delay to match production behavior.
+  Future<void> _simulateNetwork() async {
+    if (_simulatedLatency > Duration.zero) {
+      await Future.delayed(_simulatedLatency);
+    }
   }
 
   /// Seed initial calendar data
@@ -219,6 +233,7 @@ class MockApiClient implements ApiClient {
 
   @override
   Future<ApiResponse> get(String path) async {
+    // No delay for GET - reads don't need optimistic UI simulation
     print('[MockApiClient] GET $path - START');
     getRequests.add(path);
 
@@ -303,6 +318,7 @@ class MockApiClient implements ApiClient {
 
   @override
   Future<ApiResponse> post(String path, {String? body}) async {
+    await _simulateNetwork();
     print('[MockApiClient] POST $path - START');
     if (body != null) print('[MockApiClient] POST body: $body');
     postRequests.add(path);
@@ -369,6 +385,7 @@ class MockApiClient implements ApiClient {
 
   @override
   Future<ApiResponse> put(String path, {String? body}) async {
+    await _simulateNetwork();
     print('[MockApiClient] PUT $path - START');
     putRequests.add(path);
 
@@ -405,6 +422,7 @@ class MockApiClient implements ApiClient {
 
   @override
   Future<ApiResponse> patch(String path, {String? body}) async {
+    await _simulateNetwork();
     print('[MockApiClient] PATCH $path - START');
     patchRequests.add(path);
 
@@ -421,6 +439,7 @@ class MockApiClient implements ApiClient {
 
   @override
   Future<ApiResponse> delete(String path) async {
+    await _simulateNetwork();
     print('[MockApiClient] DELETE $path - START');
     deleteRequests.add(path);
 
