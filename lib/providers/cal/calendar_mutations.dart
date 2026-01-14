@@ -76,8 +76,8 @@ class CalendarMutations extends Notifier<void> {
 
     try {
       final created = await _repo.addEvent(calendarId, eventToAdd);
-      // Don't remove pending here - let eventsWithOptimisticProvider auto-cleanup
-      // when the server stream updates. Force immediate refresh instead.
+      // Explicitly remove pending since server may assign a different ID
+      ref.read(optimisticEventsProvider.notifier).removePending(eventToAdd.id);
       ref.invalidate(eventsForSelectedCalendarsProvider);
       return MutationResult.success(created);
     } catch (e) {
@@ -163,8 +163,8 @@ class CalendarMutations extends Notifier<void> {
 
     try {
       final updatedEvent = await _repo.updateEvent(calendarId, event);
-      // Don't remove pending here - let eventsWithOptimisticProvider auto-cleanup
-      // when the server stream updates. Force immediate refresh instead.
+      // Explicitly remove pending for consistency with addEventOptimistic
+      ref.read(optimisticEventsProvider.notifier).removePending(event.id);
       ref.invalidate(eventsForSelectedCalendarsProvider);
       return updatedEvent;
     } on ConflictException catch (e) {
