@@ -103,8 +103,8 @@ To build and deploy the web app to the squishygoose server:
 ```
 
 This script:
-1. Builds the web release (`flutter build web --release`)
-2. Copies files to `../squishygoose/static/timeshare/`
+1. Builds the web release (`flutter build web --release --dart-define=ENV=prod`)
+2. Copies files to `../squishygoose/timeshare-web/`
 
 **Required directory structure:**
 ```

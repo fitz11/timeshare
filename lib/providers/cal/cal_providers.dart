@@ -518,10 +518,20 @@ List<Event> _expandRecurrence(Event event, DateTime horizon) {
       case EventRecurrence.weekly:
         current = current.add(const Duration(days: 7));
       case EventRecurrence.monthly:
-        current = DateTime(current.year, current.month + 1, current.day,
+        // Clamp day to last day of target month to avoid overflow
+        // (e.g., Jan 31 -> Feb 28, not Mar 2)
+        final nextMonth = DateTime(current.year, current.month + 1, 1);
+        final lastDayOfMonth = DateTime(nextMonth.year, nextMonth.month + 1, 0).day;
+        final day = current.day > lastDayOfMonth ? lastDayOfMonth : current.day;
+        current = DateTime(nextMonth.year, nextMonth.month, day,
             current.hour, current.minute);
       case EventRecurrence.yearly:
-        current = DateTime(current.year + 1, current.month, current.day,
+        // Clamp day to last day of target month to avoid overflow
+        // (e.g., Feb 29 in leap year -> Feb 28 in non-leap year)
+        final targetMonth = DateTime(current.year + 1, current.month, 1);
+        final lastDayOfMonth = DateTime(targetMonth.year, targetMonth.month + 1, 0).day;
+        final day = current.day > lastDayOfMonth ? lastDayOfMonth : current.day;
+        current = DateTime(targetMonth.year, targetMonth.month, day,
             current.hour, current.minute);
       case EventRecurrence.none:
         break; // Should not happen

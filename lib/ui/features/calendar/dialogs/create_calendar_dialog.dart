@@ -45,6 +45,7 @@ void showCreateCalendarDialog(BuildContext context, WidgetRef ref) {
                 .read(calendarMutationsProvider.notifier)
                 .addCalendarOptimistic(ownerUid: uid, name: name)
                 .then((result) {
+              if (!context.mounted) return;
               if (result.isFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

@@ -55,7 +55,7 @@ final class AuthServiceProvider
   }
 }
 
-String _$authServiceHash() => r'1c4da1de34c55a560259f83bd2903e87e6aa5af0';
+String _$authServiceHash() => r'bc171ee95e9a49fe364b6a9b4c9205c2cb8e7509';
 
 /// Stream of authentication state changes.
 /// Use this to react to login/logout events.

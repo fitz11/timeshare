@@ -1,5 +1,39 @@
 # timeshare
+
+A simple calendar sharing app. Designed to be easier to edit than others. Built with Flutter and Riverpod.
+
+## Development
+
+### Prerequisites
+
+- Flutter SDK (3.8.0+)
+- Dart SDK (3.8.0+)
+
+### Setup
+
+```bash
+# Install dependencies
+flutter pub get
+
+# Run code generators (freezed, json_serializable, riverpod_generator)
+dart run build_runner build --delete-conflicting-outputs
+
+# Run the app
+flutter run
+
+# Run tests
+flutter test
+
+# Analyze code
+flutter analyze
+```
+
+For release builds and deployment, see [BUILD.md](BUILD.md).
+
+## Table of Contents
+
 <!--toc:start-->
+- [Development](#development)
 - [Usage](#usage)
   - [Authentication and Security](#authentication-and-security)
   - [Making a Calendar](#making-a-calendar)
@@ -8,16 +42,9 @@
   - [Sharing Events](#sharing-events)
   - [Friend Requests](#friend-requests)
   - [Ownership Transfer](#ownership-transfer)
-- [General Flow Structure](#general-flow-structure)
-- [Elements Explained](#elements-explained)
-  - [The Database](#the-database)
-  - [The Repositories](#the-repositories)
-    - [Why is there no state or local copy stored in the repositories?](#why-is-there-no-state-or-local-copy-stored-in-the-repositories)
-  - [The Notifiers and Providers](#the-notifiers-and-providers)
-  - [UI Elements](#ui-elements)
+- [Architecture](#architecture)
+- [Licensing](#licensing)
 <!--toc:end-->
-
-A simple calendar sharing thing. Designed to be easier to edit than others.
 
 ## Usage
 
@@ -26,7 +53,9 @@ A simple calendar sharing thing. Designed to be easier to edit than others.
 > **Important Security Notice:** Please read this section carefully before storing sensitive information in Timeshare.
 
 #### Password Security
+
 Your password is:
+
 - Securely hashed on the server using industry-standard algorithms
 - Never stored in plain text
 - Not visible to the app developer or maintainers
@@ -40,6 +69,7 @@ Your password is:
 - However, data **can be read by** database administrators
 
 **What data is stored:**
+
 - Your email address and display name
 - Calendar names and sharing settings
 - Event names, dates, times, and recurrence patterns
@@ -126,54 +156,26 @@ the new owner with full control over the calendar.
 
 - Pending transfers can be cancelled by the current owner before acceptance.
 
-## General Flow Structure
+## Architecture
 
-**Database**  
-↑ ↓  
-**Repositories**  
-↑ ↓  
-**Notifiers & Providers**  
-↑ ↓  
-**UI elements**  
+```
+REST API ↔ Repositories ↔ Riverpod Providers ↔ UI (ConsumerWidgets)
+```
 
-## Elements Explained
+### Layers
 
-### The Database
+- **REST API Backend**: Data storage and authentication via HTTPS
+- **Repositories** (`lib/data/repo/`): Stateless data access layer with interface/implementation pattern
+- **Providers** (`lib/providers/`): [Riverpod](https://riverpod.dev/) providers for state management and caching
+- **UI** (`lib/ui/`): ConsumerWidgets that react to provider state changes
 
-The app uses a REST API backend for data storage and authentication.
-All access and control logic is stored in modular repositories, making
-it easy to swap backends if needed.
+### Key Models
 
-### The Repositories
-
-Here is logic tied to how I push and pull information from the backend.
-The repositories, despite the name, carry no actual state: they just
-push and return data.
-
-#### Why is there no state or local copy stored in the repositories?
-
-[Riverpod library]: https://riverpod.dev/
-
-- Currently, my state solution is provided by the [Riverpod library].
- This offers the ability to store state such that my widgets can
- respond to changes in the data. This has a two fold benefit, as these
- provide both caching and "widget controlling" functionality.
-
-### The Notifiers and Providers
-
-- Cool little riverpod tools that help me store and access state.
- It demands the use of ConsumerWidgets, which can use WidgetRef objects
- to do their thing. Essentially, this takes over the place of the 'controller'
- layer of the software. It enables the UI to respond to and push events to and
- from our backend.
-
-### UI Elements
-
-- I couldn't design a UI to save my life. I've been trying to make all my
- design elements (widgets) more "composable", however I've had a hell of a time
- trying to organize them. Not sure if they should be organized by function,
- type, etc. Therefore, you may notice, when looking through this repository, an
- absolute explosion of separate files. For this, I apologize.
+- **Calendar**: Contains events, owner, shared users, and version for conflict detection
+- **Event**: Name, date/time, color, shape, recurrence settings
+- **AppUser**: User profile with friends list
+- **FriendRequest**: Request with 30-day expiration
+- **OwnershipTransferRequest**: Transfer calendar ownership between users
 
 ## Licensing
 

@@ -51,6 +51,7 @@ class DeleteEventDialog extends ConsumerWidget {
                           eventId: event.id,
                         )
                         .then((result) {
+                      if (!context.mounted) return;
                       if (result.isFailure) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

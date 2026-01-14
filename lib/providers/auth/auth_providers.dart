@@ -18,10 +18,13 @@ const _tag = 'AuthProviders';
 AuthService authService(Ref ref) {
   final config = ref.watch(appConfigProvider);
   _logger.debug('Creating auth service for ${config.apiBaseUrl}', tag: _tag);
-  return RestApiAuthService(
+  final service = RestApiAuthService(
     baseUrl: config.apiBaseUrl,
     storage: FlutterSecureStorageImpl(),
   );
+  // Dispose StreamController when provider is disposed
+  ref.onDispose(() => service.dispose());
+  return service;
 }
 
 /// Stream of authentication state changes.

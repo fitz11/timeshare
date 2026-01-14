@@ -147,6 +147,7 @@ class CalendarWidget extends ConsumerWidget {
           .read(calendarMutationsProvider.notifier)
           .addEventOptimistic(calendarId: copied.calendarId!, event: copied)
           .then((result) {
+        if (!context.mounted) return;
         if (result.isFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

@@ -17,7 +17,6 @@ By using Timeshare, you agree to the collection and use of information in accord
 |-----------|---------|
 | **Email Address** | Account creation, login, and user identification |
 | **Display Name** | Showing your name to other users you share calendars with |
-| **Profile Photo** | Optional profile customization (via Google Sign-In) |
 | **Calendar Data** | Names of calendars you create |
 | **Event Data** | Event names, dates, times, colors, shapes, and recurrence patterns |
 | **Friends List** | User IDs of people you've added as friends |
@@ -26,9 +25,7 @@ By using Timeshare, you agree to the collection and use of information in accord
 
 | Data Type | Purpose |
 |-----------|---------|
-| **Crash Reports** | App stability improvement via Firebase Crashlytics |
-| **Device Information** | Debugging and crash report context |
-| **Usage Analytics** | Understanding app usage patterns (if enabled) |
+| **Device Information** | Debugging context (logged locally, not transmitted) |
 
 ## How We Use Your Information
 
@@ -36,8 +33,7 @@ We use your information to:
 
 1. **Provide the Service** - Store and sync your calendars and events
 2. **Enable Sharing** - Allow you to share calendars with friends
-3. **Improve the App** - Analyze crash reports to fix bugs
-4. **Communicate** - Send service-related notifications (if applicable)
+3. **Communicate** - Send service-related emails (account verification, password reset)
 
 We do **not** use your information to:
 
@@ -50,14 +46,14 @@ We do **not** use your information to:
 
 ### Where Your Data Is Stored
 
-Your data is stored in **Firebase Firestore**, operated by Google. Data is primarily stored in Google's data centers in the United States.
+Your data is stored on our **REST API backend** servers. Data is stored on servers in the United States.
 
 ### Security Measures
 
 - Data is encrypted in transit using HTTPS/TLS
-- Data is encrypted at rest by Google's infrastructure
-- Access to data is controlled by Firebase Security Rules
-- Authentication is handled by Firebase Authentication
+- Data is encrypted at rest by the server infrastructure
+- Access to data is controlled by server-side authorization rules
+- Authentication is handled via secure API keys stored on your device
 
 ### Important Limitation
 
@@ -68,7 +64,7 @@ Your calendar and event data is **not end-to-end encrypted**. This means the dat
 Your data is shared only with:
 
 1. **Users You Choose** - People you explicitly share calendars with
-2. **Service Providers** - Google/Firebase for infrastructure
+2. **Service Infrastructure** - Our backend server for data storage
 3. **Legal Requirements** - If required by law
 
 We do not sell your personal data.
@@ -105,13 +101,7 @@ Timeshare is not intended for children under 13 years of age. We do not knowingl
 
 ## Third-Party Services
 
-We use the following third-party services:
-
-| Service | Purpose | Privacy Policy |
-|---------|---------|----------------|
-| Firebase Authentication | User login | [Google Privacy Policy](https://policies.google.com/privacy) |
-| Firebase Firestore | Data storage | [Google Privacy Policy](https://policies.google.com/privacy) |
-| Firebase Crashlytics | Crash reporting | [Google Privacy Policy](https://policies.google.com/privacy) |
+This app does not use third-party analytics or tracking services. All data is stored on our own backend infrastructure.
 
 ## Changes to This Policy
 
@@ -132,7 +122,6 @@ If you are in the European Economic Area (EEA), our legal basis for collecting a
 
 - **Consent** - You consent when creating an account
 - **Contract** - Processing necessary to provide the service
-- **Legitimate Interests** - Improving app stability through crash reports
 
 You may withdraw consent at any time by deleting your account.
 

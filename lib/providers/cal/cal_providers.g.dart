@@ -239,7 +239,7 @@ final class CalendarMutationsProvider
   }
 }
 
-String _$calendarMutationsHash() => r'04d70f3145bd8cb4d520271deca7135584aec96f';
+String _$calendarMutationsHash() => r'eafa624cd50144083577b70b67b41062ba2e91f8';
 
 /// Calendar mutations with optimistic update support.
 /// Includes conflict detection and retry mechanisms for concurrent edit handling.
@@ -1055,7 +1055,7 @@ final class OptimisticCalendarsProvider
 }
 
 String _$optimisticCalendarsHash() =>
-    r'5747a677c04c47c4248bac5e204c57bba4721815';
+    r'e227597262459902b962f619e611e9e231d773d0';
 
 /// Pending calendar operations for optimistic UI updates.
 /// Tracks calendars being added/deleted before server confirmation.
@@ -1116,7 +1116,7 @@ final class OptimisticEventsProvider
   }
 }
 
-String _$optimisticEventsHash() => r'820ede6a8e8f0fed94579f53a86bbbe79da8effc';
+String _$optimisticEventsHash() => r'256caf074ee6a90f8189e0ffb24ecb70de0e48de';
 
 /// Pending event operations for optimistic UI updates.
 
@@ -1193,7 +1193,7 @@ final class CalendarsWithOptimisticProvider
 }
 
 String _$calendarsWithOptimisticHash() =>
-    r'a908bde6fbde56d97a466f0d41b94f38f01d427b';
+    r'9db6762430fb01ae220059c91a4b8629e22cf6b4';
 
 /// Events with optimistic updates merged in.
 /// Use this instead of eventsForSelectedCalendarsProvider for UI that should show optimistic state.
@@ -1249,4 +1249,4 @@ final class EventsWithOptimisticProvider
 }
 
 String _$eventsWithOptimisticHash() =>
-    r'8c7468bea62f474ee46f478d94c0dc473a52df0f';
+    r'e311a90b05e29b4e56194289dac4523515ffb7ea';

@@ -24,7 +24,7 @@ All user data is stored in a **REST API backend** database. Data is transmitted 
 
 | Data Type | Fields | Purpose |
 |-----------|--------|---------|
-| **User Profile** | Email, display name, profile photo URL, join date | Account identification and display |
+| **User Profile** | Email, display name, join date | Account identification and display |
 | **Calendars** | Name, owner, shared users list, version | Calendar organization |
 | **Events** | Name, date/time, color, shape, recurrence settings, version | Event tracking |
 | **Friends** | List of friend user IDs | Social features |

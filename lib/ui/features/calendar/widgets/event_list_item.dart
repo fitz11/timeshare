@@ -32,7 +32,6 @@ class EventListItem extends ConsumerWidget {
 
     ref.read(interactionModeStateProvider.notifier).setCopy();
     ref.read(copyEventStateProvider.notifier).set(event);
-    _showSnackBar(context, ref);
   }
 
   void _openEditDialog(BuildContext context, WidgetRef ref) {
@@ -43,33 +42,6 @@ class EventListItem extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => EditEventDialog(event: sourceEvent),
-    );
-  }
-
-  void _showSnackBar(BuildContext context, WidgetRef ref) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 5),
-        content: Row(
-          children: [
-            const Icon(Icons.copy, color: Colors.white, size: 20),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                "Tap a date to paste '${event.name}'",
-              ),
-            ),
-          ],
-        ),
-        action: SnackBarAction(
-          label: 'Cancel',
-          onPressed: () {
-            ref.read(copyEventStateProvider.notifier).clear();
-            ref.read(interactionModeStateProvider.notifier).setNormal();
-          },
-        ),
-      ),
     );
   }
 

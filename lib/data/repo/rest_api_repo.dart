@@ -83,7 +83,7 @@ class RestApiRepository implements CalendarRepository {
   @override
   Future<Calendar?> getCalendarById(String calendarId) async {
     try {
-      final response = await _client.get('/api/v1/timeshare/calendars/$calendarId/');
+      final response = await _client.get('/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/');
       return Calendar.fromJson(jsonDecode(response.body));
     } on ApiException catch (e) {
       if (e.statusCode == 404) return null;
@@ -100,21 +100,21 @@ class RestApiRepository implements CalendarRepository {
     final endpoint = share ? 'share' : 'unshare';
     // Note: Backend uses camelCase JSON (djangorestframework-camel-case)
     await _client.post(
-      '/api/v1/timeshare/calendars/$calendarId/$endpoint/',
+      '/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/$endpoint/',
       body: jsonEncode({'targetUid': targetUid}),
     );
   }
 
   @override
   Future<void> deleteCalendar(String calendarId) async {
-    await _client.delete('/api/v1/timeshare/calendars/$calendarId/');
+    await _client.delete('/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/');
   }
 
   @override
   Future<Calendar> updateCalendar(Calendar calendar) async {
     try {
       final response = await _client.put(
-        '/api/v1/timeshare/calendars/${calendar.id}/',
+        '/api/v1/timeshare/calendars/${Uri.encodeComponent(calendar.id)}/',
         body: jsonEncode(calendar.toJson()),
       );
       return Calendar.fromJson(jsonDecode(response.body));
@@ -200,7 +200,7 @@ class RestApiRepository implements CalendarRepository {
 
   @override
   Future<List<Event>> getEventsForCalendar(String calendarId) async {
-    final response = await _client.get('/api/v1/timeshare/calendars/$calendarId/events/');
+    final response = await _client.get('/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/events/');
     final List<dynamic> data = jsonDecode(response.body);
     return data.map((json) {
       // Inject calendarId since it's not stored in event data
@@ -212,7 +212,7 @@ class RestApiRepository implements CalendarRepository {
   @override
   Future<Event> addEvent(String calendarId, Event event) async {
     final response = await _client.post(
-      '/api/v1/timeshare/calendars/$calendarId/events/',
+      '/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/events/',
       body: jsonEncode(event.toJson()),
     );
     final json = jsonDecode(response.body);
@@ -224,7 +224,7 @@ class RestApiRepository implements CalendarRepository {
   Future<Event> updateEvent(String calendarId, Event event) async {
     try {
       final response = await _client.put(
-        '/api/v1/timeshare/calendars/$calendarId/events/${event.id}/',
+        '/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/events/${Uri.encodeComponent(event.id)}/',
         body: jsonEncode(event.toJson()),
       );
       final json = jsonDecode(response.body);
@@ -249,11 +249,11 @@ class RestApiRepository implements CalendarRepository {
 
   @override
   Future<void> deleteEvent(String calendarId, String eventId) async {
-    await _client.delete('/api/v1/timeshare/calendars/$calendarId/events/$eventId/');
+    await _client.delete('/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/events/${Uri.encodeComponent(eventId)}/');
   }
 
   @override
   Future<void> deleteAllEventsForCalendar(String calendarId) async {
-    await _client.delete('/api/v1/timeshare/calendars/$calendarId/events/');
+    await _client.delete('/api/v1/timeshare/calendars/${Uri.encodeComponent(calendarId)}/events/');
   }
 }

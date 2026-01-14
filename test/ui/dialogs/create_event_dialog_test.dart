@@ -81,7 +81,7 @@ void main() {
       expect(find.byType(ChoiceChip), findsNWidgets(4));
     });
 
-    testWidgets('has shape checkbox', (tester) async {
+    testWidgets('has shape selector', (tester) async {
       final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
@@ -95,8 +95,10 @@ void main() {
 
       await tester.pumpWidget(scope);
 
-      expect(find.text('Square shape'), findsOneWidget);
-      expect(find.byType(CheckboxListTile), findsOneWidget);
+      expect(find.text('Shape'), findsOneWidget);
+      expect(find.text('Circle'), findsOneWidget);
+      expect(find.text('Square'), findsOneWidget);
+      expect(find.byType(SegmentedButton<BoxShape>), findsOneWidget);
     });
 
     testWidgets('Add Event button is disabled when event name is empty',
@@ -229,6 +231,14 @@ void main() {
     });
 
     testWidgets('color selection updates when chip is tapped', (tester) async {
+      // Use a larger screen size to avoid scroll issues
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
       final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
@@ -248,9 +258,11 @@ void main() {
       );
       expect(blackChip.selected, true);
 
-      // Tap the Red chip
-      await tester.tap(find.text('Red'));
-      await tester.pump();
+      // Scroll to ensure Red chip is visible and tap it
+      await tester.ensureVisible(find.widgetWithText(ChoiceChip, 'Red'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Red'));
+      await tester.pumpAndSettle();
 
       // Red should now be selected
       final redChip = tester.widget<ChoiceChip>(
@@ -265,7 +277,7 @@ void main() {
       expect(blackChipAfter.selected, false);
     });
 
-    testWidgets('checkbox can be toggled', (tester) async {
+    testWidgets('shape selection can be toggled', (tester) async {
       final scope = createTestProviderScope(
         child: const MaterialApp(
           home: Scaffold(
@@ -279,21 +291,24 @@ void main() {
 
       await tester.pumpWidget(scope);
 
-      // Checkbox should be unchecked initially
-      final checkbox = tester.widget<CheckboxListTile>(
-        find.byType(CheckboxListTile),
-      );
-      expect(checkbox.value, false);
+      // Find the SegmentedButton for shape selection
+      expect(find.byType(SegmentedButton<BoxShape>), findsOneWidget);
 
-      // Tap the checkbox
-      await tester.tap(find.byType(CheckboxListTile));
-      await tester.pump();
-
-      // Checkbox should now be checked
-      final checkboxAfter = tester.widget<CheckboxListTile>(
-        find.byType(CheckboxListTile),
+      // Circle should be selected by default
+      final segmentedButton = tester.widget<SegmentedButton<BoxShape>>(
+        find.byType(SegmentedButton<BoxShape>),
       );
-      expect(checkboxAfter.value, true);
+      expect(segmentedButton.selected, {BoxShape.circle});
+
+      // Tap the Square segment
+      await tester.tap(find.text('Square'));
+      await tester.pumpAndSettle();
+
+      // Square should now be selected
+      final segmentedButtonAfter = tester.widget<SegmentedButton<BoxShape>>(
+        find.byType(SegmentedButton<BoxShape>),
+      );
+      expect(segmentedButtonAfter.selected, {BoxShape.rectangle});
     });
   });
 }

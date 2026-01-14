@@ -28,18 +28,17 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   @override
   void initState() {
     super.initState();
-    _initializeAuth();
+    // Delay initialization until after the first frame, ensuring build()
+    // has established the stream subscription via ref.watch() before
+    // loadStoredCredentials() emits to the broadcast stream.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _initializeAuth();
+    });
   }
 
   Future<void> _initializeAuth() async {
     _logger.debug('Initializing auth', tag: _tag);
 
-    // CRITICAL: First, ensure the auth state stream subscription exists
-    // by reading the provider. This must happen BEFORE loadStoredCredentials()
-    // emits to the broadcast stream, otherwise the emission is lost.
-    ref.read(authStateProvider);
-
-    // Now load stored credentials - the stream emission will be received
     final authService = ref.read(authServiceProvider);
     await authService.loadStoredCredentials();
 
