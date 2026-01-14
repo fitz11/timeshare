@@ -76,6 +76,7 @@ class CalendarMutations extends Notifier<void> {
 
     try {
       final created = await _repo.addEvent(calendarId, eventToAdd);
+      ref.read(optimisticEventsProvider.notifier).removePending(eventToAdd.id);
       return MutationResult.success(created);
     } catch (e) {
       ref.read(optimisticEventsProvider.notifier).removePending(eventToAdd.id);
