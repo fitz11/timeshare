@@ -52,6 +52,8 @@ class CalendarMutations extends Notifier<void> {
 
     try {
       await _repo.createCalendar(calendar);
+      // Calendar API returns void, and calendarsWithOptimisticProvider lacks auto-cleanup,
+      // so we must invalidate to prevent the calendar from disappearing
       ref.read(optimisticCalendarsProvider.notifier).removePending(calendar.id);
       ref.invalidate(calendarsProvider);
       return MutationResult.success(calendar);
@@ -76,9 +78,8 @@ class CalendarMutations extends Notifier<void> {
 
     try {
       final created = await _repo.addEvent(calendarId, eventToAdd);
-      // Explicitly remove pending since server may assign a different ID
-      ref.read(optimisticEventsProvider.notifier).removePending(eventToAdd.id);
-      ref.invalidate(eventsForSelectedCalendarsProvider);
+      // Replace pending with server response (handles different ID assignment)
+      ref.read(optimisticEventsProvider.notifier).replacePending(eventToAdd.id, created);
       return MutationResult.success(created);
     } catch (e) {
       ref.read(optimisticEventsProvider.notifier).removePending(eventToAdd.id);
@@ -165,9 +166,8 @@ class CalendarMutations extends Notifier<void> {
 
     try {
       final updatedEvent = await _repo.updateEvent(calendarId, event);
-      // Explicitly remove pending for consistency with addEventOptimistic
-      ref.read(optimisticEventsProvider.notifier).removePending(event.id);
-      ref.invalidate(eventsForSelectedCalendarsProvider);
+      // Replace pending with server response
+      ref.read(optimisticEventsProvider.notifier).replacePending(event.id, updatedEvent);
       return updatedEvent;
     } on ConflictException catch (e) {
       ref.read(optimisticEventsProvider.notifier).removePending(event.id);
@@ -200,7 +200,7 @@ class CalendarMutations extends Notifier<void> {
 
     try {
       final updatedCalendar = await _repo.updateCalendar(calendar);
-      ref.read(optimisticCalendarsProvider.notifier).removePending(calendar.id);
+      ref.read(optimisticCalendarsProvider.notifier).replacePending(calendar.id, updatedCalendar);
       return updatedCalendar;
     } on ConflictException catch (e) {
       ref.read(optimisticCalendarsProvider.notifier).removePending(calendar.id);

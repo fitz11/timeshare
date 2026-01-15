@@ -172,8 +172,8 @@ VisibleEvents _filterVisibleEvents(
   DateTime? selectedDay,
   bool afterToday,
 ) {
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
+  // Use normalizeDate for UTC consistency with event map keys
+  final today = normalizeDate(DateTime.now());
   Map<DateTime, List<Event>> filteredMap;
   List<Event> eventList;
 

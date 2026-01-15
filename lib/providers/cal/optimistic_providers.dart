@@ -60,6 +60,15 @@ class OptimisticCalendars extends Notifier<OptimisticState<Calendar>> {
     );
   }
 
+  void replacePending(String oldId, Calendar newCalendar) {
+    state = state.copyWith(
+      pending: [
+        ...state.pending.where((c) => c.id != oldId),
+        newCalendar,
+      ],
+    );
+  }
+
   void addDeleting(String id) {
     state = state.copyWith(deleting: {...state.deleting, id});
   }
@@ -104,6 +113,15 @@ class OptimisticEvents extends Notifier<OptimisticState<Event>> {
   void removePending(String id) {
     state = state.copyWith(
       pending: state.pending.where((e) => e.id != id).toList(),
+    );
+  }
+
+  void replacePending(String oldId, Event newEvent) {
+    state = state.copyWith(
+      pending: [
+        ...state.pending.where((e) => e.id != oldId),
+        newEvent,
+      ],
     );
   }
 

@@ -2,13 +2,22 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:timeshare/config/app_config.dart';
 import 'package:timeshare/services/logging/api_call_tracker.dart';
+
+/// Log level for the app logger.
+enum LogLevel {
+  debug,
+  info,
+  warning,
+  error,
+}
 
 /// Centralized logging service for the app.
 ///
-/// Provides structured logging with different behavior for debug and release:
-/// - Debug: Verbose console output for all levels
-/// - Release: Errors only, logged to console
+/// Provides structured logging with environment-based minimum levels:
+/// - Dev/Staging: All levels (debug and above)
+/// - Production: Warnings and errors only
 ///
 /// Also tracks API call rates to detect excessive calls.
 class AppLogger {
@@ -18,6 +27,7 @@ class AppLogger {
 
   Logger? _logger;
   bool _initialized = false;
+  LogLevel _minLevel = LogLevel.debug;
 
   /// API call trackers by operation name.
   final Map<String, ApiCallTracker> _apiCallTrackers = {};
@@ -25,10 +35,16 @@ class AppLogger {
   /// Threshold for slow API calls (milliseconds).
   static const int slowCallThresholdMs = 3000;
 
+  /// Current minimum log level.
+  LogLevel get minLevel => _minLevel;
+
   /// Initialize the logger. Call once at app startup.
   /// Safe to skip in tests - logger will use debugPrint fallback.
-  Future<void> initialize() async {
+  Future<void> initialize({AppConfig? config}) async {
     if (_initialized) return;
+
+    final appConfig = config ?? AppConfig.fromEnvironment();
+    _minLevel = _getMinLevelForEnvironment(appConfig);
 
     _logger = Logger(
       printer: PrettyPrinter(
@@ -39,12 +55,41 @@ class AppLogger {
         printEmojis: true,
         dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
       ),
-      // TEMP: Production level lowered to debug for console visibility
-      level: Level.debug,
+      level: _mapToLoggerLevel(_minLevel),
     );
 
     _initialized = true;
-    debug('AppLogger initialized', tag: 'Logger');
+    info('AppLogger initialized (minLevel: ${_minLevel.name}, env: ${appConfig.environment.name})', tag: 'Logger');
+  }
+
+  /// Determine minimum log level based on environment.
+  LogLevel _getMinLevelForEnvironment(AppConfig config) {
+    switch (config.environment) {
+      case Environment.prod:
+        return LogLevel.warning;
+      case Environment.staging:
+      case Environment.dev:
+        return LogLevel.debug;
+    }
+  }
+
+  /// Map our LogLevel to the logger package's Level.
+  Level _mapToLoggerLevel(LogLevel level) {
+    switch (level) {
+      case LogLevel.debug:
+        return Level.debug;
+      case LogLevel.info:
+        return Level.info;
+      case LogLevel.warning:
+        return Level.warning;
+      case LogLevel.error:
+        return Level.error;
+    }
+  }
+
+  /// Check if a log level should be output.
+  bool _shouldLog(LogLevel level) {
+    return level.index >= _minLevel.index;
   }
 
   String _formatMessage(String message, String? tag) {
@@ -53,24 +98,26 @@ class AppLogger {
 
   /// Log debug message.
   void debug(String message, {String? tag}) {
+    if (!_shouldLog(LogLevel.debug)) return;
     final formatted = _formatMessage(message, tag);
-    print('[DEBUG] $formatted');
+    debugPrint('[DEBUG] $formatted');
   }
 
   /// Log info message.
   void info(String message, {String? tag}) {
+    if (!_shouldLog(LogLevel.info)) return;
     final formatted = _formatMessage(message, tag);
-    print('[INFO] $formatted');
+    debugPrint('[INFO] $formatted');
   }
 
-  /// Log warning message (always logged).
+  /// Log warning message.
   void warning(String message, {String? tag}) {
+    if (!_shouldLog(LogLevel.warning)) return;
     final formatted = _formatMessage(message, tag);
-    // TEMP: Using print for developer console visibility
-    print('[WARNING] $formatted');
+    debugPrint('[WARNING] $formatted');
   }
 
-  /// Log error message (always logged).
+  /// Log error message.
   void error(
     String message, {
     Object? error,
@@ -78,11 +125,11 @@ class AppLogger {
     String? tag,
     bool fatal = false,
   }) {
+    if (!_shouldLog(LogLevel.error)) return;
     final formatted = _formatMessage(message, tag);
-    // TEMP: Using print for developer console visibility
-    print('[ERROR] $formatted');
-    if (error != null) print('Error: $error');
-    if (stackTrace != null) print('StackTrace: $stackTrace');
+    debugPrint('[ERROR] $formatted');
+    if (error != null) debugPrint('Error: $error');
+    if (stackTrace != null) debugPrint('StackTrace: $stackTrace');
   }
 
   /// Execute and log an API call with timing.
