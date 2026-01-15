@@ -7,6 +7,7 @@ import 'package:timeshare/data/models/calendar/calendar.dart';
 import 'package:timeshare/data/models/event/event.dart';
 import 'package:timeshare/data/repo/calendar_repo.dart';
 import 'package:timeshare/providers/cal/calendar_stream_providers.dart';
+import 'package:timeshare/providers/cal/events_providers.dart';
 import 'package:timeshare/providers/cal/events_stream_providers.dart';
 import 'package:timeshare/providers/cal/optimistic_providers.dart';
 import 'package:timeshare/providers/cal/repository_providers.dart';
@@ -115,6 +116,8 @@ class CalendarMutations extends Notifier<void> {
     required String eventId,
   }) async {
     ref.read(optimisticEventsProvider.notifier).addDeleting(eventId);
+    // Force rebuild of events provider chain to ensure UI updates immediately
+    ref.invalidate(eventsWithOptimisticProvider);
 
     try {
       await _repo.deleteEvent(calendarId, eventId);
@@ -123,6 +126,7 @@ class CalendarMutations extends Notifier<void> {
       return const MutationResult.success(null);
     } catch (e) {
       ref.read(optimisticEventsProvider.notifier).removeDeleting(eventId);
+      ref.invalidate(eventsWithOptimisticProvider);
       return MutationResult.failure('Failed to delete event: $e');
     }
   }

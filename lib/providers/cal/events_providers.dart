@@ -22,13 +22,20 @@ final eventsWithOptimisticProvider = Provider<AsyncValue<List<Event>>>((ref) {
   final optimistic = ref.watch(optimisticEventsProvider);
 
   AppLogger().warning(
-    'rebuild - pending: ${optimistic.pending.length}, eventsAsync: ${eventsAsync.runtimeType}',
+    'rebuild - pending: ${optimistic.pending.length}, deleting: ${optimistic.deleting.length}, eventsAsync: ${eventsAsync.runtimeType}',
     tag: tag,
   );
 
   return eventsAsync.when(
     data: (events) {
       // Filter out items being deleted
+      final deletedCount = events.where((e) => optimistic.deleting.contains(e.id)).length;
+      if (deletedCount > 0) {
+        AppLogger().warning(
+          'filtering out $deletedCount events with IDs in deleting set: ${optimistic.deleting}',
+          tag: tag,
+        );
+      }
       var filtered = events.where((e) => !optimistic.deleting.contains(e.id)).toList();
 
       // Get IDs of pending items (both new and updates)

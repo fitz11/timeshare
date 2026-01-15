@@ -126,11 +126,15 @@ class OptimisticEvents extends Notifier<OptimisticState<Event>> {
   }
 
   void addDeleting(String id) {
+    AppLogger().warning('addDeleting: $id', tag: _tag);
     state = state.copyWith(deleting: {...state.deleting, id});
+    AppLogger().warning('deleting count after add: ${state.deleting.length}', tag: _tag);
   }
 
   void removeDeleting(String id) {
+    AppLogger().warning('removeDeleting: $id', tag: _tag);
     state = state.copyWith(deleting: state.deleting.where((i) => i != id).toSet());
+    AppLogger().warning('deleting count after remove: ${state.deleting.length}', tag: _tag);
   }
 }
 
