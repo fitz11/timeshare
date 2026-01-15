@@ -54,6 +54,8 @@ class CalendarAdminPage extends ConsumerWidget {
               if (isOwner) ...[
                 const Divider(),
                 _buildTransferSection(context, ref, calendar, friends),
+                const Divider(),
+                _buildDeleteSection(context, ref, calendar),
               ],
             ],
           ),
@@ -176,6 +178,102 @@ class CalendarAdminPage extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+
+  Widget _buildDeleteSection(
+    BuildContext context,
+    WidgetRef ref,
+    Calendar calendar,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            'Delete Calendar',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Permanently delete this calendar and all its events. This action cannot be undone.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: FilledButton.icon(
+            icon: const Icon(Icons.delete_forever),
+            label: const Text('Delete Calendar'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: () => _showDeleteDialog(context, ref, calendar),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  void _showDeleteDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Calendar calendar,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Calendar'),
+        content: Text(
+          'Are you sure you want to delete "${calendar.name}"?\n\n'
+          'This will permanently delete the calendar and all its events. '
+          'This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final result = await ref
+                  .read(calendarMutationsProvider.notifier)
+                  .deleteCalendarOptimistic(calendar.id);
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      result.isSuccess
+                          ? 'Calendar "${calendar.name}" deleted'
+                          : result.error ?? 'Failed to delete calendar',
+                    ),
+                    backgroundColor: result.isFailure
+                        ? Theme.of(context).colorScheme.error
+                        : null,
+                    duration: const Duration(seconds: 5),
+                  ),
+                );
+              }
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
     );
   }
 

@@ -54,6 +54,7 @@ final eventsWithOptimisticProvider = Provider<AsyncValue<List<Event>>>((ref) {
           }
           for (final id in staleDeletingIds) {
             ref.read(optimisticEventsProvider.notifier).removeDeleting(id);
+            ref.read(optimisticEventsProvider.notifier).removePending(id);
           }
           if (resolvedPendingIds.isNotEmpty) {
             AppLogger().warning(
