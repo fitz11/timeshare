@@ -15,7 +15,7 @@ A simple calendar sharing app. Designed to be easier to edit than others. Built 
 # Install dependencies
 flutter pub get
 
-# Run code generators (freezed, json_serializable, riverpod_generator)
+# Run code generators (freezed, json_serializable)
 dart run build_runner build --delete-conflicting-outputs
 
 # Run the app

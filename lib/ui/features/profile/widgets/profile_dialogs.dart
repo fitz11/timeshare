@@ -58,13 +58,13 @@ void showEditDisplayNameDialog(
               return;
             }
 
-            // Only allow letters, spaces, hyphens, and apostrophes
-            final validNamePattern = RegExp(r"^[a-zA-Z\s\-']+$");
+            // Only allow letters, numbers, spaces, hyphens, and apostrophes
+            final validNamePattern = RegExp(r"^[a-zA-Z0-9\s\-']+$");
             if (!validNamePattern.hasMatch(newName)) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
-                    'Display name can only contain letters, spaces, hyphens, and apostrophes',
+                    'Display name can only contain letters, numbers, spaces, hyphens, and apostrophes',
                   ),
                   duration: Duration(seconds: 5),
                 ),
