@@ -37,15 +37,29 @@ final eventsWithOptimisticProvider = Provider<AsyncValue<List<Event>>>((ref) {
       // Clean up pending events that now exist in server data
       final serverIds = events.map((e) => e.id).toSet();
       final resolvedPendingIds = pendingIds.intersection(serverIds);
-      if (resolvedPendingIds.isNotEmpty) {
+      // Clean up deleting IDs that are no longer in server data (delete confirmed)
+      final staleDeletingIds = optimistic.deleting.difference(serverIds);
+
+      if (resolvedPendingIds.isNotEmpty || staleDeletingIds.isNotEmpty) {
         Future.microtask(() {
           for (final id in resolvedPendingIds) {
             ref.read(optimisticEventsProvider.notifier).removePending(id);
           }
-          AppLogger().warning(
-            'cleaned up ${resolvedPendingIds.length} resolved pending events',
-            tag: tag,
-          );
+          for (final id in staleDeletingIds) {
+            ref.read(optimisticEventsProvider.notifier).removeDeleting(id);
+          }
+          if (resolvedPendingIds.isNotEmpty) {
+            AppLogger().warning(
+              'cleaned up ${resolvedPendingIds.length} resolved pending events',
+              tag: tag,
+            );
+          }
+          if (staleDeletingIds.isNotEmpty) {
+            AppLogger().warning(
+              'cleaned up ${staleDeletingIds.length} confirmed deletions',
+              tag: tag,
+            );
+          }
         });
       }
 

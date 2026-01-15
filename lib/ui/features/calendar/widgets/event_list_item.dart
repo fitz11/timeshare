@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
 import 'package:timeshare/ui/features/calendar/dialogs/edit_event_dialog.dart';
 
-class EventListItem extends ConsumerWidget {
+class EventListItem extends ConsumerStatefulWidget {
   final Event event;
   final bool showDate;
   final String? calendarName;
@@ -23,10 +23,19 @@ class EventListItem extends ConsumerWidget {
     this.calendarName,
   });
 
-  void _onTap(BuildContext context, WidgetRef ref) {
+  @override
+  ConsumerState<EventListItem> createState() => _EventListItemState();
+}
+
+class _EventListItemState extends ConsumerState<EventListItem> {
+  bool _isHovered = false;
+
+  Event get event => widget.event;
+
+  void _onTap(BuildContext context) {
     // Repeating events open editor instead of copy mode
     if (event.recurrence != EventRecurrence.none) {
-      _openEditDialog(context, ref);
+      _openEditDialog(context);
       return;
     }
 
@@ -34,7 +43,7 @@ class EventListItem extends ConsumerWidget {
     ref.read(copyEventStateProvider.notifier).set(event);
   }
 
-  void _openEditDialog(BuildContext context, WidgetRef ref) {
+  void _openEditDialog(BuildContext context) {
     // Fetch source event (with original start time) rather than expanded occurrence
     final sourceEvent = ref.read(sourceEventProvider(event.id));
     if (sourceEvent == null) return;
@@ -43,6 +52,29 @@ class EventListItem extends ConsumerWidget {
       context: context,
       builder: (context) => EditEventDialog(event: sourceEvent),
     );
+  }
+
+  void _onDelete(BuildContext context) {
+    if (event.calendarId == null) return;
+
+    ref
+        .read(calendarMutationsProvider.notifier)
+        .deleteEventOptimistic(
+          calendarId: event.calendarId!,
+          eventId: event.id,
+        )
+        .then((result) {
+      if (!context.mounted) return;
+      if (result.isFailure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.error!),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    });
   }
 
   String _recurrenceToShortLabel(EventRecurrence recurrence) {
@@ -61,7 +93,7 @@ class EventListItem extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final copyMode = ref.watch(interactionModeStateProvider);
     final copiedEvent = ref.watch(copyEventStateProvider);
     final theme = Theme.of(context);
@@ -75,13 +107,16 @@ class EventListItem extends ConsumerWidget {
 
     // Use passed name or look up via scoped provider (avoids watching all calendars)
     final String displayCalendarName =
-        calendarName ?? ref.watch(calendarNameProvider(event.calendarId ?? ''));
+        widget.calendarName ?? ref.watch(calendarNameProvider(event.calendarId ?? ''));
 
     // Format time if available
     final timeStr = DateFormat.jm().format(event.time);
     final dateStr = DateFormat.MMMd().format(event.time);
 
-    return ListTile(
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: Container(
         width: 40,
@@ -146,21 +181,47 @@ class EventListItem extends ConsumerWidget {
           ],
         ],
       ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (showDate)
-            Text(
-              dateStr,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w500,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (widget.showDate)
+                Text(
+                  dateStr,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              Text(
+                timeStr,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
-          Text(
-            timeStr,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+            ],
+          ),
+          // Delete button - visible on hover for desktop users
+          AnimatedOpacity(
+            opacity: _isHovered ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 150),
+            child: SizedBox(
+              width: _isHovered ? 40 : 0,
+              child: _isHovered
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        size: 18,
+                        color: colorScheme.error,
+                      ),
+                      onPressed: () => _onDelete(context),
+                      tooltip: 'Delete event',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    )
+                  : null,
             ),
           ),
         ],
@@ -173,7 +234,8 @@ class EventListItem extends ConsumerWidget {
               side: BorderSide(color: colorScheme.primary, width: 2),
             )
           : null,
-      onTap: () => _onTap(context, ref),
+      onTap: () => _onTap(context),
+    ),
     );
   }
 }

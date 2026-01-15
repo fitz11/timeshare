@@ -118,8 +118,8 @@ class CalendarMutations extends Notifier<void> {
 
     try {
       await _repo.deleteEvent(calendarId, eventId);
-      ref.read(optimisticEventsProvider.notifier).removeDeleting(eventId);
-      ref.invalidate(eventsForSelectedCalendarsProvider);
+      // Don't removeDeleting or invalidate - let polling + cleanup handle it
+      // Event stays hidden via deleting set until cleanup removes it
       return const MutationResult.success(null);
     } catch (e) {
       ref.read(optimisticEventsProvider.notifier).removeDeleting(eventId);
