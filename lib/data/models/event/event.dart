@@ -20,7 +20,7 @@ abstract class Event with _$Event {
     required String id,
     required String name,
     required DateTime time,
-    List<String>? attendees,
+    @Default([]) List<String> attendees,
     @ColorConverter() @Default(Colors.black) Color color,
     @ShapeConverter() @Default(BoxShape.circle) BoxShape shape,
     @Default(EventRecurrence.none) EventRecurrence recurrence,

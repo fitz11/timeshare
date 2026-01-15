@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Event {
 
- String get id; String get name; DateTime get time; List<String>? get attendees;@ColorConverter() Color get color;@ShapeConverter() BoxShape get shape; EventRecurrence get recurrence; DateTime? get recurrenceEndDate;// calendarId is populated at runtime from the subcollection path, not stored in backend
+ String get id; String get name; DateTime get time; List<String> get attendees;@ColorConverter() Color get color;@ShapeConverter() BoxShape get shape; EventRecurrence get recurrence; DateTime? get recurrenceEndDate;// calendarId is populated at runtime from the subcollection path, not stored in backend
 @JsonKey(includeToJson: false) String? get calendarId; int get version;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
@@ -49,7 +49,7 @@ abstract mixin class $EventCopyWith<$Res>  {
   factory $EventCopyWith(Event value, $Res Function(Event) _then) = _$EventCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, DateTime time, List<String>? attendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeToJson: false) String? calendarId, int version
+ String id, String name, DateTime time, List<String> attendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeToJson: false) String? calendarId, int version
 });
 
 
@@ -66,13 +66,13 @@ class _$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? time = null,Object? attendees = freezed,Object? color = null,Object? shape = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? calendarId = freezed,Object? version = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? time = null,Object? attendees = null,Object? color = null,Object? shape = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? calendarId = freezed,Object? version = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
-as DateTime,attendees: freezed == attendees ? _self.attendees : attendees // ignore: cast_nullable_to_non_nullable
-as List<String>?,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as DateTime,attendees: null == attendees ? _self.attendees : attendees // ignore: cast_nullable_to_non_nullable
+as List<String>,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
 as Color,shape: null == shape ? _self.shape : shape // ignore: cast_nullable_to_non_nullable
 as BoxShape,recurrence: null == recurrence ? _self.recurrence : recurrence // ignore: cast_nullable_to_non_nullable
 as EventRecurrence,recurrenceEndDate: freezed == recurrenceEndDate ? _self.recurrenceEndDate : recurrenceEndDate // ignore: cast_nullable_to_non_nullable
@@ -163,7 +163,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? attendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String> attendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
 return $default(_that.id,_that.name,_that.time,_that.attendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
@@ -184,7 +184,7 @@ return $default(_that.id,_that.name,_that.time,_that.attendees,_that.color,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String>? attendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  DateTime time,  List<String> attendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)  $default,) {final _that = this;
 switch (_that) {
 case _Event():
 return $default(_that.id,_that.name,_that.time,_that.attendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
@@ -204,7 +204,7 @@ return $default(_that.id,_that.name,_that.time,_that.attendees,_that.color,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  DateTime time,  List<String>? attendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  DateTime time,  List<String> attendees, @ColorConverter()  Color color, @ShapeConverter()  BoxShape shape,  EventRecurrence recurrence,  DateTime? recurrenceEndDate, @JsonKey(includeToJson: false)  String? calendarId,  int version)?  $default,) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
 return $default(_that.id,_that.name,_that.time,_that.attendees,_that.color,_that.shape,_that.recurrence,_that.recurrenceEndDate,_that.calendarId,_that.version);case _:
@@ -219,19 +219,17 @@ return $default(_that.id,_that.name,_that.time,_that.attendees,_that.color,_that
 @JsonSerializable()
 
 class _Event implements Event {
-   _Event({required this.id, required this.name, required this.time, final  List<String>? attendees, @ColorConverter() this.color = Colors.black, @ShapeConverter() this.shape = BoxShape.circle, this.recurrence = EventRecurrence.none, this.recurrenceEndDate, @JsonKey(includeToJson: false) this.calendarId, this.version = 1}): _attendees = attendees;
+   _Event({required this.id, required this.name, required this.time, final  List<String> attendees = const [], @ColorConverter() this.color = Colors.black, @ShapeConverter() this.shape = BoxShape.circle, this.recurrence = EventRecurrence.none, this.recurrenceEndDate, @JsonKey(includeToJson: false) this.calendarId, this.version = 1}): _attendees = attendees;
   factory _Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override final  DateTime time;
- final  List<String>? _attendees;
-@override List<String>? get attendees {
-  final value = _attendees;
-  if (value == null) return null;
+ final  List<String> _attendees;
+@override@JsonKey() List<String> get attendees {
   if (_attendees is EqualUnmodifiableListView) return _attendees;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(value);
+  return EqualUnmodifiableListView(_attendees);
 }
 
 @override@JsonKey()@ColorConverter() final  Color color;
@@ -275,7 +273,7 @@ abstract mixin class _$EventCopyWith<$Res> implements $EventCopyWith<$Res> {
   factory _$EventCopyWith(_Event value, $Res Function(_Event) _then) = __$EventCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, DateTime time, List<String>? attendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeToJson: false) String? calendarId, int version
+ String id, String name, DateTime time, List<String> attendees,@ColorConverter() Color color,@ShapeConverter() BoxShape shape, EventRecurrence recurrence, DateTime? recurrenceEndDate,@JsonKey(includeToJson: false) String? calendarId, int version
 });
 
 
@@ -292,13 +290,13 @@ class __$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? time = null,Object? attendees = freezed,Object? color = null,Object? shape = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? calendarId = freezed,Object? version = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? time = null,Object? attendees = null,Object? color = null,Object? shape = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? calendarId = freezed,Object? version = null,}) {
   return _then(_Event(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
-as DateTime,attendees: freezed == attendees ? _self._attendees : attendees // ignore: cast_nullable_to_non_nullable
-as List<String>?,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as DateTime,attendees: null == attendees ? _self._attendees : attendees // ignore: cast_nullable_to_non_nullable
+as List<String>,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
 as Color,shape: null == shape ? _self.shape : shape // ignore: cast_nullable_to_non_nullable
 as BoxShape,recurrence: null == recurrence ? _self.recurrence : recurrence // ignore: cast_nullable_to_non_nullable
 as EventRecurrence,recurrenceEndDate: freezed == recurrenceEndDate ? _self.recurrenceEndDate : recurrenceEndDate // ignore: cast_nullable_to_non_nullable

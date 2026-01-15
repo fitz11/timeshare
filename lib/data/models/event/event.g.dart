@@ -10,9 +10,9 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   id: json['id'] as String,
   name: json['name'] as String,
   time: DateTime.parse(json['time'] as String),
-  attendees: (json['attendees'] as List<dynamic>?)
-      ?.map((e) => e as String)
-      .toList(),
+  attendees:
+      (json['attendees'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
   color: json['color'] == null
       ? Colors.black
       : const ColorConverter().fromJson((json['color'] as num).toInt()),
