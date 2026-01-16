@@ -1,41 +1,20 @@
 # Release Checklist
 
-Manual steps remaining before app store release.
+Manual steps remaining before app store release. See [BUILD.md](BUILD.md) for detailed build instructions.
 
-## Android Release Build Setup
+## Build Setup
 
-- [ ] Create upload keystore:
-  ```bash
-  keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA \
-    -keysize 2048 -validity 10000 -alias upload
-  ```
-- [ ] Create `android/key.properties` (gitignored):
-  ```properties
-  storeFile=/path/to/upload-keystore.jks
-  storePassword=your_keystore_password
-  keyAlias=upload
-  keyPassword=your_key_password
-  ```
-- [ ] Store keystore and passwords securely (cannot update app if lost)
+- [ ] Android: Create keystore and `key.properties` (see BUILD.md)
+- [ ] iOS: Configure Xcode Cloud in App Store Connect
 
-## iOS Release Build Setup
+## GitHub Actions (Optional)
 
-- [ ] Configure Xcode Cloud in App Store Connect
-- [ ] Verify signing works: `flutter build ipa --release`
-
-## GitHub Actions (Optional - for signed CI builds)
-
-- [ ] Add `ANDROID_KEYSTORE_BASE64` secret (base64-encoded keystore)
-- [ ] Add `ANDROID_KEYSTORE_PASSWORD` secret
-- [ ] Add `ANDROID_KEY_ALIAS` secret
-- [ ] Add `ANDROID_KEY_PASSWORD` secret
+- [ ] Add Android signing secrets to GitHub
 - [ ] Uncomment release build section in `.github/workflows/main.yaml`
 
 ## Pre-Submission Verification
 
-- [ ] Run `flutter analyze` - should show no issues
-- [ ] Run `flutter test` - all tests should pass (200+ tests, 9 skipped)
-- [ ] Build release APK: `flutter build apk --release`
-- [ ] Build release AAB: `flutter build appbundle --release`
-- [ ] Test on real Android device
-- [ ] Test on real iOS device
+- [ ] Run `flutter analyze` - no issues
+- [ ] Run `flutter test` - all tests pass
+- [ ] Build and test on real Android device
+- [ ] Build and test on real iOS device

@@ -26,6 +26,13 @@ flutter test
 
 # Analyze code
 flutter analyze
+
+# Generate API documentation
+dart doc
+
+# View docs locally (requires dhttpd)
+dart pub global activate dhttpd
+dart pub global run dhttpd --path doc/api
 ```
 
 For release builds and deployment, see [BUILD.md](BUILD.md).
@@ -50,34 +57,9 @@ For release builds and deployment, see [BUILD.md](BUILD.md).
 
 ### Authentication and Security
 
-> **Important Security Notice:** Please read this section carefully before storing sensitive information in Timeshare.
+> **Important:** Your calendar data is **not end-to-end encrypted**. Do not store highly sensitive information (medical details, financial data, confidential business information) in this app.
 
-#### Password Security
-
-Your password is:
-
-- Securely hashed on the server using industry-standard algorithms
-- Never stored in plain text
-- Not visible to the app developer or maintainers
-
-#### Data Storage - Please Read Carefully
-
-**Your calendar data is NOT end-to-end encrypted.** This means:
-
-- Data is encrypted during transmission (HTTPS)
-- Data is encrypted at rest by the server infrastructure
-- However, data **can be read by** database administrators
-
-**What data is stored:**
-
-- Your email address and display name
-- Calendar names and sharing settings
-- Event names, dates, times, and recurrence patterns
-- Your friends list
-
-**Recommendation:** Do not store highly sensitive information (medical details, financial data, confidential business information) in this app.
-
-For complete security details, see [SECURITY.md](SECURITY.md).
+For complete security and privacy details, see [SECURITY.md](SECURITY.md) and [PRIVACY_POLICY.md](PRIVACY_POLICY.md).
 
 ### Making a Calendar
 
@@ -176,6 +158,11 @@ REST API ↔ Repositories ↔ Riverpod Providers ↔ UI (ConsumerWidgets)
 - **AppUser**: User profile with friends list
 - **FriendRequest**: Request with 30-day expiration
 - **OwnershipTransferRequest**: Transfer calendar ownership between users
+
+### Documentation
+
+- **Flutter client**: Run `dart doc` to generate API docs (output: `doc/api/`)
+- **REST API**: See [TIMESHARE_API_REFERENCE.md](TIMESHARE_API_REFERENCE.md)
 
 ## Licensing
 

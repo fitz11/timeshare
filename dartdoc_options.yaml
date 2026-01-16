@@ -1,0 +1,6 @@
+dartdoc:
+  name: Timeshare
+  description: A Flutter calendar-sharing app using REST API and Riverpod
+  exclude:
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'
