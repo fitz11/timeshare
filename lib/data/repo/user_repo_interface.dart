@@ -22,15 +22,12 @@ abstract class UserRepositoryInterface {
   Future<AppUser?> getUserById([String uid = '']);
 
   /// Search for users by email prefix.
-  /// Returns empty list if email is less than 5 characters.
+  /// Returns empty list if email is less than 6 characters.
   Future<List<AppUser>> searchUsersByEmail(String email);
 
   /// Get the friends list for a user.
   /// If [uid] is empty, defaults to the current user.
   Future<List<AppUser>> getFriendsOfUser([String uid = '']);
-
-  /// Add a user to the current user's friends list.
-  Future<void> addFriend(String targetUid);
 
   /// Remove a user from the current user's friends list.
   Future<void> removeFriend(String targetUid);

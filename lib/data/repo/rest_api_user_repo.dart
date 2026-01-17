@@ -67,7 +67,8 @@ class RestApiUserRepository implements UserRepositoryInterface {
 
   @override
   Future<List<AppUser>> searchUsersByEmail(String email) async {
-    if (email.isEmpty || email.length < 5) {
+    // Backend requires minimum 6 characters to prevent email enumeration
+    if (email.isEmpty || email.length < 6) {
       return [];
     }
 
@@ -86,14 +87,6 @@ class RestApiUserRepository implements UserRepositoryInterface {
     final response = await _client.get('/api/v1/timeshare/users/$uid/friends/');
     final List<dynamic> data = jsonDecode(response.body);
     return data.map((json) => AppUser.fromJson(json)).toList();
-  }
-
-  @override
-  Future<void> addFriend(String targetUid) async {
-    final currentUid = currentUserId;
-    if (currentUid == null) return;
-
-    await _client.post('/api/v1/timeshare/users/$currentUid/friends/$targetUid/');
   }
 
   @override

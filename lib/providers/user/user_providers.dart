@@ -46,24 +46,6 @@ class UserFriendsNotifier extends AsyncNotifier<List<AppUser>> {
     return await repo.getFriendsOfUser();
   }
 
-  Future<void> addFriend({required String targetUid}) async {
-    final repo = ref.read(userRepositoryProvider);
-    final previousState = state;
-
-    try {
-      final newFriend = await repo.getUserById(targetUid);
-      if (newFriend == null) throw Exception('User not found');
-
-      final currentFriends = state.value ?? [];
-      state = AsyncValue.data([...currentFriends, newFriend]);
-
-      await repo.addFriend(targetUid);
-    } catch (e, st) {
-      state = previousState;
-      state = AsyncValue.error(e, st);
-    }
-  }
-
   Future<void> removeFriend({required String targetUid}) async {
     final repo = ref.read(userRepositoryProvider);
     final previousState = state;
@@ -110,13 +92,15 @@ final userFriendsProvider =
 );
 
 /// Search users by email.
+/// Backend requires minimum 6 characters to prevent email enumeration.
 final userSearchProvider =
     FutureProvider.family<List<AppUser>, String>((ref, email) async {
   const tag = 'UserSearch';
   final trimmed = email.trim();
 
-  if (trimmed.length < 5) {
-    AppLogger().warning('skipped - query too short: "$trimmed" (${trimmed.length} chars)', tag: tag);
+  // Backend requires minimum 6 characters to prevent email enumeration
+  if (trimmed.length < 6) {
+    AppLogger().warning('skipped - query too short: "$trimmed" (${trimmed.length} chars, min 6)', tag: tag);
     return [];
   }
 

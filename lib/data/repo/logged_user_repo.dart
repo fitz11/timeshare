@@ -58,14 +58,6 @@ class LoggedUserRepository implements UserRepositoryInterface {
   }
 
   @override
-  Future<void> addFriend(String targetUid) {
-    return _logger.logApiCall(
-      'addFriend',
-      () => _delegate.addFriend(targetUid),
-    );
-  }
-
-  @override
   Future<void> removeFriend(String targetUid) {
     return _logger.logApiCall(
       'removeFriend',
