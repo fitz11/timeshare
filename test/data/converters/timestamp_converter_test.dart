@@ -34,12 +34,14 @@ void main() {
       expect(() => fromTimestamp('invalid'), throwsException);
     });
 
-    test('throws exception for null', () {
-      expect(() => fromTimestamp(null), throwsException);
+    test('returns epoch for null', () {
+      final result = fromTimestamp(null);
+      expect(result, DateTime.utc(1970, 1, 1));
     });
 
-    test('throws exception for int', () {
-      expect(() => fromTimestamp(12345), throwsException);
+    test('returns epoch for int', () {
+      final result = fromTimestamp(12345);
+      expect(result, DateTime.utc(1970, 1, 1));
     });
   });
 

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import 'package:flutter/foundation.dart';
-import 'package:logger/logger.dart';
 import 'package:timeshare/config/app_config.dart';
 import 'package:timeshare/services/logging/api_call_tracker.dart';
 
@@ -25,7 +24,6 @@ class AppLogger {
   factory AppLogger() => _instance;
   AppLogger._internal();
 
-  Logger? _logger;
   bool _initialized = false;
   LogLevel _minLevel = LogLevel.debug;
 
@@ -46,18 +44,6 @@ class AppLogger {
     final appConfig = config ?? AppConfig.fromEnvironment();
     _minLevel = _getMinLevelForEnvironment(appConfig);
 
-    _logger = Logger(
-      printer: PrettyPrinter(
-        methodCount: 0,
-        errorMethodCount: 5,
-        lineLength: 80,
-        colors: true,
-        printEmojis: true,
-        dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
-      ),
-      level: _mapToLoggerLevel(_minLevel),
-    );
-
     _initialized = true;
     info('AppLogger initialized (minLevel: ${_minLevel.name}, env: ${appConfig.environment.name})', tag: 'Logger');
   }
@@ -70,20 +56,6 @@ class AppLogger {
       case Environment.staging:
       case Environment.dev:
         return LogLevel.debug;
-    }
-  }
-
-  /// Map our LogLevel to the logger package's Level.
-  Level _mapToLoggerLevel(LogLevel level) {
-    switch (level) {
-      case LogLevel.debug:
-        return Level.debug;
-      case LogLevel.info:
-        return Level.info;
-      case LogLevel.warning:
-        return Level.warning;
-      case LogLevel.error:
-        return Level.error;
     }
   }
 

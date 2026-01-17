@@ -16,8 +16,8 @@ void main() {
       addTearDown(container.dispose);
 
       // Listen to providers to keep them alive
-      final calSub = container.listen(calendarsProvider, (_, __) {});
-      final eventSub = container.listen(eventsWithOptimisticProvider, (_, __) {});
+      final calSub = container.listen(calendarsProvider, (_, _) {});
+      final eventSub = container.listen(eventsWithOptimisticProvider, (_, _) {});
 
       // Wait for initial data to load
       await Future.delayed(const Duration(milliseconds: 200));

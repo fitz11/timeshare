@@ -177,10 +177,10 @@ void main() {
       final json = request.toJson();
 
       expect(json['id'], equals('transfer-1'));
-      expect(json['calendarId'], equals('cal-1'));
+      expect(json['calendar'], equals('cal-1'));
       expect(json['calendarName'], equals('My Calendar'));
-      expect(json['fromUid'], equals('user-1'));
-      expect(json['toUid'], equals('user-2'));
+      expect(json['fromUser'], equals('user-1'));
+      expect(json['toUser'], equals('user-2'));
       expect(json['status'], equals('pending'));
       expect(json['fromDisplayName'], equals('Alice'));
     });
@@ -190,10 +190,10 @@ void main() {
 
       final json = {
         'id': 'transfer-1',
-        'calendarId': 'cal-1',
+        'calendar': 'cal-1',
         'calendarName': 'My Calendar',
-        'fromUid': 'user-1',
-        'toUid': 'user-2',
+        'fromUser': 'user-1',
+        'toUser': 'user-2',
         'status': 'pending',
         'createdAt': now.toIso8601String(),
         'fromDisplayName': 'Alice',
@@ -215,40 +215,40 @@ void main() {
 
       final pendingJson = {
         'id': 't1',
-        'calendarId': 'cal-1',
+        'calendar': 'cal-1',
         'calendarName': 'Calendar',
-        'fromUid': 'u1',
-        'toUid': 'u2',
+        'fromUser': 'u1',
+        'toUser': 'u2',
         'status': 'pending',
         'createdAt': now.toIso8601String(),
       };
 
       final acceptedJson = {
         'id': 't2',
-        'calendarId': 'cal-1',
+        'calendar': 'cal-1',
         'calendarName': 'Calendar',
-        'fromUid': 'u1',
-        'toUid': 'u2',
+        'fromUser': 'u1',
+        'toUser': 'u2',
         'status': 'accepted',
         'createdAt': now.toIso8601String(),
       };
 
       final declinedJson = {
         'id': 't3',
-        'calendarId': 'cal-1',
+        'calendar': 'cal-1',
         'calendarName': 'Calendar',
-        'fromUid': 'u1',
-        'toUid': 'u2',
+        'fromUser': 'u1',
+        'toUser': 'u2',
         'status': 'declined',
         'createdAt': now.toIso8601String(),
       };
 
       final cancelledJson = {
         'id': 't4',
-        'calendarId': 'cal-1',
+        'calendar': 'cal-1',
         'calendarName': 'Calendar',
-        'fromUid': 'u1',
-        'toUid': 'u2',
+        'fromUser': 'u1',
+        'toUser': 'u2',
         'status': 'cancelled',
         'createdAt': now.toIso8601String(),
       };

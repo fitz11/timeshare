@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:timeshare/data/enums.dart';
 import 'package:timeshare/data/models/user/app_user.dart';
 import 'package:timeshare/providers/cal/cal_providers.dart';
+import 'package:timeshare/providers/config/app_info_provider.dart';
 import 'package:timeshare/providers/nav/nav_providers.dart';
 import 'package:timeshare/providers/user/user_providers.dart';
 import 'package:timeshare/ui/core/responsive/responsive.dart';
@@ -409,12 +410,29 @@ class ProfilePage extends ConsumerWidget {
 
             // Version Info
             Center(
-              child: Text(
-                'Version 2.0.1',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                ),
-              ),
+              child: ref.watch(appVersionProvider).when(
+                    data: (version) => Text(
+                      'Version $version',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    loading: () => Text(
+                      'Version ...',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    error: (_, _) => Text(
+                      'Version unknown',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
             ),
 
             const SizedBox(height: 16),

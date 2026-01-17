@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeshare/data/exceptions/email_not_verified_exception.dart';
 import 'package:timeshare/data/services/rest_api_auth_service.dart';
 import 'package:timeshare/providers/auth/auth_providers.dart';
+import 'package:timeshare/ui/features/profile/widgets/profile_dialogs.dart';
 
 /// Authentication screen - login and registration.
 class AuthScreen extends ConsumerStatefulWidget {
@@ -436,10 +438,25 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   const SizedBox(height: 24),
 
                   // Footer
-                  Text(
-                    'By continuing, you agree to our Terms of Service and Privacy Policy',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                  Text.rich(
+                    TextSpan(
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      children: [
+                        const TextSpan(
+                          text: 'By continuing, you agree to our Terms of Service and ',
+                        ),
+                        TextSpan(
+                          text: 'Privacy Policy',
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => showPrivacyPolicyDialog(context),
+                        ),
+                      ],
                     ),
                     textAlign: TextAlign.center,
                   ),

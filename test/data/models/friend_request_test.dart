@@ -204,8 +204,8 @@ void main() {
       final json = request.toJson();
 
       expect(json['id'], equals('req-1'));
-      expect(json['fromUid'], equals('user-1'));
-      expect(json['toUid'], equals('user-2'));
+      expect(json['fromUser'], equals('user-1'));
+      expect(json['toUser'], equals('user-2'));
       expect(json['status'], equals('pending'));
       expect(json['fromDisplayName'], equals('Alice'));
     });
@@ -216,8 +216,8 @@ void main() {
 
       final json = {
         'id': 'req-1',
-        'fromUid': 'user-1',
-        'toUid': 'user-2',
+        'fromUser': 'user-1',
+        'toUser': 'user-2',
         'status': 'pending',
         'createdAt': now.toIso8601String(),
         'expiresAt': expires.toIso8601String(),
@@ -239,8 +239,8 @@ void main() {
 
       final pendingJson = {
         'id': 'req-1',
-        'fromUid': 'user-1',
-        'toUid': 'user-2',
+        'fromUser': 'user-1',
+        'toUser': 'user-2',
         'status': 'pending',
         'createdAt': now.toIso8601String(),
         'expiresAt': expires.toIso8601String(),
@@ -248,8 +248,8 @@ void main() {
 
       final acceptedJson = {
         'id': 'req-2',
-        'fromUid': 'user-1',
-        'toUid': 'user-2',
+        'fromUser': 'user-1',
+        'toUser': 'user-2',
         'status': 'accepted',
         'createdAt': now.toIso8601String(),
         'expiresAt': expires.toIso8601String(),
@@ -257,8 +257,8 @@ void main() {
 
       final declinedJson = {
         'id': 'req-3',
-        'fromUid': 'user-1',
-        'toUid': 'user-2',
+        'fromUser': 'user-1',
+        'toUser': 'user-2',
         'status': 'declined',
         'createdAt': now.toIso8601String(),
         'expiresAt': expires.toIso8601String(),
