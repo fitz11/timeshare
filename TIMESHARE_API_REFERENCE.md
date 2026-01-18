@@ -468,7 +468,7 @@ Search users by email prefix.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| email | string | Yes | Email prefix (minimum 5 characters) |
+| email | string | Yes | Email prefix (minimum 6 characters) |
 
 **Example:** `GET /users/search/?email=john@`
 
@@ -486,7 +486,7 @@ Search users by email prefix.
 
 **Notes:**
 - Returns maximum 10 results
-- Minimum prefix length: 5 characters
+- Minimum prefix length: 6 characters
 - Excludes current user from results
 
 ---
@@ -928,12 +928,7 @@ Delete all events in a calendar.
 
 **Permissions:** Calendar owner or shared user
 
-**Response 200:**
-```json
-{
-  "deleted": 42
-}
-```
+**Response 204:** No content
 
 ---
 
